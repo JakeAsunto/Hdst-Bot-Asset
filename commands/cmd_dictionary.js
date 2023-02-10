@@ -1,10 +1,11 @@
 module.exports.config = {
 	name: 'dictionary',
-	version: '2.0.0',
+	version: '2.0.1',
 	hasPermssion: 0,
 	credits: 'DungUwU', // beautify by Hadestia
 	description: 'Check definition of specific word.',
 	usages: '<word>',
+	aliases: [ 'dict', 'meaning' ],
 	commandCategory: 'education',
 	cooldowns: 5,
 	envConfig: {

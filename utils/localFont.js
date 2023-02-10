@@ -13,11 +13,11 @@ function replaceEachChar(text, dataUpper, dataLower, dataNumber) {
 		
 		for (let i = 0; i < text.length; i++) {
 			
-			if (/^[A-Za-z0-9]*$/.test(text[i]) == false) {
-				fonted += test[i];
+			if (!text[i].match(/^[A-Za-z0-9]*$/)) {
+				fonted += text[i];
 			} else {
 				// if number
-				if (/[0-9]/.test(text[i])) {
+				if (text[i].match(/[0-9]/)) {
 			
 					// if data number has values
 					if (dataNumber) {
@@ -60,36 +60,37 @@ function replaceEachChar(text, dataUpper, dataLower, dataNumber) {
 }
 
 module.exports.get = async function (text, style) {
+	const styleNum = parseInt(style) || 0;
 	
-	if (style == 'bold-sans') {
+	if (styleNum == 1 || style == 'bold-sans') {
 		return replaceEachChar(
 			text,
 			reference.fonts.bold_sans_caps,
 			reference.fonts.bold_sans_small,
 			reference.fonts.bold_sans_number
 		);
-	} else if (style == 'bold-sans-italic') {
+	} else if (styleNum == 2 || style == 'bold-sans-italic') {
 		return replaceEachChar(
 			text,
 			reference.fonts.bold_sans_italic_caps,
 			reference.fonts.bold_sans_italic_small,
 			reference.fonts.bold_sans_number
 		);
-	} else if (style == 'bold-serif') {
+	} else if (styleNum == 3 || style == 'bold-serif') {
 		return replaceEachChar(
 			text,
 			reference.fonts.bold_serif_caps,
 			reference.fonts.bold_serif_small,
 			reference.fonts.bold_serif_number
 		);
-	} else if (style == 'bold-serif-italic') {
+	} else if (styleNum == 4 || style == 'bold-serif-italic') {
 		return replaceEachChar(
 			text,
 			reference.fonts.bold_serif_italic_caps,
 			reference.fonts.bold_serif_italic_small,
 			reference.fonts.bold_serif_number
 		);
-	} else if (style == 'bold-medieval') {
+	} else if (styleNum == 5 || style == 'bold-medieval') {
 		return replaceEachChar(
 			text,
 			reference.fonts.bold_medieval_caps,

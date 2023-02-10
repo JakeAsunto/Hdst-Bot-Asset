@@ -15,11 +15,11 @@
 	}
 };
 
-module.exports.run = function({ api, event, args, textFormat }) {
+module.exports.run = async function({ api, event, args, textFormat }) {
 	
-	const { commands } = global.client;
+	const { commands, commandAliases } = global.client;
 	const { threadID, messageID } = event;
-	const command = commands.get((args[0] || '').toLowerCase());
+	const command = commands.get((commandAliases.get(args[0]) || args[0] || '').toLowerCase());
 	const threadSetting = global.data.threadData.get(parseInt(threadID)) || {};
 	
 	const prefix = (threadSetting.hasOwnProperty('PREFIX')) ? threadSetting.PREFIX : global.config.PREFIX;
@@ -125,14 +125,15 @@ module.exports.run = function({ api, event, args, textFormat }) {
 	
 	// command = module + help: show command info
 		
-	const permssion = textFormat('system', `perm${command.config.hasPermssion}`) || 0;
+	const permssion = textFormat('system', `perm${command.config.hasPermssion || 0}`);
 	const commandUsage = `${prefix}${command.config.name} ${command.config.usages || ''}`;
 	const cooldown = (command.config.cooldowns && command.config.cooldowns > 1) ? `${command.config.cooldowns} seconds` : 'no cooldown';
 	const commandReplyUsage = (command.config.replyUsages) ? `\n● usage reply:\n${command.config.replyUsages}` : '';
+	const commandName = await global.fancyFont.get(command.config.name, 2);
 	
 	const messageBody = textFormat(
 		'cmd', 'cmdShowInfo',
-		command.config.name,
+		commandName,
 		command.config.description,
 		commandUsage,
 		commandReplyUsage,
