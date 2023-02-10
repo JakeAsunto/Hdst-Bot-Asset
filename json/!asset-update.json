@@ -5,8 +5,8 @@
         "https://facebook.com/mensaherong.iantot",
         "This repository was linked to bot assets repository of Hadestia that include assets auto updater."
     ],
-    "VERSION": "5.2.0 (beta)",
-    "CHANGELOGS": "- Add 'bold-font' command for bold font styles see full details by running '$help bold-font'.",
+    "VERSION": "5.2.1 (beta)",
+    "CHANGELOGS": "- Add aliases for dictionary command.\n- Support using command aliases for requesting help for specific command.",
     "MAIN": {
         "listen.js": {
             "path": "includes/"

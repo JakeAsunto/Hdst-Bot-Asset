@@ -1,6 +1,6 @@
  module.exports.config = {
 	name: 'help',
-	version: '1.1.2',
+	version: '1.1.4',
 	hasPermssion: 0,
 	credits: 'Hadestia',
 	description: 'A guide for commands',
@@ -129,11 +129,11 @@ module.exports.run = async function({ api, event, args, textFormat }) {
 	const commandUsage = `${prefix}${command.config.name} ${command.config.usages || ''}`;
 	const cooldown = (command.config.cooldowns && command.config.cooldowns > 1) ? `${command.config.cooldowns} seconds` : 'no cooldown';
 	const commandReplyUsage = (command.config.replyUsages) ? `\n● usage reply:\n${command.config.replyUsages}` : '';
-	const commandName = await global.fancyFont.get(command.config.name, 2);
+	const commandName = await global.fancyFont.get(command.config.name, 1);
 	
 	const messageBody = textFormat(
 		'cmd', 'cmdShowInfo',
-		commandName,
+		`${prefix}${commandName}`,
 		command.config.description,
 		commandUsage,
 		commandReplyUsage,

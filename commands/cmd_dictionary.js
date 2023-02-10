@@ -40,8 +40,9 @@ module.exports.run = function({ api, event, args, textFormat }) {
 			const format = textFormat('cmd', 'cmdDictionaryDefFormat', items.partOfSpeech, `${items.definitions[0].definition[0].toUpperCase() + items.definitions[0].definition.slice(1)}`, example);
 			msg_meanings += `${format}\n\n`;
 		});
-      
-		const messageBody = textFormat('cmd', 'cmdDictionaryFormat', data.word, msg_phonetics, msg_meanings);
+		
+		const word = await global.fancyFont.get(data.word.charAt(0) + data.word.slice(1), 2);
+		const messageBody = textFormat('cmd', 'cmdDictionaryFormat', word, msg_phonetics, msg_meanings);
 		return api.sendMessage(messageBody, threadID, messageID);
 		
     }).catch(err => {
