@@ -1,0 +1,87 @@
+{
+    "INFO": [
+        "Hadestia Bot",
+        "Modified by Ian Divinus",
+        "https://facebook.com/mensaherong.iantot",
+        "This repository was linked to bot assets repository of Hadestia that include assets auto updater."
+    ],
+    "VERSION": "5.2.0 (beta)",
+    "CHANGELOGS": "- Add 'bold-font' command for bold font styles see full details by running '$help bold-font'.",
+    "MAIN": {
+        "listen.js": {
+            "path": "includes/"
+        },
+        "handleCommand.js": {
+            "path": "includes/handle/"
+        },
+        "handleCommandEvent.js": {
+            "path": "includes/handle/"
+        },
+        "handleCommandMessageReply.js": {
+            "path": "includes/handle/"
+        },
+        "handleCreateDatabase.js": {
+            "path": "includes/handle/"
+        },
+        "handleEvent.js": {
+            "path": "includes/handle/"
+        },
+        "handleReaction.js": {
+            "path": "includes/handle/"
+        },
+        "handleReply.js": {
+            "path": "includes/handle/"
+        },
+        "textFormat.json": {
+            "path": "json/",
+            "folder": "json"
+        },
+        "autoResponse.json": {
+            "path": "json/",
+            "folder": "json"
+        }
+    },
+    "COMMANDS": [
+        "sys_pendingMessageReq",
+        "sys_execBash",
+        "sys_botInfo",
+        "sys_botReboot",
+        "sys_changelogs",
+        "sys_checkUpdate",
+        "sys_botShutdown",
+        "sys_textFormat",
+        "sys_setBio",
+        "sys_botReport",
+        "cmd_addUser",
+        "cmd_help",
+        "cmd_sim",
+        "cmd_getID",
+        "cmd_baybayin",
+        "cmd_getLink",
+        "cmd_anonMsg",
+        "cmd_stalk",
+        "cmd_unsent",
+        "cmd_openAI",
+        "cmd_dall-E",
+        "cmd_playMusic",
+        "cmd_announce",
+        "cmd_saveLocally",
+        "cmd_getLyrics",
+        "cmd_pinterest",
+        "event_adminMessageReply",
+        "event_autoRecycleMessage",
+        "event_autoResponse",
+        "event_autoSeen",
+        "cmd_dictionary",
+        "cmd_group",
+        "cmd_boldFont"
+    ],
+    "EVENTS": [
+        "event_adminUpdate",
+        "event_antiChange",
+        "event_antiJoin",
+        "event_antiOut",
+        "event_botJoined",
+        "event_botLogs"
+    ]
+}

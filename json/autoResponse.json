@@ -1,0 +1,255 @@
+{
+    "prefix": {
+        "matches": [
+            "prefix"
+        ],
+        "response": [
+            "Hey!, looking for me? This is my prefix\n❱ ${prefix} ❰"
+        ],
+        "single_message_only": true
+    },
+    "meridiemAM": {
+        "matches": [
+            "good morning",
+            "morning",
+            "mrning",
+            "gd morning",
+            "ohayo"
+        ],
+        "response": [
+            "Good morning too ${mention}.",
+            "Hi ${mention} good morning.",
+            "Wish you the best today ${mention}.",
+            "Blessed day to you ${mention}."
+        ],
+        "single_message_only": true
+    },
+    "meridiemPM": {
+        "matches": [
+            "good afternoon",
+            "good aft",
+            "afternoon",
+            "gd afternoon"
+        ],
+        "response": [
+            "Good afternoon too ${mention}.",
+            "Hi ${mention} good afternoon"
+        ],
+        "single_message_only": true
+    },
+    "greetings": {
+        "matches": [
+            "hi",
+            "hello",
+            "zup",
+            "wassup",
+            "zap",
+            "hey",
+            "yo",
+            "henlo",
+            "low",
+            "yow"
+        ],
+        "response": [
+            "${meridiem} ${mention}!.",
+            "Hello ${mention}, ${meridiem}!.",
+            "${meridiem} ${mention}.",
+            "Oh hi ${mention}.",
+            "Hello ${mention} How are you?"
+        ],
+        "single_message_only": true
+    },
+    "pat": {
+        "matches": [
+            "pat"
+        ],
+        "response": [
+            "( ^-^`)",
+            "Nyaaahh..."
+        ],
+        "required_mention": true
+    },
+    "naol": {
+        "matches": [
+            "naol",
+            "sana all",
+            "hope all"
+        ],
+        "response": [
+            "(2)",
+            "same vibes",
+            "Sana all nga",
+            "I feel you",
+            "Ok lang yan mahalaga kumain"
+        ],
+        "stand_alone": true
+    },
+    "otherbot": {
+        "matches": [
+            "command not found",
+            "intereact with me using sim command",
+            "you have no permission to use command \""
+        ],
+        "response": [
+            "You are kinda sus, I'll keep my eyes on you.ᕙ(͡°‿ ͡°)",
+            "Lah may ibang bot ayaw nyo naba saken.",
+            "Umay may ibang bot.",
+            "Hayst dapat di nyo nako sinali rito may iba pala kayong bot.",
+            "Umay Pinag palit ako sa ibang bot"
+        ],
+        "stand_alone": true
+    },
+    "tulugan": {
+        "matches": [
+            "goodnight",
+            "tulog nako",
+            "tulg nako",
+            "sleep nako"
+        ],
+        "response": [
+            "Sleepwell ${mention}.",
+            "Sana di kana magising",
+            "Goodnight sweet dreams sweetie.<3",
+            "Sige una kana",
+            "Asan kiss ko?",
+            "Kiss muna( ╹▽╹ )"
+        ],
+        "stand_alone": true
+    },
+    "ligo": {
+        "matches": [
+            "ligo nako",
+            "ligo muna ako",
+            "ligo na",
+            "ligo ako"
+        ],
+        "response": [
+            "sama ako(人 •͈ᴗ•͈)",
+            "kaylangan mo ba ng taga kuskos?",
+            "sabunin kita"
+        ],
+        "stand_alone": true
+    },
+    "crush": {
+        "matches": [
+            "crush kita",
+            "crush"
+        ],
+        "response": [
+            "Crush rin kita yieeee😍",
+            "Ako ba?",
+            "Luhh",
+            "Kain mo nlang yan",
+            "Sige",
+            "Sana ako rin",
+            "Minor momints"
+        ],
+        "stand_alone": true
+    },
+    "love": {
+        "matches": [
+            "i love you",
+            "love you",
+            "labyu"
+        ],
+        "response": [
+            "Hope all",
+            "I love you too",
+            "Kadiri",
+            "Mag pm kayo umay naman par",
+            "hayst sana ol may jowa",
+            "Aawwww so lovely..(人 •͈ᴗ•͈)"
+        ],
+        "stand_alone": true
+    },
+    "bye": {
+        "matches": [
+            "bye",
+            "maya nalang",
+            "brb"
+        ],
+        "response": [
+            "take your time:)",
+            "sige",
+            "Sige sige",
+            "Balik ka"
+        ],
+        "stand_alone": true
+    },
+    "kain": {
+        "matches": [
+            "kain nako",
+            "kain muna ako",
+            "makakain na nga"
+        ],
+        "response": [
+            "Eatwell sweetie<3.",
+            "Ano ulam?",
+            "sige",
+            "pakain naren"
+        ],
+        "stand_alone": true
+    },
+    "laugh": {
+        "matches": [
+            "haha",
+            "gago",
+            "amp",
+            "kadiri",
+            "yuck",
+            "panget",
+            "ugly",
+            "stupid",
+            "bobo",
+            "umay",
+            "tae",
+            "putik",
+            "lah",
+            "naol",
+            "sana all",
+            "hope all"
+        ],
+        "response": [
+            "😆",
+            "😂",
+            "🤣"
+        ],
+        "reaction": true
+    },
+    "nigga": {
+        "matches": [
+            "nigga",
+            "nigs",
+            "nigger"
+        ],
+        "response": [
+            "Racist amp.",
+            "Umay sayo par anong taon na racist ka paren ang itim naman ng singit mo."
+        ],
+        "stand_alone": true
+    },
+    "pain": {
+        "matches": [
+            "sad",
+            "sakit",
+            "hurt",
+            "pain"
+        ],
+        "response": [
+            "😢"
+        ],
+        "reaction": true
+    },
+    "surprised": {
+        "matches": [
+            "wow",
+            "luh",
+            "garabi",
+            "grabe"
+        ],
+        "response": [
+            "😮"
+        ],
+        "reaction": true
+    }
+}
