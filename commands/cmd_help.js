@@ -49,7 +49,7 @@ module.exports.run = async function({ api, event, args, textFormat }) {
 			
 		for (const cmd of commands.values()) {
 			
-			const cat = cmd.config.commandCategory.toLowerCase()
+			const cat = (cmd.config.commandCategory).toLowerCase()
 			if (cat !== 'hidden') {
 				if (!group.some(item => item.group.toLowerCase() == cat)) {
 					group.push({ group: cat, cmds: [cmd.config.name] });
@@ -89,9 +89,9 @@ module.exports.run = async function({ api, event, args, textFormat }) {
         let index = 0;
         
         for (const [ name, value ] of (commands)) {
-        	const cat = ((commands.get(name)).config.commandCategory).toLowerCase();
-        	const isHidden = (commands.get(name)).config.hidden || false;
-        	if (!isHidden || cat !== 'hidden') {
+        	const cmd = commands.get(name);
+        	const cat = (cmd.config.commandCategory).toLowerCase();
+        	if (!cmd.config.hidden || cat !== 'hidden') {
         		arrayInfo.push(name);
 			}
         }
