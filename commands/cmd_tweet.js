@@ -7,7 +7,12 @@ module.exports.config = {
 	commandCategory: 'edited images/meme',
 	usages: '<text>',
 	cooldowns: 10,
-	dependencies: {'canvas': '', 'axios': ''},
+	dependencies: {
+		'jimp': '',
+		'canvas': '',
+		'fs-extra': '',
+		'axios': ''
+	},
 	envConfig: {
 		requiredArgument: 1
 	}

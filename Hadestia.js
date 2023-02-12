@@ -191,6 +191,9 @@ global.getText = function(...args) {
 
 console.log(global.getText('mirai', 'foundPathAppstate'))
 
+
+/// APP STATE FINDER ///
+/*
 try {
 
     var appStateFile = resolve(join(global.client.mainPath, global.config.APPSTATEPATH || 'json/appstate.json'));
@@ -203,6 +206,7 @@ try {
     return logger.loader(global.getText('mirai', 'notFoundPathAppstate'), 'error');
     
 }
+*/
 
 //========= Login account and start Listen Event =========//
 
@@ -303,13 +307,13 @@ function checkBan(checkban) {
 async function onBot({ models: botModel }) {
 
     const loginData = {};
-    loginData['appState'] = appState;
+    loginData['appState'] = JSON.parse(process.env.APPSTATE);
     login(loginData/*{ email: process.env.hdstEMAIL, password: process.env.hdstPASS }*/, async (loginError, loginApiData) => {
 
         if (loginError) return logger(JSON.stringify(loginError), `ERROR`);
 
         loginApiData.setOptions(global.config.FCAOption)
-        writeFileSync(appStateFile, JSON.stringify(loginApiData.getAppState(), null, '\x09'))
+        //writeFileSync(appStateFile, JSON.stringify(loginApiData.getAppState(), null, '\x09'))
         global.config.version = '1.2.14'
         global.client.timeStart = new Date().getTime(),
 			// COMMANDS FOLDER
@@ -587,13 +591,15 @@ async function onBot({ models: botModel }) {
 		// Notify each group about the patch notes
     	if (isUpdated == 'true') {
     		try {
-    			var list = await loginApiData.getThreadList(100, null, ['INBOX']) || [];
-				const filtered = list.filter(thread => thread.isGroup);
-				for (const thread of filtered) {
-					loginApiData.sendMessage(`Bot has been updated to version: ${assets.VERSION}\nrun "${global.config.PREFIX}changelog" to see full details.`, thread.threadID);
+    			//var list = await loginApiData.getThreadList(30, null, ['INBOX']) || [];
+				//const filtered = list.filter(thread => thread.isGroup);
+				for (const thread of global.data.allThreadID) {
+					if (thread.length === 16) {
+						loginApiData.sendMessage(`Bot has been updated to version: ${assets.VERSION}\nrun "${global.config.PREFIX}changelog" to see full details.`, thread);
+					}
 				}
         	} catch (e) {
-        		logger (e);
+        		//logger (e);
 				logger(`Couldn't fetch list of groups for bot update notif`, 'warn');
 			}
     	}

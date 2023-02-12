@@ -15,7 +15,7 @@ module.exports.config = {
     }
 };
 
-module.exports.run = async function({ api, event, args, textFormat }) {
+module.exports.run = async function({ api, event, args, logger, textFormat }) {
 	
 	const { threadID, messageID } = event;
     const axios = require('axios');
@@ -57,7 +57,9 @@ module.exports.run = async function({ api, event, args, textFormat }) {
     
 				let path = `${__dirname}/../../cache/${filename}`;
 				let getDown = (await axios.get(`${url}`, { responseType: 'arraybuffer' })).data;
-			
+				
+				logger(`CMD: PINTEREST: Downloaded ${url} for search ${keySearchs}`, 'cache');
+				
 				fs.writeFileSync(path, Buffer.from(getDown, 'utf-8'));
 				imgData.push(fs.createReadStream(path));
 			}
@@ -77,11 +79,15 @@ module.exports.run = async function({ api, event, args, textFormat }) {
 		);
 		
 		for (const file of hashMap) {
+			logger(`CMD: PINTEREST: Deleting ${url} for search ${keySearchs}`, cache);
 			try { fs.unlinkSync(`${__dirname}/../../cache/${file}`); } catch (e) {}
 		}
+		
 	} catch (e) {
+		
 		console.log(e);
 		global.sendReaction.failed(api, event);
         api.sendMessage(textFormat('error', 'errCmdExceptionError', e, global.config.PREFIX), threadID, messageID);
+        
 	}
 };
