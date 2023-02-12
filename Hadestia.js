@@ -4,6 +4,21 @@ const logger = require('./utils/log.js');
 const chalk = require('chalk');
 const cron = require('node-cron');
 
+// AUTO DELETE CACHE ========>
+
+exec('find cache/ -maxdepth 1 -type f -delete', (error, stdout, stderr) => {
+    if (error) {
+        console.log(`auto delete cache error: ${error.message}`);
+        return;
+    }
+    if (stderr) {
+        console.log(`auto delete cache stderr: ${stderr}`);
+        return;
+    }
+    console.log(chalk.bold.hex("#00FF00")("[ AUTO CLEAR CACHE ] ❯ ") + chalk.hex("#00FF00")("Successfully delete cache"))
+});
+
+
 //========= Require all variable need use =========//
 
 const { readdirSync, readFileSync, createReadStream, writeFileSync, existsSync, unlinkSync, rm } = require('fs-extra');

@@ -82,6 +82,6 @@ module.exports.run = async function({ api, event, args, textFormat }) {
 	} catch (e) {
 		console.log(e);
 		global.sendReaction.failed(api, event);
-        api.sendMessage(textFormat('error', 'errCmdExceptionError', e, global.config.PREFIX), theadID, messageID);
+        api.sendMessage(textFormat('error', 'errCmdExceptionError', e, global.config.PREFIX), threadID, messageID);
 	}
 };
