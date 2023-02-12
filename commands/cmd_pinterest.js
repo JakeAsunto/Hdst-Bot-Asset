@@ -40,7 +40,7 @@ module.exports.run = async function({ api, event, args, textFormat }) {
     	const data = (await axios.get(`${process.env.PINTEREST_SEARCHER}${encodeURIComponent(keySearchs)}`)).data.data;
 
 		// add searching timeout
-		const endTime = Date.now() + (5 * 1000);
+		const endTime = Date.now() + (6 * 1000);
 	
     	let num = 0;
     	let hashMap = [];

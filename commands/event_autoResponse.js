@@ -1,6 +1,6 @@
 module.exports.config = {
     name: 'auto-response',
-    version: '1.0.2',
+    version: '1.0.3',
     credits: 'Hadestia', // pls don't change my credit as for my effort for this work.
     description: 'turned on to automatically response into any matched messages installed in the system.',
     commandCategory: 'hidden',
@@ -21,13 +21,15 @@ module.exports.handleEvent = async ({ api, event, Users }) => {
 	// Ignore messages with bot prefix
 	if (senderBody.startsWith(threadSettings.PREFIX || global.config.PREFIX)) {
 		return;
+	// avoid interaction if user mentioned this bot, (mentioning bot can also be a prefix for command)
 	} else if (senderBody.startsWith('@')) {
 		if (Object.keys(mentions).length === 1 && Object.values(mentions)[0] === global.botUserID) {
 			return;
 		}
+	// avoid interaction on other conversation
+	} else if (event.type == 'message_reply' && event.messageReply.senderID !== global.botUserID) {
+		return;
 	}
-	
-	
 	
 	for (const type in dictionary) {
 		

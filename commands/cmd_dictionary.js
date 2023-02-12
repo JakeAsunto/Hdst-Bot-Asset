@@ -23,7 +23,6 @@ module.exports.run = function({ api, event, args, textFormat }) {
 	const { threadID, messageID } = event;
 	const fs = require('fs-extra');
 	const axios = require('axios');
-	const request = require('request');
 	
 	const req = encodeURI(args.join(' ').normalize('NFKD').toLowerCase());
 	const encodedUrl = encodeURI(`https://api.dictionaryapi.dev/api/v2/entries/en/${req}`);
@@ -57,6 +56,15 @@ module.exports.run = function({ api, event, args, textFormat }) {
 	}).catch(err => {
 		
 	});
+	const attachment = [];
+	const dict = (await axios.get(encodedUrlVoice)).data.dictionary;
+	const path = `${__dirname}/../../cache/${(dict.audio).split('/').pop()}`;
+	//console.log(dict)
+	let audio = dict.audio ? await axios.get(dict.audio, { responseType: 'arraybuffer' }).data : null;
+	if (audio) {
+		fs.writeFileSync(path, Buffer.from(getDown, 'utf-8'));
+		attachment.push(fs.createReadStream(path));
+	}
 	*/
 	
 	axios.get(encodedUrl).then(async (res) => {
@@ -83,33 +91,19 @@ module.exports.run = function({ api, event, args, textFormat }) {
 		});
 		
 		const word = await global.fancyFont.get(data.word.charAt(0).toUpperCase() + data.word.slice(1), 2);
-		
-		try {
-			const dict = (await axios.get(encodedUrlVoice)).data.dictionary;
-			const path = `${__dirname}/../../cache/${(dict.audio).split('/').pop()}`;
-			//console.log(dict)
-			return request(dict.audio).pipe(fs.createWriteStream(path)).on('close', function () {
-				api.sendMessage({
-					body: textFormat('cmd', 'cmdDictionaryFormat', word, data.phonetic || msg_phonetics, msg_meanings),
-					attachment: fs.createReadStream(path)
-				}, threadID,
-				(e) => {
-					return path && fs.unlinkSync(path);
-				}, messageID);
-			});
-		} catch (e) {}
-		
 		const messageBody = {
-			body: textFormat('cmd', 'cmdDictionaryFormat', word, data.phonetic || msg_phonetics, msg_meanings)
+			body: textFormat('cmd', 'cmdDictionaryFormat', word, data.phonetic || msg_phonetics, msg_meanings),
+			//attachment
 		};
 		
 		
-		return api.sendMessage( messageBody, threadID, messageID );
+		return api.sendMessage( messageBody, threadID, () => global.sendReaction.success(api, event), messageID );
 		
     }).catch(err => {
-		//console.log(err)
-		//if (err.response.status && err.response.status === 404) {
+		console.log(err)
+		if (err.response.status && err.response.status === 404) {
+			global.sendReaction.failed(api, event);
 			return api.sendMessage(textFormat('cmd', 'cmdDictionaryNotFound'), threadID, messageID);
-		//}
+		}
 	});
 }

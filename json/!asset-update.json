@@ -6,7 +6,7 @@
         "This repository was linked to bot assets repository of Hadestia that include assets auto updater."
     ],
     "VERSION": "5.2.3 (beta)",
-    "CHANGELOGS": "- Add pronunciation voicemail for dictionary command.",
+    "CHANGELOGS": "- basta",
     "MAIN": {
         "listen.js": {
             "path": "includes/"
