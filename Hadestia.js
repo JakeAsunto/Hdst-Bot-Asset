@@ -584,8 +584,8 @@ async function onBot({ models: botModel }) {
     	}
     
 		// notify every admin
-		// AUTO RESTART EVERY 2 HOURS
-		cron.schedule ('0 0 */2 * * *', async () => {
+		// AUTO RESTART EVERY 1 HOURS
+		cron.schedule ('0 0 */1 * * *', async () => {
 			const time_now = gmt.tz('Asia/Manila').format('HH:mm:ss');
 			for (const admin of botAdmins) {
   	  		await loginApiData.sendMessage(textFormat('system', 'botLogRestart', time_now), admin);
