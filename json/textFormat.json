@@ -100,7 +100,7 @@
         "cmdPinterestInvalidFormat": "🔴 Invalid format. Follow sample request below.\nsample: \"$pinterest hadestia - 10\"",
         "cmdPinterestFormat": "%1 images result for \"%2\".",
         "cmdPinterestSearchExceed": "🔴 I can only send maximum of %1 images to avoid spam.",
-        "cmdDictionaryFormat": "❝ %1 ❞\n━━━━━━━━━━━━━━━━━━━━\n%2\n%3",
+        "cmdDictionaryFormat": "❝ %1 ❞\n━━━━━━━━━━━━━━━━━━━━\n%2",
         "cmdDictionaryDefFormat": "● %1\n- %2 %3",
         "cmdDictionaryNotFound": "🔴 No definition found.",
         "cmdPeriodicTableFormat": ""

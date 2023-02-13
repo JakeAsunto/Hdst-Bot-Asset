@@ -1,6 +1,6 @@
 module.exports.config = {
 	name: 'dictionary',
-	version: '2.0.3',
+	version: '2.0.5',
 	hasPermssion: 0,
 	credits: 'Hadestia',
 	description: 'Check definition of specific word.',
@@ -18,33 +18,38 @@ module.exports.config = {
 	}
 }
 
-module.exports.run = function({ api, event, args, textFormat }) {
+module.exports.run = async function({ api, event, args, textFormat }) {
 	
 	const { threadID, messageID, senderID } = event;
 	const fs = require('fs-extra');
 	const axios = require('axios');
 	
-	const req = args.join(' ')".toLowerCase();
+	const req = args.join(' ').toLowerCase();
 	//const encodedUrl = encodeURI(`https://api.dictionaryapi.dev/api/v2/entries/en/${req}`);
 	const encodedUrl = encodeURI(`https://api-dien.hdstteam.repl.co/googlethis?search=${req}`);
 	global.sendReaction.inprocess(api, event);
 
-	await axios.get(encodedUrl).then( async (response) => {
+	await axios.get(encodedUrl).then( async function (response){
 		const dictionary = response.data.dictionary;
-		const pronunciation = [];
 		
 		const word = await global.fancyFont.get(dictionary.word, 2);
 		
+		let definitions = '';
+		// const examples = `● ${await global.fancyFont.get('examples:', 2)}\n${dictionary.examples.join(',\n')}`;
+		
+		for (const index in dictionary.definitions) {
+		 	definitions += ${textFormat('cmd', 'cmdDictionaryDefFormat', dictionary.phonetic, dictionary.definitions[index], (dictionary.examples[index]) ? `\n● ${await global.fancyFont.get('examples:', 2)}\n${dictionary.examples[index]}` : '')}\n\n`;
+		}
 		// download pronunciation voicemail
 		try {
 			
 			const path = `${__dirname}/../../cache/${(dictionary.voice).split('/').pop}`;
-			await axios axios.get(dictionary.voice, { responseType: 'arraybuffer' });
-			fs.writeFileSync(path, Buffer.from(getDown, 'utf-8'));
+			const voice = await axios.get(dictionary.voice, { responseType: 'arraybuffer' });
+			fs.writeFileSync(path, Buffer.from(voice, 'utf-8'));
 			
 			return api.sendMessage(
 				{
-					body: textFormat('cmd', 'cmdDictionaryFormat', word, textFormat('cmd', 'cmdDictionaryDefFormat', dictionary.phonetic, dictionary.definitions[0], dictionary.examples.join(',\n'))),
+					body: textFormat('cmd', 'cmdDictionaryFormat', word, definitions ),
 					attachment: fs.createReadStream(path)
 				},
 				threadID,
@@ -57,7 +62,7 @@ module.exports.run = function({ api, event, args, textFormat }) {
 			
 		} catch (e) {}
 		
-		return api.sendMessage( textFormat('cmd', 'cmdDictionaryFormat', word, textFormat('cmd', 'cmdDictionaryDefFormat', dictionary.phonetic, dictionary.definitions[0], dictionary.examples.join(',\n'))), threadID, messageID );
+		return api.sendMessage( textFormat('cmd', 'cmdDictionaryFormat', word, definitions ), threadID, messageID );
 		
 	}).catch(err => {
 		console.log(err);
