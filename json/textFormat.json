@@ -172,7 +172,8 @@
         "groupBotNeedsAdminPerm": "🔴 Admin this bot first in order to set admin status.",
         "groupCmdGroupInvalidAdminState": "🔴 Invalid syntax, specify what you want to do with this/these user(s).\nUse:\n[ add | promote ] to add user as admin.\n[ remove | demote ] to remove user as admin.",
         "groupCmdGroupInvalidCommandType": "🔴 Invalid command type.\n● accepted option :\n%1",
-        "groupCmdGroupAdminNoParam": "🔴 Mention or Reply to the person you want to apply the changes with."
+        "groupCmdGroupAdminNoParam": "🔴 Mention or Reply to the person you want to apply the changes with.",
+        "groupCmdAddInvalidSyntax": "🔴 Invalid syntax. No parameters given.\n● usage: %1group add [ user id | (user ids sperated with space) | (reply message) ]"
     },
     "fonts": {
         "bold_sans_number": [

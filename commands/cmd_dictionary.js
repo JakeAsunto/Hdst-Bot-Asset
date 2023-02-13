@@ -72,7 +72,7 @@ module.exports.run = async function({ api, event, args, textFormat }) {
 	}).catch(err => {
 		console.log(err);
 		global.sendReaction.failed(api, event);
-		global.logModuleErrorToAdmin(err, __filename, threadID, senderID);
+		global.logModuleErrorToAdmin(err, __filename, event);
 	});
 	
 	/* DEPRECATED

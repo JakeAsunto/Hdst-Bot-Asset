@@ -364,6 +364,8 @@ module.exports = function({ api, models, Users, Threads, Currencies }) {
             Obj.textFormat = textFormat;
 
 			Obj.logger = logger;
+			
+			Obj.Prefix = PREFIX_FINAL;
 
 			Obj.Cache = cache;
 

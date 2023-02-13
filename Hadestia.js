@@ -560,9 +560,9 @@ async function onBot({ models: botModel }) {
 			return loginApiData.unsendMessage(info.messageID);
 		}
 		
-		global.logModuleErrorToAdmin = function (err, filename, threadID, senderID) {
+		global.logModuleErrorToAdmin = function (err, filename, event) {
 			for (const admin of botAdmins) {
-				loginApiData.sendMessage(textFormat('events', 'eventModulesErrorToAdmin', filename, err, threadID, senderID), admin);
+				loginApiData.sendMessage(textFormat('events', 'eventModulesErrorToAdmin', filename, err, event.threadID, event. senderID), admin);
 			}
 		}
 		

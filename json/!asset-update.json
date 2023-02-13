@@ -5,8 +5,8 @@
         "https://facebook.com/mensaherong.iantot",
         "This repository was linked to bot assets repository of Hadestia that include assets auto updater."
     ],
-    "VERSION": "5.2.8 (beta)",
-    "CHANGELOGS": "- FIX DICTIONARY COMMAND",
+    "VERSION": "5.2.9 (beta)",
+    "CHANGELOGS": "- Merge add-user command with 'group' command.",
     "MAIN": {
         "listen.js": {
             "path": "includes/"
@@ -52,7 +52,6 @@
         "sys_textFormat",
         "sys_setBio",
         "sys_botReport",
-        "cmd_addUser",
         "cmd_help",
         "cmd_sim",
         "cmd_getID",

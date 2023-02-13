@@ -59,7 +59,7 @@ module.exports.handleReply = async function ({ api, event, returns, handleReply 
     catch (e) {
 		console.log(e);
     	global.sendReaction.failed(api, event);
-		global.logModuleErrorToAdmin(e, __filename, threadID, senderID);
+		global.logModuleErrorToAdmin(e, __filename, event);
 		return api.sendMessage(global.textFormat('error', 'errCmdExceptionError', e, global.config.PREFIX), threadID, messageID);
     }
 }
@@ -180,7 +180,7 @@ module.exports.run = async function ({ api, args, event, logger, textFormat }) {
 	} catch (api_one_err) {
 		if (api_one_err !== 'SEARCH_VIA_LINK') {
 			console.log(api_one_err);
-			global.logModuleErrorToAdmin(api_one_err, __filename, threadID, senderID);
+			global.logModuleErrorToAdmin(api_one_err, __filename, event);
 		}
 		// if first api failed try in second api
 		global.sendReaction.custom(api, event, '🔍');
@@ -217,7 +217,7 @@ module.exports.run = async function ({ api, args, event, logger, textFormat }) {
 				} catch (err_link_req) {
 					console.log(err_link_req);
 					global.sendReaction.success(api, event);
-					global.logModuleErrorToAdmin(err_link_req, __filename, threadID, senderID);
+					global.logModuleErrorToAdmin(err_link_req, __filename, event);
 					return api.sendMessage(textFormat('error', 'errCmdExceptionError', err_link_req, global.config.PREFIX), threadID, messageID);
 				}
 				return;
@@ -259,13 +259,13 @@ module.exports.run = async function ({ api, args, event, logger, textFormat }) {
 			} catch (api_second_error_manual_search) {
 				console.log(api_second_error_manual_search)
 				global.sendReaction.failed(api, event);
-				global.logModuleErrorToAdmin(api_second_error_manual_search, __filename, threadID, senderID);
+				global.logModuleErrorToAdmin(api_second_error_manual_search, __filename, event);
 				return api.sendMessage(textFormat('error', 'errCmdExceptionError', api_second_error_manual_search, global.config.PREFIX), threadID, messageID);
 			}
 		} catch (api_second_err) {
 			console.log(api_second_err);
 			global.sendReaction.failed(api, event);
-			global.logModuleErrorToAdmin(api_second_err, __filename, threadID, senderID);
+			global.logModuleErrorToAdmin(api_second_err, __filename, event);
 			return api.sendMessage(textFormat('error', 'errCmdExceptionError', api_second_err, global.config.PREFIX), threadID, messageID);
 		}
 	}

@@ -19,7 +19,7 @@ const validTypes = [
 	'name'
 ];
 
-module.exports.handleReply = async function ({ api, event, returns }) {
+module.exports.handleReply = async function ({ api, args, event, returns, textFormat, Prefix }) {
 	
 }
 
@@ -57,9 +57,12 @@ module.exports.run = async function ({ api, args, alias, event, returns, textFor
 			break;
 		// group admin
 		case 'admin':
-		
 			setAdminStatus({ threadInfo, returns, api, args, event });
+			break;
 			
+		// add user to the group
+		case 'add':
+			handleAddUserToGroup({ api, args, event, returns, textFormat, Prefix }) {
 			break;
 		default:
 			break;
@@ -77,6 +80,68 @@ function commandTypeValid(cmd) {
 
 
 // =============== COMMANDS FUNCTIONS =============== //
+
+async function handleAddUserToGroup({ api, args, event, returns, textFormat, Prefix }) {
+	
+	const { threadID, messageID } = event;
+	var { participantIDs, approvalMode, adminIDs } = await api.getThreadInfo(threadID);
+	var participantIDs = participantIDs.map(e => parseInt(e));
+	
+	
+	// handle message reply// this is for when anti out was turned off and a user left the group and they want to add him/her back.
+	// they don't need to get the id of that person and just proceed replying on his/her last chat and run the commnad.
+	if (event.type === 'message_reply') {
+		return adduser(event.messageReply.senderID);
+	} else {
+		if (args.length === 0) {
+			// return invalid syntax
+			return api.sendMessage(
+				textFormat('group', 'groupCmdAddInvalidSyntax', Prefix),
+				threadID, messageID
+			);
+		}
+		
+		for (const id of args) {
+			addUser(id);
+		}
+	}
+	
+	// some detections
+	function adduser(id) {
+		// check user id
+		if (!id.length === 15) return api.sendMessage(textFormat ('error', 'errInvalidUserID'), threadID, messageID);
+		
+		const target = await api.getUserInfoV2(id);
+		// id = parseInt(id);
+		
+		if (participantIDs.includes(id)) {
+			
+			return out(textFormat('group', 'groupAddUserAlreadyInGroup', target.name || 'user'));
+			
+		} else {
+			
+			const admins = adminIDs.map(e => parseInt(e.id));
+			
+			try {
+				
+				await api.addUserToGroup(id, threadID);
+				
+			} catch {
+				
+				return out(textFormat('group', 'groupAddUserAddedFailed', target.name || 'user'));
+			}
+			
+			if (approvalMode === true && !admins.includes(botID)) {
+				
+				return out(textFormat('group', 'groupAddUserAddToPending', target.name || 'member'));
+				
+			} else {
+				
+				return out(textFormat('group', 'groupAddUserAddedSuccess', target.name || 'member'))
+			}
+		}
+	}
+}
 
 async function setAdminStatus({ threadInfo, returns, api, args, event }) {
 	
