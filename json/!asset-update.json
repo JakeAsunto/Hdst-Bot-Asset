@@ -5,8 +5,8 @@
         "https://facebook.com/mensaherong.iantot",
         "This repository was linked to bot assets repository of Hadestia that include assets auto updater."
     ],
-    "VERSION": "5.3.0 (beta)",
-    "CHANGELOGS": "- Update system file tree.\n- Move global variables initializer outside main script.",
+    "VERSION": "5.3.1 (beta)",
+    "CHANGELOGS": "- Update system file tree.\n- Adjust ai configuration.",
     "MAIN": {
         "LICENSE-HADESTIA": {
             "path": "/"

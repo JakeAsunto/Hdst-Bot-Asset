@@ -34,16 +34,8 @@ const { join, resolve } = require('path');
 const axios = require('axios');
 
 ////////////// INSTANTIATE GLOBAL VARIABLES & FUNCTIONS
-(async () => {
-	await spawn('node', ['--trace-warnings', '--async-stack-traces', 'scripts/global_initializer.js'], {
-		cwd: __dirname,
-	    stdio: "inherit",
-	    shell: true
-	});
-})();
 
-/*
-console.log(chalk.bold.hex('#03f0fc').bold('[ Hadestia ] » ') + chalk.bold.hex('#fcba03').bold('Initializing variables...'));
+logger.loader('Intializing Global Variables...');
 
 global.client = new Object({
 
@@ -149,7 +141,6 @@ try {
 
     return logger.loader('Can\'t load file config!', 'error');
 }
-*/
 
 const { Sequelize, sequelize } = require('./includes/database');
 
@@ -157,7 +148,7 @@ writeFileSync(global.client.configPath + '.temp', JSON.stringify(global.config, 
 
 //========= Load language use =========//
 
-/*const langFile = (readFileSync(`${__dirname}/languages/${global.config.language || 'en'}.lang`, { encoding: 'utf-8' })).split(/\r?\n|\r/);
+const langFile = (readFileSync(`${__dirname}/languages/${global.config.language || 'en'}.lang`, { encoding: 'utf-8' })).split(/\r?\n|\r/);
 
 const langData = langFile.filter(item => item.indexOf('#') != 0 && item != '');
 
@@ -192,7 +183,7 @@ global.getText = function(...args) {
 
     return text;
 
-}*/
+}
 
 
 //console.log(global.getText('mirai', 'foundPathAppstate'))
