@@ -17,7 +17,7 @@ module.exports.config = {
 
 module.exports.run = async function({ api, event, args, logger, textFormat }) {
 	
-	const { threadID, messageID } = event;
+	const { threadID, messageID, senderID } = event;
     const axios = require('axios');
     const fs = require('fs-extra');
     const request = require('request');
@@ -79,7 +79,7 @@ module.exports.run = async function({ api, event, args, logger, textFormat }) {
 		);
 		
 		for (const file of hashMap) {
-			logger(`CMD: PINTEREST: Deleting ${url} for search ${keySearchs}`, cache);
+			logger(`CMD: PINTEREST: Deleting ${file} for search ${keySearchs}`, cache);
 			try { fs.unlinkSync(`${__dirname}/../../cache/${file}`); } catch (e) {}
 		}
 		
@@ -87,6 +87,7 @@ module.exports.run = async function({ api, event, args, logger, textFormat }) {
 		
 		console.log(e);
 		global.sendReaction.failed(api, event);
+		global.logModuleErrorToAdmin(e, __filename, threadID, senderID);
         api.sendMessage(textFormat('error', 'errCmdExceptionError', e, global.config.PREFIX), threadID, messageID);
         
 	}

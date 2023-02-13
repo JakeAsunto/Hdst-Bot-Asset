@@ -1,8 +1,8 @@
 module.exports.config = {
 	name: 'dictionary',
-	version: '2.0.1',
+	version: '2.0.3',
 	hasPermssion: 0,
-	credits: 'DungUwU', // beautify by Hadestia
+	credits: 'Hadestia',
 	description: 'Check definition of specific word.',
 	usages: '<word>',
 	aliases: [ 'dict', 'meaning' ],
@@ -20,53 +20,53 @@ module.exports.config = {
 
 module.exports.run = function({ api, event, args, textFormat }) {
 	
-	const { threadID, messageID } = event;
+	const { threadID, messageID, senderID } = event;
 	const fs = require('fs-extra');
 	const axios = require('axios');
 	
-	const req = encodeURI(args.join(' ').normalize('NFKD').toLowerCase());
-	const encodedUrl = encodeURI(`https://api.dictionaryapi.dev/api/v2/entries/en/${req}`);
-	const encodedUrlVoice = encodeURI(`https://api-dien.hdstteam.repl.co/googlethis?search=${req}`);
+	const req = args.join(' ')".toLowerCase();
+	//const encodedUrl = encodeURI(`https://api.dictionaryapi.dev/api/v2/entries/en/${req}`);
+	const encodedUrl = encodeURI(`https://api-dien.hdstteam.repl.co/googlethis?search=${req}`);
 	global.sendReaction.inprocess(api, event);
-	/* OTHER METHOD
-	axios.get(encoded).then( async (response) => {
+
+	await axios.get(encodedUrl).then( async (response) => {
 		const dictionary = response.data.dictionary;
 		const pronunciation = [];
 		
 		const word = await global.fancyFont.get(dictionary.word, 2);
 		
-		//initialize messageBody
-		const messageBody = {
-			body: textFormat('cmd', 'cmdDictionaryFormat', word, dictionary.phonetic, dictionary.examples.join(',\n'));
-		}
-		
-		
 		// download pronunciation voicemail
 		try {
+			
 			const path = `${__dirname}/../../cache/${(dictionary.voice).split('/').pop}`;
-			request(dictionary.voice).pipe(fs.createWriteStream(path)).on('close', function () {
-				messageBody.attachment = fs.createReadStream(path);
-			});
+			await axios axios.get(dictionary.voice, { responseType: 'arraybuffer' });
+			fs.writeFileSync(path, Buffer.from(getDown, 'utf-8'));
+			
+			return api.sendMessage(
+				{
+					body: textFormat('cmd', 'cmdDictionaryFormat', word, textFormat('cmd', 'cmdDictionaryDefFormat', dictionary.phonetic, dictionary.definitions[0], dictionary.examples.join(',\n'))),
+					attachment: fs.createReadStream(path)
+				},
+				threadID,
+				() => {
+					try { return fs.unlinkSync(path); } catch (e) {}
+				},
+				messageID
+			
+			);
+			
 		} catch (e) {}
 		
-		api.sendMessage(
-			messageBody,
-			
+		return api.sendMessage( textFormat('cmd', 'cmdDictionaryFormat', word, textFormat('cmd', 'cmdDictionaryDefFormat', dictionary.phonetic, dictionary.definitions[0], dictionary.examples.join(',\n'))), threadID, messageID );
 		
 	}).catch(err => {
-		
+		console.log(err);
+		global.sendReaction.failed(api, event);
+		global.logModuleErrorToAdmin(err, __filename, threadID, senderID);
+		return api.sendMessage(textFormat('cmd', 'cmdDictionaryNotFound'), threadID, messageID);
 	});
-	const attachment = [];
-	const dict = (await axios.get(encodedUrlVoice)).data.dictionary;
-	const path = `${__dirname}/../../cache/${(dict.audio).split('/').pop()}`;
-	//console.log(dict)
-	let audio = dict.audio ? await axios.get(dict.audio, { responseType: 'arraybuffer' }).data : null;
-	if (audio) {
-		fs.writeFileSync(path, Buffer.from(getDown, 'utf-8'));
-		attachment.push(fs.createReadStream(path));
-	}
-	*/
 	
+	/* DEPRECATED
 	axios.get(encodedUrl).then(async (res) => {
 		const data = res.data[0];
 		// let example = data.meanings[0].definitions.example;
@@ -101,9 +101,10 @@ module.exports.run = function({ api, event, args, textFormat }) {
 		
     }).catch(err => {
 		console.log(err)
-		if (err.response.status && err.response.status === 404) {
+		//if (err.response.status && err.response.status === 404) {
 			global.sendReaction.failed(api, event);
 			return api.sendMessage(textFormat('cmd', 'cmdDictionaryNotFound'), threadID, messageID);
-		}
+		//}
 	});
+	*/
 }

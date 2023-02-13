@@ -36,6 +36,8 @@ module.exports = function({ api, models, Users, Threads, Currencies }) {
 
 		//console.log('current-threadID: ' + threadID)
 		const botMent = (mentions && Object.keys(mentions).length > 0 && Object.keys(mentions)[0] == global.botUserID) ? (Object.values(mentions)[0]).replace('@', '') : global.botUserID;
+		
+		let PREFIX_FINAL = (threadSetting.hasOwnProperty('PREFIX')) ? threadSetting.PREFIX : PREFIX;
 
         const prefixRegex = new RegExp(`^(<@!?${senderID}>|\@${botMent}|${escapeRegex(threadSetting.PREFIX || PREFIX)}|${escapeRegex(PREFIX)})\\s*`);
 		
@@ -109,18 +111,18 @@ module.exports = function({ api, models, Users, Threads, Currencies }) {
 
         if (!command) {
 
-            var allCommandName = [];
+            //var allCommandName = [];
 
             const commandValues = commands['keys']();
 
-            for (const cmd of commandValues) allCommandName.push(cmd)
+            //for (const cmd of commandValues) allCommandName.push(cmd)
 
-            const checker = stringSimilarity.findBestMatch(commandName, allCommandName);
+            //const checker = stringSimilarity.findBestMatch(commandName, allCommandName);
 
-            if (checker.bestMatch.rating >= 0.9) command = client.commands.get(checker.bestMatch.target);
+           // if (checker.bestMatch.rating >= 0.9) command = client.commands.get(checker.bestMatch.target);
 			// const rate = checker.bestMatch.rating;
 			// console.log(rate);
-            return api.sendMessage(textFormat('cmd', 'cmdNotFound', checker.bestMatch.target), threadID, messageID);
+            return api.sendMessage(textFormat('cmd', 'cmdNotFound', PREFIX_FINAL), threadID, messageID);
 
         }
 
@@ -203,8 +205,6 @@ module.exports = function({ api, models, Users, Threads, Currencies }) {
 		} else if (cmdPerm == 0) {
 			eligible = true;
 		}
-		
-		let PREFIX_FINAL = (threadSetting.hasOwnProperty('PREFIX')) ? threadSetting.PREFIX : PREFIX;
 		
 		if (args.length < requiredArgs) {
 			

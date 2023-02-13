@@ -63,7 +63,7 @@
     "cmd": {
         "cmdWasDisabled": "🔴 This command is not available, it's either it was disabled or it was under development.",
         "cmdPermissionNotEnough": "🔴 You don't have enough permission to use this command.\n✦❯ required: %1",
-        "cmdNotFound": "🔴 No such command exist in my library, is that '%1'?",
+        "cmdNotFound": "🔴 No such command exist in my library, kindly use \"%1help\" to see available commands.",
         "cmdWrongUsage": "🔴 Invalid command syntax.\n● usage: '%1'",
         "cmdUserCooldown": "🔴 You cannot use this command for %1.",
         "userBanned0": "🔴 You are unable to use bot commands while being ban.\n\n●❯ Your Case(s)\nreason : %1\nissued: %2",

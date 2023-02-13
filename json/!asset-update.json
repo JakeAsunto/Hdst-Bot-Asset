@@ -5,7 +5,7 @@
         "https://facebook.com/mensaherong.iantot",
         "This repository was linked to bot assets repository of Hadestia that include assets auto updater."
     ],
-    "VERSION": "5.2.5 (beta)",
+    "VERSION": "5.2.6 (beta)",
     "CHANGELOGS": "- Fix Pinterest command processing but not sending images.\n- Add auto clear cache on main script.\n- Downgrade dictionary command while fixing pronunciation audio download hang-up.",
     "MAIN": {
         "listen.js": {
