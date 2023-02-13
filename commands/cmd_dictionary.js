@@ -31,6 +31,8 @@ module.exports.run = async function({ api, event, args, textFormat }) {
 
 	await axios.get(encodedUrl).then( async function (response){
 		const dictionary = response.data.dictionary;
+		// return if no definition found
+		if (!dictionary.word) return api.sendMessage(textFormat('cmd', 'cmdDictionaryNotFound'), threadID, messageID);
 		
 		const word = await global.fancyFont.get(dictionary.word, 2);
 		
@@ -38,7 +40,7 @@ module.exports.run = async function({ api, event, args, textFormat }) {
 		// const examples = `● ${await global.fancyFont.get('examples:', 2)}\n${dictionary.examples.join(',\n')}`;
 		
 		for (const index in dictionary.definitions) {
-		 	definitions += ${textFormat('cmd', 'cmdDictionaryDefFormat', dictionary.phonetic, dictionary.definitions[index], (dictionary.examples[index]) ? `\n● ${await global.fancyFont.get('examples:', 2)}\n${dictionary.examples[index]}` : '')}\n\n`;
+		 	definitions += `${textFormat('cmd', 'cmdDictionaryDefFormat', dictionary.phonetic, dictionary.definitions[index], (dictionary.examples[index]) ? `\n● ${await global.fancyFont.get('examples:', 2)}\n${dictionary.examples[index]}` : '')}\n\n`;
 		}
 		// download pronunciation voicemail
 		try {
@@ -68,7 +70,6 @@ module.exports.run = async function({ api, event, args, textFormat }) {
 		console.log(err);
 		global.sendReaction.failed(api, event);
 		global.logModuleErrorToAdmin(err, __filename, threadID, senderID);
-		return api.sendMessage(textFormat('cmd', 'cmdDictionaryNotFound'), threadID, messageID);
 	});
 	
 	/* DEPRECATED
