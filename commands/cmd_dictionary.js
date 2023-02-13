@@ -45,8 +45,8 @@ module.exports.run = async function({ api, event, args, textFormat }) {
 		// download pronunciation voicemail
 		try {
 			
-			const path = `${__dirname}/../../cache/${(dictionary.voice).split('/').pop}`;
-			const voice = await axios.get(dictionary.voice, { responseType: 'arraybuffer' });
+			const path = `${__dirname}/../../cache/${(dictionary.audio).split('/').pop()}`;
+			const voice = (await axios.get(`${dictionary.audio}`, { responseType: 'arraybuffer' })).data;
 			fs.writeFileSync(path, Buffer.from(voice, 'utf-8'));
 			
 			return api.sendMessage(
@@ -56,15 +56,18 @@ module.exports.run = async function({ api, event, args, textFormat }) {
 				},
 				threadID,
 				() => {
+					global.sendReaction.success(api, event);
 					try { return fs.unlinkSync(path); } catch (e) {}
 				},
 				messageID
-			
 			);
 			
-		} catch (e) {}
+		} catch (e) { 
+			console.log(e);
+			global.logModuleErrorToAdmin(e, __filename, threadID, senderID);
+		}
 		
-		return api.sendMessage( textFormat('cmd', 'cmdDictionaryFormat', word, definitions ), threadID, messageID );
+		return api.sendMessage( textFormat('cmd', 'cmdDictionaryFormat', word, definitions ), threadID, () => global.sendReaction.success(api, event), messageID );
 		
 	}).catch(err => {
 		console.log(err);
