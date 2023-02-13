@@ -79,7 +79,7 @@ module.exports.run = async function({ api, event, args, logger, textFormat }) {
 		);
 		
 		for (const file of hashMap) {
-			logger(`CMD: PINTEREST: Deleting ${file} for search ${keySearchs}`, cache);
+			logger(`CMD: PINTEREST: Deleting ${file} for search ${keySearchs}`, 'cache');
 			try { fs.unlinkSync(`${__dirname}/../../cache/${file}`); } catch (e) {}
 		}
 		

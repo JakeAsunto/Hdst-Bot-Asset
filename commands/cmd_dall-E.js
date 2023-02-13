@@ -27,7 +27,7 @@ module.exports.run = async function({ api, event, args, textFormat }) {
 	const configuration = new Configuration({ apiKey: process.env.OPENAI_API });
   
 	try {
-		global.sendReaction.process(api, event);
+		global.sendReaction.inprocess(api, event);
 		const openai = new OpenAIApi(configuration);
 		const response = await openai.createImage({ prompt: args.join(' '), n: 1, size: '1024x1024' });
 	
@@ -52,6 +52,6 @@ module.exports.run = async function({ api, event, args, textFormat }) {
 	} catch (err) {
 		global.logger(err, 'error');
 		global.sendReaction.failed(api, event);
-		api.sendMessage(textFormat('error', 'errCmdExceptionError', err, global.config.PREFIX), theadID, messageID);
+		api.sendMessage(textFormat('error', 'errCmdExceptionError', err, global.config.PREFIX), threadID, messageID);
 	}
 }
