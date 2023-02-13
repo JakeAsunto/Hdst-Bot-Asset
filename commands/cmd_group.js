@@ -16,14 +16,15 @@ module.exports.config = {
 const validTypes = [
 	'setting',
 	'admin',
-	'name'
+	'name',
+	'add'
 ];
 
 module.exports.handleReply = async function ({ api, args, event, returns, textFormat, Prefix }) {
 	
 }
 
-module.exports.run = async function ({ api, args, alias, event, returns, textFormat, Threads }) {
+module.exports.run = async function ({ api, args, alias, event, returns, textFormat, Threads, Prefix }) {
 	
 	const { threadID, messageID, senderID } = event;
 	
@@ -62,7 +63,7 @@ module.exports.run = async function ({ api, args, alias, event, returns, textFor
 			
 		// add user to the group
 		case 'add':
-			handleAddUserToGroup({ api, args, event, returns, textFormat, Prefix }) {
+			handleAddUserToGroup({ api, args, event, returns, textFormat, Prefix })
 			break;
 		default:
 			break;
@@ -102,12 +103,12 @@ async function handleAddUserToGroup({ api, args, event, returns, textFormat, Pre
 		}
 		
 		for (const id of args) {
-			addUser(id);
+			adduser(id);
 		}
 	}
 	
 	// some detections
-	function adduser(id) {
+	async function adduser(id) {
 		// check user id
 		if (!id.length === 15) return api.sendMessage(textFormat ('error', 'errInvalidUserID'), threadID, messageID);
 		
@@ -211,5 +212,6 @@ async function setAdminStatus({ threadInfo, returns, api, args, event }) {
 		} else {
 			return api.sendMessage(global.textFormat('group', 'groupCmdGroupAdminNoParam'), threadID, messageID);
 		}
+		
 	}
 }

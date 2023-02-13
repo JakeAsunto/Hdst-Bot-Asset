@@ -31,7 +31,7 @@ module.exports.loader = (data, option) => {
 			console.log(chalk.bold.hex("#ff0000").bold('[ Hadestia ] » ') + chalk.hex("#ff0000")(data));
 			break;
 		default:
-			console.log(chalk.bold.hex("#00ffff").bold(`[ Hadestia ] » `) + chalk.hex("#00ffff")(data));
+			console.log(chalk.bold.hex("#00ffff").bold('[ Hadestia ] » ') + chalk.hex("#00ffff")(data));
 			break;
 	}
 }

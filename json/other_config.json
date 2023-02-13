@@ -1,0 +1,11 @@
+{
+	'openai_config': {
+		'model': 'text-davinci-003',
+		'temperature': 0.5,
+		'frequency_penalty': 0.5,
+		'presence_penalty': 0.5,
+		'max_tokens': 200,
+		'best_of': 5,
+		'stop': '\n'
+	}
+}

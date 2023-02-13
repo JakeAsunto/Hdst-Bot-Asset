@@ -5,9 +5,18 @@
         "https://facebook.com/mensaherong.iantot",
         "This repository was linked to bot assets repository of Hadestia that include assets auto updater."
     ],
-    "VERSION": "5.2.9 (beta)",
-    "CHANGELOGS": "- Merge add-user command with 'group' command.",
+    "VERSION": "5.3.0 (beta)",
+    "CHANGELOGS": "- Update system file tree.\n- Move global variables initializer outside main script.",
     "MAIN": {
+        "LICENSE-HADESTIA": {
+            "path": "/"
+        },
+        "Hadestia.js": {
+            "path": "/"
+        },
+        "global_initializer.js": {
+            "path": "scripts/"
+        },
         "listen.js": {
             "path": "includes/"
         },

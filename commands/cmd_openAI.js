@@ -27,11 +27,13 @@ module.exports.run = async function({ api, event, args, textFormat }) {
 		global.sendReaction.inprocess(api, event);
 		const completion = await openai.createCompletion({
         	model: 'text-davinci-003',
-            prompt: args.join(' '),
-            temperature: 0.3,
-            max_tokens: 1000,
-            frequency_penalty: 0.3,
-            presence_penalty: 0.5
+			temperature: 0.5,
+			frequency_penalty: 0.5,
+			presence_penalty: 0.5,
+			max_tokens: 500,
+			prompt: args.join(' '),
+			best_of: 5,
+			stop: '\n'
         });
         
 		api.sendMessage(
