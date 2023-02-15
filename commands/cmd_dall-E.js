@@ -22,7 +22,7 @@ module.exports.run = async function({ api, event, args, textFormat, Prefix }) {
 
 	const axios = require('axios');
 	const { threadID, messageID } = event;
-	const { unlinkSync, createWriteStream, createReadStream } = require('fs-extra');
+	const { unlinkSync, writeFileSync, createReadStream } = require('fs-extra');
 	
 	const { Configuration, OpenAIApi } = require('openai');
 	const configuration = new Configuration({ apiKey: process.env.OPENAI_API });
@@ -34,7 +34,7 @@ module.exports.run = async function({ api, event, args, textFormat, Prefix }) {
 	
 		const path = `${__dirname}/../../cache/ai-generatedImages.png`;
 		const img_req = await axios.get(response.data.data[0].url, { responseType: 'arraybuffer' }).data;
-		createWriteStream(img_req);
+		writeFileSync(path, Buffer.from(img_req, 'utf-8'));
 		
 		const messageBody = {
 			body: args.join(' '),

@@ -59,7 +59,7 @@ module.exports.run = async function ({ api, event, args, utils, textFormat, Pref
 
 		const path = `${__dirname}/../../cache/stalkImg.png`;
 		const profile_av = await axios.get(encodeURI(`https://graph.facebook.com/${id}/picture?width=800&height=800&access_token=${process.env.FB_ACCESS_TOKEN}`), { responseType: 'arraybuffer' }).data;
-		await fs.createWriteStream(profile_av);
+		fs.writeFileSync(path, Buffer.from(profile_av, 'utf-8'));
 		
 		return api.sendMessage(
 			{

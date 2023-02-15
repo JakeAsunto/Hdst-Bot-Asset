@@ -5,7 +5,7 @@
         "https://facebook.com/mensaherong.iantot",
         "This repository was linked to bot assets repository of Hadestia that include assets auto updater."
     ],
-    "VERSION": "5.3.2 (beta)",
+    "VERSION": "5.3.3 (beta)",
     "CHANGELOGS": "- Update system file tree.\n- Adjust ai configuration.",
     "MAIN": {
         "LICENSE-HADESTIA": {
