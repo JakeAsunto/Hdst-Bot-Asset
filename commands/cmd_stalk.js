@@ -58,7 +58,7 @@ module.exports.run = async function ({ api, event, args, utils, textFormat, Pref
 		//var rs = res.love == 'Không Có Dữ Liệu' ? n_a : res.love.name;
 
 		const path = `${__dirname}/../../cache/stalkImg.png`;
-		const profile_av = await axios.get(encodeURI(`https://graph.facebook.com/${id}/picture?width=800&height=800&access_token=${process.env.FB_ACCESS_TOKEN}`), { responseType: 'arraybuffer' }).data;
+		const profile_av = (await axios.get(encodeURI(`https://graph.facebook.com/${id}/picture?width=800&height=800&access_token=${process.env.FB_ACCESS_TOKEN}`), { responseType: 'arraybuffer' })).data;
 		fs.writeFileSync(path, Buffer.from(profile_av, 'utf-8'));
 		
 		return api.sendMessage(

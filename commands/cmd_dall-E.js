@@ -33,13 +33,14 @@ module.exports.run = async function({ api, event, args, textFormat, Prefix }) {
 		const response = await openai.createImage({ prompt: args.join(' '), n: 1, size: '1024x1024' });
 	
 		const path = `${__dirname}/../../cache/ai-generatedImages.png`;
-		const img_req = await axios.get(response.data.data[0].url, { responseType: 'arraybuffer' }).data;
+		const img_req = (await axios.get(response.data.data[0].url, { responseType: 'arraybuffer' })).data;
 		writeFileSync(path, Buffer.from(img_req, 'utf-8'));
 		
 		const messageBody = {
 			body: args.join(' '),
 			attachment: createReadStream(path)
 		}
+		
 		return api.sendMessage(
 			messageBody,
 			threadID,

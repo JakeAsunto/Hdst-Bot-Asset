@@ -10,8 +10,7 @@ module.exports.config = {
     maxSearchCount: 20,
     dependencies: {
     	'fs-extra': '',
-    	'axios': '',
-    	'request': ''
+    	'axios': ''
     }
 };
 
@@ -20,7 +19,6 @@ module.exports.run = async function({ api, event, args, logger, textFormat }) {
 	const { threadID, messageID, senderID } = event;
     const axios = require('axios');
     const fs = require('fs-extra');
-    const request = require('request');
     const keySearch = args.join(' ');
 
     if (!keySearch.includes('-')) {
