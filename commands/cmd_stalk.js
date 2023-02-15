@@ -9,7 +9,7 @@ module.exports.config = {
 	cooldowns: 300
 };
 
-module.exports.run = async function ({ api, event, args, utils, textFormat }) {
+module.exports.run = async function ({ api, event, args, utils, textFormat, Prefix }) {
 	
 	const axios = require('axios');
 	const fs = require('fs-extra');
@@ -58,30 +58,27 @@ module.exports.run = async function ({ api, event, args, utils, textFormat }) {
 		//var rs = res.love == 'Không Có Dữ Liệu' ? n_a : res.love.name;
 
 		const path = `${__dirname}/../../cache/stalkImg.png`;
+		const profile_av = await axios.get(encodeURI(`https://graph.facebook.com/${id}/picture?width=800&height=800&access_token=${process.env.FB_ACCESS_TOKEN}`), { responseType: 'arraybuffer' }).data;
+		await fs.createWriteStream(profile_av);
 		
-		const callback = function () {
-			
-			return api.sendMessage(
-				{
-					body: textFormat('cmd', 'cmdStalkFormat', res.name, usern, gender, is_birthday),
-					attachment: fs.createReadStream(path)
-				},
-				event.threadID,
-				(e, info) => {
-					global.sendReaction.success(api, event);
-					try { fs.unlinkSync(path) } catch (e) {}
-					global.autoUnsend(e, info, 300);
-				},
-				event.messageID
-			)
-			
-		};
-		
-		return request(encodeURI(`https://graph.facebook.com/${id}/picture?width=512&height=512&access_token=${process.env.FB_ACCESS_TOKEN}`)).pipe(fs.createWriteStream(path)).on('close', callback);
+		return api.sendMessage(
+			{
+				body: textFormat('cmd', 'cmdStalkFormat', res.name, usern, gender, is_birthday),
+				attachment: fs.createReadStream(path)
+			},
+			event.threadID,
+			(e, info) => {
+				global.sendReaction.success(api, event);
+				try { fs.unlinkSync(path) } catch (e) {}
+				global.autoUnsend(e, info, 300);
+			},
+			event.messageID
+		);
 		
 	} catch (err) {
 		global.sendReaction.failed(api, event);
-		api.sendMessage(textFormat('error', 'errCmdExceptionError', err, global.config.PREFIX), theadID, messageID);
+		global.logModuleErrorToAdmin(err, __filename, event);
+		api.sendMessage(textFormat('error', 'errCmdExceptionError', err, Prefix), theadID, messageID);
 		return console.log(err);
 	}
 }

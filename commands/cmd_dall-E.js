@@ -10,48 +10,50 @@ module.exports.config = {
 	cooldowns: 10,
 	dependencies: {
         'openai': '',
-        'fs-extra': ''
+        'fs-extra': '',
+        'axios': ''
     },
     envConfig: {
     	requiredArgument: 1
    }
 }
 
-module.exports.run = async function({ api, event, args, textFormat }) {
+module.exports.run = async function({ api, event, args, textFormat, Prefix }) {
 
-	const request = require('request');
+	const axios = require('axios');
 	const { threadID, messageID } = event;
 	const { unlinkSync, createWriteStream, createReadStream } = require('fs-extra');
 	
 	const { Configuration, OpenAIApi } = require('openai');
 	const configuration = new Configuration({ apiKey: process.env.OPENAI_API });
+	const openai = new OpenAIApi(configuration);
   
 	try {
 		global.sendReaction.inprocess(api, event);
-		const openai = new OpenAIApi(configuration);
 		const response = await openai.createImage({ prompt: args.join(' '), n: 1, size: '1024x1024' });
 	
 		const path = `${__dirname}/../../cache/ai-generatedImages.png`;
-		const data = response.data.data[0];
-		const callback = () => {
-			const messageBody = {
-				body: args.join(' '),
-				attachment: createReadStream(path)
-			}
-			api.sendMessage(
-				messageBody,
-				threadID,
-				(err) => {
-					unlinkSync(path);
-					if (!err) return global.sendReaction.success(api, event);
-				},
-				messageID
-			);
+		const img_req = await axios.get(response.data.data[0].url, { responseType: 'arraybuffer' }).data;
+		createWriteStream(img_req);
+		
+		const messageBody = {
+			body: args.join(' '),
+			attachment: createReadStream(path)
 		}
-		return request(data.url).pipe(createWriteStream(path)).on('close', callback);
+		return api.sendMessage(
+			messageBody,
+			threadID,
+			(err) => {
+				try { unlinkSync(path); } catch {}
+				if (!err) return global.sendReaction.success(api, event);
+			},
+			messageID
+		);
+		
 	} catch (err) {
 		global.logger(err, 'error');
 		global.sendReaction.failed(api, event);
-		api.sendMessage(textFormat('error', 'errCmdExceptionError', err, global.config.PREFIX), threadID, messageID);
+		global.logModuleErrorToAdmin(err, __filename, event);
+		api.sendMessage(textFormat('error', 'errCmdExceptionError', err, Prefix), threadID, messageID);
 	}
 }

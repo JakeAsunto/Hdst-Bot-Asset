@@ -1,3 +1,5 @@
+//////////////// TEXT TO FONT BY HADESTIA ////////////////
+
 const textFormat = require('./textFormat.js');
 const reference = require('../json/textFormat.json');
 
@@ -13,6 +15,7 @@ function replaceEachChar(text, dataUpper, dataLower, dataNumber) {
 		
 		for (let i = 0; i < text.length; i++) {
 			
+			// if character is a special character or other language char
 			if (!text[i].match(/^[A-Za-z0-9]*$/)) {
 				fonted += text[i];
 			} else {

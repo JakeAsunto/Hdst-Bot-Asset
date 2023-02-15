@@ -1,18 +1,18 @@
 module.exports.config = {
-	name: 'openai',
+	name: 'ai',
 	version: '2.0.10',
 	hasPermssion: 0,
 	credits: 'Hadestia',
 	description: 'a ChatGPT3 base AI.',
 	commandCategory: 'artificial intelligence',
 	usages: '< prompt (that is not a single word) >',
-	aliases: [ 'ai', 'aoi' ],
+	aliases: [ 'openai', 'aoi' ],
 	cooldowns: 10,
 	dependencies: {
         'openai': ''
     },
     envConfig: {
-    	requiredArgument: 2
+    	requiredArgument: 1
    }
 }
 
@@ -27,13 +27,11 @@ module.exports.run = async function({ api, event, args, textFormat }) {
 		global.sendReaction.inprocess(api, event);
 		const completion = await openai.createCompletion({
         	model: 'text-davinci-003',
-			temperature: 0.5,
-			frequency_penalty: 0.5,
-			presence_penalty: 0.5,
-			max_tokens: 500,
-			prompt: args.join(' '),
-			best_of: 5,
-			stop: '\n'
+            prompt: args.join(' '),
+            temperature: 0.3,
+            max_tokens: 1000,
+            frequency_penalty: 0.5,
+            presence_penalty: 0.5
         });
         
 		api.sendMessage(
@@ -46,14 +44,14 @@ module.exports.run = async function({ api, event, args, textFormat }) {
 			event.messageID
 		);
 	} catch (error) {
-		
+		console.log(error);
 		if (error.response) {
         	console.log(error.response.status);
             console.log(error.response.data);
         } else {
         	console.log(error.message);
         	global.sendReaction.failed(api, event);
-            api.sendMessage(textFormat('error', 'errCmdExceptionError', err, global.config.PREFIX), event.theadID, event.messageID);
+            api.sendMessage(textFormat('error', 'errCmdExceptionError', err, global.config.PREFIX), event.threadID, event.messageID);
         }
         
 	}
