@@ -82,7 +82,8 @@
         "event_autoSeen",
         "cmd_dictionary",
         "cmd_group",
-        "cmd_boldFont"
+        "cmd_boldFont",
+        "cmd_avatar"
     ],
     "EVENTS": [
         "event_adminUpdate",
