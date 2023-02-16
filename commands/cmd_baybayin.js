@@ -12,7 +12,7 @@ module.exports.config = {
 	}
 }
 
-module.exports.run = async ({ api, event,args }) => {
+module.exports.run = async ({ api, event, args }) => {
 	
 	const axios = require('axios');
 	let text = args.join(' ');
@@ -20,5 +20,6 @@ module.exports.run = async ({ api, event,args }) => {
 	const res = await axios.get(`https://api-baybayin-transliterator.vercel.app/?text=${text}`);
 	var a = res.data.baybay;
 	
-	return api.sendMessage(`${a}`, event.threadID, event.messageID);
+	api.sendMessage(`${a}`, event.threadID, event.messageID);
+	return global.sendReaction.success(api, event);
 }

@@ -219,6 +219,10 @@ module.exports = function({ api, models, Users, Threads, Currencies }) {
 			);
 		}
 		
+		if (command.config.envConfig && command.config.envConfig.inProcessReaction) {
+			global.sendReaction.inprocess(api, event);
+		}
+		
         if (!eligible) {
         	
         	const permTxt = textFormat('system', 'perm' + cmdPerm)
@@ -323,6 +327,7 @@ module.exports = function({ api, models, Users, Threads, Currencies }) {
 			}
 			
 			returns.invalid_usage = function () {
+				global.sendReaction.failed(api, event);
 				api.sendMessage(
 					textFormat('cmd', 'cmdWrongUsage', `\n${PREFIX_FINAL}${command.config.name} ${command.config.usages}\nAlternatively you can use "${PREFIX_FINAL}help ${command.config.name}" for more information.`),
 					event.threadID,
@@ -335,6 +340,7 @@ module.exports = function({ api, models, Users, Threads, Currencies }) {
 			}
 			
 			returns.inaccessible_outside_gc = function () {
+				global.sendReaction.failed(api, event);
 				api.sendMessage(
 					textFormat('system', 'commandAvailableOnGCOnly'),
 					event.threadID,
@@ -376,13 +382,15 @@ module.exports = function({ api, models, Users, Threads, Currencies }) {
 			Obj.logMessageError = logMessageError;
 
 			timestamps.set(senderID, dateNow);
-
+			
             command.run(Obj);
 
 			return;
 
         } catch (e) {
 
+			global.sendReaction.failed(api, event);
+			
             return api.sendMessage(global.getText('handleCommand', 'commandError', commandName, e), threadID);
 
         }

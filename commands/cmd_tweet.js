@@ -111,5 +111,15 @@ module.exports.run = async function({ api, event, args, client, __GLOBAL, Users 
 	fs.writeFileSync(pathImg, imageBuffer);
 	fs.removeSync(avatar);
 	
-	return api.sendMessage({ attachment: fs.createReadStream(pathImg) }, threadID, () => fs.unlinkSync(pathImg), messageID);        
+	return api.sendMessage(
+		{ attachment: fs.createReadStream(pathImg) },
+		threadID,
+		(e) => {
+			fs.unlinkSync(pathImg);
+			if (!e) {
+				global.sendReaction.success(api, event);
+			}
+		},
+		messageID
+	);
 }

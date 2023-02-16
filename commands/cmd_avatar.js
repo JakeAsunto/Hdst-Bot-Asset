@@ -25,7 +25,7 @@ module.exports.run = async function ({ api, args, event, returns, textFormat, Pr
 	const division = (args.join(' ')).split(/\s\|\s|\| | \| |\|| \|/g);
 	let id = parseInt(division[0]);
 	const in_synText = textFormat('error', 'errOccured', 'Avatar ID must be a number ranges 1 - 800');
-	
+
 	if (!id) {
 		global.sendReaction.failed(api, event);
 		api.sendMessage(in_synText, threadID, messageID);
@@ -36,7 +36,7 @@ module.exports.run = async function ({ api, args, event, returns, textFormat, Pr
 		return returns.remove_usercooldown();
 	}
 	
-	const link = encodeURI(`https://api.reikomods.repl.co/canvas/avtwibu?id=${id}&color=${division[1]}&name=${division[2]}&subname=${division[3]}`);
+	const link = encodeURI(`https://api.reikomods.repl.co/canvas/avtwibu?id=${id - 1}&color=${division[1]}&name=${division[2]}&subname=${division[3]}`);
 	const path = `${__dirname}/../../cache/${(link.split('/')).pop()}.png`;
 	const avatar = (await axios.get(link, { responseType: 'arraybuffer' })).data;
 	

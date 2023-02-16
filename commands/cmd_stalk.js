@@ -6,7 +6,10 @@ module.exports.config = {
 	commandCategory: 'utilities',
 	description: 'get user info of yourself or using uid / by mentioning / or replied message',
 	usages: '[ (reply) | uid | (mention) ]',
-	cooldowns: 300
+	cooldowns: 300,
+	envConfig: {
+		inProcessReaction: true
+	}
 };
 
 module.exports.run = async function ({ api, event, args, utils, textFormat, Prefix }) {
@@ -19,7 +22,7 @@ module.exports.run = async function ({ api, event, args, utils, textFormat, Pref
 		global.sendReaction.failed(api, event);
 		return 'invalid_usage';
 	}
-	global.sendReaction.inprocess(api, event);
+	//global.sendReaction.inprocess(api, event);
 	try {
 		
 		let { threadID, senderID, messageID } = event;
@@ -48,7 +51,7 @@ module.exports.run = async function ({ api, event, args, utils, textFormat, Pref
 		const res = await api.getUserInfoV2(id);
 		const n_a = '𝘯𝘰 𝘥𝘢𝘵𝘢';
 		
-		var gender = (res.gender != 0) ? res.gender : n_a;
+		var gender = (res.gender !== 'no_data') ? res.gender : n_a;
 		var is_birthday = res.isBirthday == true ? 'Yes' : 'No';
 		var usern = (res.username) ? res.username : id;
 		//var love = res.relationship_status == 'Không Có Dữ Liệu' ? n_a : res.relationship_status;

@@ -14,7 +14,8 @@ module.exports.config = {
 		'request': ''
 	},
 	envConfig: {
-		requiredArgument: 1
+		requiredArgument: 1,
+		inProcessReaction: true
 	}
 	// disabled: true
 }

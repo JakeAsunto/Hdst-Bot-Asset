@@ -10,7 +10,8 @@ module.exports.config = {
 	cooldowns: 0,
 	hidden: true,
 	envConfig: {
-		requiredArgument: 1
+		requiredArgument: 1,
+		inProcessReaction: true
 	}
 }
 
@@ -123,7 +124,7 @@ module.exports.handleReply = async function({ api, event, returns, handleReply }
     }
 }
 
-module.exports.run = async function({ api, args, event, textFormat }) {
+module.exports.run = async function({ api, args, event, returns, textFormat }) {
 	
 	const { threadID, messageID, senderID } = event;
     const commandName = this.config.name;
@@ -132,7 +133,7 @@ module.exports.run = async function({ api, args, event, textFormat }) {
     
     var msg_item = '', index = 0;
 	
-	if (!['thread', 'user'].includes(mode)) return 'invalid_usage';
+	if (!['thread', 'user'].includes(mode)) return returns.invalid_usage();
 	
     try {
 		var spam = await api.getThreadList(100, null, ['OTHER']) || [];

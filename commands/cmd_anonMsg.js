@@ -11,7 +11,8 @@ module.exports.config = {
 	cooldowns: 30,
 	credits: 'Hadestia',
 	envConfig: {
-		requiredArgument: 3
+		requiredArgument: 3,
+		inProcessReaction: true
 	}
 	//isMaintenance: true
 }

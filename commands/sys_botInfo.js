@@ -9,7 +9,11 @@ module.exports.config = {
 	aliases: [ 'bot', 'upt' ],
 	cooldowns: 10,
 	dependencies: {
-		'pidusage': ''
+		'pidusage': '',
+		'axios': ''
+	},
+	envConfig: {
+		inProcessReaction: true
 	}
 }
 
@@ -21,8 +25,6 @@ function byte2mb(bytes) {
 }
 
 module.exports.run = async function ({ api, args, event, textFormat }) {
-    
-    global.sendReaction.inprocess(api, event);
 
     const axios = require('axios')
 	const pidusage = await global.nodemodule["pidusage"](process.pid);

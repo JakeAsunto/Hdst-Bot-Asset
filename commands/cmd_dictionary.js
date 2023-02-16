@@ -9,7 +9,8 @@ module.exports.config = {
 	commandCategory: 'education',
 	cooldowns: 5,
 	envConfig: {
-		requiredArgument: 1
+		requiredArgument: 1,
+		inProcessReaction: true
 	},
 	dependencies: {
 		'axios': '',
@@ -28,7 +29,7 @@ module.exports.run = async function({ api, event, args, textFormat }) {
 	const finalReq = (req.startsWith('what is')) ? req : `what is ${req}`;
 	//const encodedUrl = encodeURI(`https://api.dictionaryapi.dev/api/v2/entries/en/${req}`);
 	const encodedUrl = encodeURI(`https://api-dien.hdstteam.repl.co/googlethis?search=${finalReq}`);
-	global.sendReaction.inprocess(api, event);
+	//global.sendReaction.inprocess(api, event);
 
 	await axios.get(encodedUrl).then( async function (response){
 		const dictionary = response.data.dictionary;

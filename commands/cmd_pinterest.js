@@ -11,6 +11,10 @@ module.exports.config = {
     dependencies: {
     	'fs-extra': '',
     	'axios': ''
+    },
+    envConfig: {
+    	requiredArgument: 3,
+    	inProcessReaction: true
     }
 };
 
@@ -34,7 +38,7 @@ module.exports.run = async function({ api, event, args, logger, textFormat }) {
 	}
 	
 	try {
-		global.sendReaction.inprocess(api, event);
+		//global.sendReaction.inprocess(api, event);
     	const data = (await axios.get(`${process.env.PINTEREST_SEARCHER}${encodeURIComponent(keySearchs)}`)).data.data;
 
 		// add searching timeout

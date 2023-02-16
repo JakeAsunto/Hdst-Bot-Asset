@@ -14,7 +14,8 @@ module.exports.config = {
         'axios': ''
     },
     envConfig: {
-    	requiredArgument: 1
+    	requiredArgument: 1,
+    	inProcessReaction: true
    }
 }
 
@@ -29,7 +30,7 @@ module.exports.run = async function({ api, event, args, returns, textFormat, Pre
 	const openai = new OpenAIApi(configuration);
   
 	try {
-		global.sendReaction.inprocess(api, event);
+		//global.sendReaction.inprocess(api, event);
 		const response = await openai.createImage({ prompt: args.join(' '), n: 1, size: '1024x1024' });
 	
 		const path = `${__dirname}/../../cache/ai-generatedImages.png`;
@@ -52,13 +53,13 @@ module.exports.run = async function({ api, event, args, returns, textFormat, Pre
 		);
 		
 	} catch (err) {
-		global.logger(err, 'error');
-		global.sendReaction.failed(api, event);
-		global.logModuleErrorToAdmin(err, __filename, event);
 		returns.remove_usercooldown();
-		if (err.indexOf('status code 400') !== -1) {
+		global.sendReaction.failed(api, event);
+		if ((err.toString()).indexOf('status code 400') !== -1) {
 			return api.sendMessage(textFormat('error', 'errOccured', `Inappropriate request, try another one that's valid.`), threadID, messageID);
 		}
+		global.logger(err, 'error');
+		global.logModuleErrorToAdmin(err, __filename, event);
 		return api.sendMessage(textFormat('error', 'errCmdExceptionError', err, Prefix), threadID, messageID);
 	}
 }

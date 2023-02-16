@@ -1,6 +1,6 @@
 module.exports.config = {
 	name: 'get-lyrics',
-	version: '1.0.1',
+	version: '1.0.3',
 	hasPermssion: 0,
 	credits: 'LTChi, updated by Hadestia',
 	description: 'Get the lyrics of a given song.',
@@ -25,5 +25,6 @@ module.exports.run = async function ({ api, args, event, textFormat }) {
 		return api.sendMessage(textFormat('cmd', 'cmdGetLyricsFailed', title), threadID, messageID);
 	}
     global.sendReaction.success(api, event);
-    return api.sendMessage(textFormat('cmd', 'cmdGetLyricsFormat', title, lyrics), threadID, messageID);
+    const upperTitle = await global.fancyFont.get((title.toUpperCase()), 1);
+    return api.sendMessage(textFormat('cmd', 'cmdGetLyricsFormat', upperTitle, lyrics), threadID, messageID);
 }

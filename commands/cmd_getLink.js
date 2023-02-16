@@ -23,6 +23,7 @@ module.exports.run = function ({ api, args, event, textFormat }) {
 	
 	// return if there's no attachment found
 	if (objIsEmpty(attachments)) {
+		global.sendReaction.failed(api, event);
 		return api.sendMessage(`I don't see any attachments here :/`, threadID, messageID);
 	}
 	
@@ -54,7 +55,7 @@ module.exports.run = function ({ api, args, event, textFormat }) {
 	for (const link of fileLinks) {
 		msg += `● ${link}\n\n`;
 	}
-		
+	global.sendReaction.success(api, event);
 	return api.sendMessage(textFormat('success', 'successfulFormat', `\n${msg}`), threadID, messageID);
 }
 

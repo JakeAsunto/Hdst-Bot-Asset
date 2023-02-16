@@ -12,7 +12,8 @@ module.exports.config = {
         'openai': ''
     },
     envConfig: {
-    	requiredArgument: 1
+    	requiredArgument: 1,
+    	inProcessReaction: true
    }
 }
 
@@ -24,7 +25,7 @@ module.exports.run = async function({ api, event, args, textFormat }) {
 	const openai = new OpenAIApi(configuration);
 
 	try {
-		global.sendReaction.inprocess(api, event);
+		//global.sendReaction.inprocess(api, event);
 		const completion = await openai.createCompletion({
         	model: 'text-davinci-003',
             prompt: args.join(' '),

@@ -39,5 +39,6 @@ module.exports.run = async function ({ api, args, event, returns, textFormat }) 
 	]
 	
 	const result = await global.fancyFont.get(message, types[type - 1]);
-	return api.sendMessage(result, threadID, messageID);
+	api.sendMessage(result, threadID, messageID);
+	return global.sendReaction.success(api, event);
 }

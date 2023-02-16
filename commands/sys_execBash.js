@@ -12,7 +12,8 @@ module.exports.config = {
 		child_process: ''
 	},
 	envConfig: {
-		requiredArgument: 1
+		requiredArgument: 2,
+		inProcessReaction: true
 	}
 }
 
@@ -23,8 +24,6 @@ module.exports.run = async function ({ api, args, event, texrFormat }) {
 	if (!event.senderID == global.config.ADMINBOT[0]) {
 		return api.sendMessage(textFormat('cmd', 'cmdPermissionNotEnough', 'Bot owner'), event.threadID, event.messageID);
 	}
-	
-	global.sendReaction.custom(api, event, '🟠');
 	
 	const command = args.join(' ');
 	
