@@ -8,10 +8,10 @@ module.exports.config = {
 	usages: '<text>',
 	cooldowns: 10,
 	dependencies: {
-		'jimp': '',
-		'canvas': '',
 		'fs-extra': '',
-		'axios': ''
+		'canvas': '',
+		'axios': '',
+		'jimp': ''
 	},
 	envConfig: {
 		requiredArgument: 1
@@ -20,7 +20,7 @@ module.exports.config = {
 
 module.exports.circle = async (image) => {
 	
-    const jimp = global.nodemodule['jimp'];
+    const jimp = require('jimp');
 	image = await jimp.read(image);
 	image.circle();
 	return await image.getBufferAsync('image/png');
@@ -65,57 +65,51 @@ module.exports.run = async function({ api, event, args, client, __GLOBAL, Users 
 	const fs = require('fs-extra');
 	const axios = require('axios')
 	
-	let avatar = `${__dirname}/../../cache/avt.png`;
-	let pathImg = `${__dirname}/../../cache/porn.png`;
+	let avatar = __dirname + '/cache/avt.png';
+	let pathImg = __dirname + '/cache/porn.png';
 	var text = args.join(' ');
 	
-	global.sendReaction.inprocess(api, event);
-	try {
-		let getAvatar = (await axios.get(res.avatar, { responseType: 'arraybuffer' })).data;
-		let getTweet = (await axios.get(`https://i.imgur.com/dMiKIXM.png`, { responseType: 'arraybuffer' })).data;
+	let getAvatar = (await axios.get(res.avatar, { responseType: 'arraybuffer' })).data;
+	let getTweet = (await axios.get(`https://i.imgur.com/dMiKIXM.png`, { responseType: 'arraybuffer' })).data;
 	
-		fs.writeFileSync(avatar, Buffer.from(getAvatar, 'utf-8'));
-		//oms = await this.circle(avatar);
-		fs.writeFileSync(pathImg, Buffer.from(getTweet, 'utf-8'));
+	fs.writeFileSync(avatar, Buffer.from(getAvatar, 'utf-8'));
+	oms = await this.circle(avatar);
+	fs.writeFileSync(pathImg, Buffer.from(getTweet, 'utf-8'));
 	
-		let image = await loadImage(await this.circle(avatar););
-		let baseImage = await loadImage(pathImg);
-		let canvas = createCanvas(baseImage.width, baseImage.height);
-		let ctx = canvas.getContext('2d');
+	let image = await loadImage(oms);
+	let baseImage = await loadImage(pathImg);
+	let canvas = createCanvas(baseImage.width, baseImage.height);
+	let ctx = canvas.getContext('2d');
 	
-		ctx.drawImage(baseImage, 0, 0, canvas.width, canvas.height);
-		ctx.drawImage(image, 53, 35, 85, 85);
-		ctx.font = '700 23px Arial';
-		ctx.fillStyle = '#000000';
-		ctx.textAlign = 'start';
-		ctx.fillText(res.name, 160, 70);
-    	ctx.font = '400 16px Arial';
-		ctx.fillStyle = '#BBC0C0';
-		ctx.textAlign = 'start';
-		ctx.fillText(`@${res.name}`, 153, 99);
-		ctx.font = '400 45px Arial';
-		ctx.fillStyle = '#000000';
-		ctx.textAlign = 'start';
+	ctx.drawImage(baseImage, 0, 0, canvas.width, canvas.height);
+	ctx.drawImage(image, 53, 35, 85, 85);
+	ctx.font = '700 23px Arial';
+	ctx.fillStyle = '#000000';
+	ctx.textAlign = 'start';
+	ctx.fillText(res.name, 160, 70);
+    ctx.font = '400 16px Arial';
+	ctx.fillStyle = '#BBC0C0';
+	ctx.textAlign = 'start';
+	ctx.fillText(`@${res.name}`, 153, 99);
+	ctx.font = '400 45px Arial';
+	ctx.fillStyle = '#000000';
+	ctx.textAlign = 'start';
 	
-		let fontSize = 250;
-		while (ctx.measureText(text).width > 2600) {
-			fontSize--;
-			ctx.font = `500 ${fontSize}px Arial`;
-		}
+	let fontSize = 250;
+	while (ctx.measureText(text).width > 2600) {
+		fontSize--;
+		ctx.font = `500 ${fontSize}px Arial`;
+	}
 	
-		const lines = await this.wrapText(ctx, text, 850);
+	const lines = await this.wrapText(ctx, text, 850);
 	
-		ctx.fillText(lines.join('\n'), 56, 180);
-		ctx.beginPath();
+	ctx.fillText(lines.join('\n'), 56, 180);
+	ctx.beginPath();
 	
-		const imageBuffer = canvas.toBuffer();
+	const imageBuffer = canvas.toBuffer();
 	
-		fs.writeFileSync(pathImg, imageBuffer);
-		fs.removeSync(avatar);
+	fs.writeFileSync(pathImg, imageBuffer);
+	fs.removeSync(avatar);
 	
-		return api.sendMessage({ attachment: fs.createReadStream(pathImg) }, threadID, () => fs.unlinkSync(pathImg), messageID);
-	} catch (e) {
-		api.sendMessage(textFormat('error', 'errCmdExceptionError', err, global.config.PREFIX), theadID, messageID);
-		return global.sendReaction.failed(api, event);
-	}     
+	return api.sendMessage({ attachment: fs.createReadStream(pathImg) }, threadID, () => fs.unlinkSync(pathImg), messageID);        
 }

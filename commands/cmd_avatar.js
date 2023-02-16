@@ -22,7 +22,7 @@ module.exports.run = async function ({ api, args, event, returns, textFormat, Pr
 	const axios = require('axios');
 	const fs = require('fs-extra');
 	
-	const division = (args.join(' ')).split('|');
+	const division = (args.join(' ')).split(/\s\|\s|\| | \| |\|| \|/g);
 	let id = parseInt(division[0]);
 	const in_synText = textFormat('error', 'errOccured', 'Avatar ID must be a number ranges 1 - 800');
 	
@@ -38,16 +38,19 @@ module.exports.run = async function ({ api, args, event, returns, textFormat, Pr
 	
 	const link = encodeURI(`https://api.reikomods.repl.co/canvas/avtwibu?id=${id}&color=${division[1]}&name=${division[2]}&subname=${division[3]}`);
 	const path = `${__dirname}/../../cache/${(link.split('/')).pop()}.png`;
-	const avatar = (await axios.get(link, { responseType: 'arraybuffer' }).data;
+	const avatar = (await axios.get(link, { responseType: 'arraybuffer' })).data;
 	
-	await fs.writeFileSync(path, Buffer.from(avatar, 'utf-8'));
+	fs.writeFileSync(path, Buffer.from(avatar, 'utf-8'));
 	return api.sendMessage(
 		{
 			body: '',
 			attachment: fs.createReadStream(path)
 		},
 		threadID,
-		(e, i) => {
+		async (e, i) => {
+			if (fs.existsSync(path) {
+				fs.unlinkSync(path);
+			}
 			if (e) {
 				global.sendReaction.failed(api, event);
 				global.logModuleErrorToAdmin(e, __filename, event);

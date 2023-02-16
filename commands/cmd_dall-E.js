@@ -18,7 +18,7 @@ module.exports.config = {
    }
 }
 
-module.exports.run = async function({ api, event, args, textFormat, Prefix }) {
+module.exports.run = async function({ api, event, args, returns, textFormat, Prefix }) {
 
 	const axios = require('axios');
 	const { threadID, messageID } = event;
@@ -55,6 +55,10 @@ module.exports.run = async function({ api, event, args, textFormat, Prefix }) {
 		global.logger(err, 'error');
 		global.sendReaction.failed(api, event);
 		global.logModuleErrorToAdmin(err, __filename, event);
-		api.sendMessage(textFormat('error', 'errCmdExceptionError', err, Prefix), threadID, messageID);
+		returns.remove_usercooldown();
+		if (err.indexOf('status code 400') !== -1) {
+			return api.sendMessage(textFormat('error', 'errOccured', `Inappropriate request, try another one that's valid.`), threadID, messageID);
+		}
+		return api.sendMessage(textFormat('error', 'errCmdExceptionError', err, Prefix), threadID, messageID);
 	}
 }

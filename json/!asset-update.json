@@ -5,8 +5,8 @@
         "https://facebook.com/mensaherong.iantot",
         "This repository was linked to bot assets repository of Hadestia that include assets auto updater."
     ],
-    "VERSION": "5.3.5 (beta)",
-    "CHANGELOGS": "- Bot can now response on message body contains 'prefix' while auto response listener was turned off.\n- Fix dictionary not giving other word meanings.\n- Add avatar command (currently in test).",
+    "VERSION": "5.3.7 (beta)",
+    "CHANGELOGS": "- Bot can now response on message body contains 'prefix' while auto response listener was turned off.\n- Fix dictionary not giving other word meanings.\n- Add avatar command.\n- Add response for inappropriate task for dall-e.\n- Add aliases for get-lyrics command",
     "MAIN": {
         "LICENSE-HADESTIA": {
             "path": "/"

@@ -9,7 +9,7 @@ module.exports.config = {
 	cooldowns: 10,
 	aliases: [ 'group' ],
 	envConfig: {
-		requiredArgument: 2
+		requiredArgument: 1
 	}
 }
 

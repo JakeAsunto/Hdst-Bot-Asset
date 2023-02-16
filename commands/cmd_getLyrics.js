@@ -6,6 +6,7 @@ module.exports.config = {
 	description: 'Get the lyrics of a given song.',
 	commandCategory: 'media',
 	usages: '<title>',
+	aliases: [ 'lyrics' ],
 	cooldowns: 10,
 	envConfig: {
 		requiredArgument: 1
