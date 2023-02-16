@@ -48,7 +48,7 @@ module.exports.run = async function ({ api, args, event, returns, textFormat, Pr
 		},
 		threadID,
 		async (e, i) => {
-			if (fs.existsSync(path) {
+			if (fs.existsSync(path)) {
 				fs.unlinkSync(path);
 			}
 			if (e) {

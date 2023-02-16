@@ -24,7 +24,7 @@ module.exports.run = function ({ api, args, event, textFormat, Threads }) {
 			return api.sendMessage(textFormat('system', 'botRebootError'), threadID, messageID);
 		}
 		
-		const assetSession = await spawn("node", ["--trace-warnings", "--async-stack-traces", "../../assets.js"], {
+		const assetSession = await spawn("node", ["--trace-warnings", "--async-stack-traces", "../../scripts/assets.js"], {
 			cwd: __dirname,
 	    	stdio: "inherit",
 	    	shell: true
