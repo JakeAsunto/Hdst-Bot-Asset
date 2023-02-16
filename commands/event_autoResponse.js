@@ -1,6 +1,6 @@
 module.exports.config = {
     name: 'auto-response',
-    version: '1.0.3',
+    version: '1.0.4',
     credits: 'Hadestia', // pls don't change my credit as for my effort for this work.
     description: 'turned on to automatically response into any matched messages installed in the system.',
     commandCategory: 'hidden',
@@ -11,17 +11,23 @@ module.exports.config = {
 module.exports.handleEvent = async ({ api, event, Users }) => {
 	
 	const threadSettings = global.data.threadData.get(event.threadID) || {};
-	if (!threadSettings.auto_response_listener || event.body === undefined || event.body == '') return;
+	if (event.body === undefined || event.body == '') return;
 	
 	const { body, mentions, threadID, messageID, senderID } = event;
 	
 	const dictionary = require('../../json/autoResponse.json');
 	const senderBody = body.toLowerCase();
 	
+	if (senderBody === 'prefix') {
+		return api.sendMessage((await constructMessage(api, event, 'Hey!, looking for me? This is my prefix\n❱ ${prefix} ❰', Users)), threadID, messageID);
+	}
+	
+	if (!threadSettings.auto_response_listener) return;
+	
 	// Ignore messages with bot prefix
 	if (senderBody.startsWith(threadSettings.PREFIX || global.config.PREFIX)) {
 		return;
-	// avoid interaction if user mentioned this bot, (mentioning bot can also be a prefix for command)
+	// avoid interaction if user mentioned this bot, (mentioning bot can also be a prefix for command (see handleCommand.js))
 	} else if (senderBody.startsWith('@')) {
 		if (Object.keys(mentions).length === 1 && Object.values(mentions)[0] === global.botUserID) {
 			return;

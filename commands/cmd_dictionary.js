@@ -1,6 +1,6 @@
 module.exports.config = {
 	name: 'dictionary',
-	version: '2.0.5',
+	version: '2.0.6',
 	hasPermssion: 0,
 	credits: 'Hadestia',
 	description: 'Check definition of specific word.',
@@ -25,8 +25,9 @@ module.exports.run = async function({ api, event, args, textFormat }) {
 	const axios = require('axios');
 	
 	const req = args.join(' ').toLowerCase();
+	const finalReq = (req.startsWith('what is')) ? req : `what is ${req}`;
 	//const encodedUrl = encodeURI(`https://api.dictionaryapi.dev/api/v2/entries/en/${req}`);
-	const encodedUrl = encodeURI(`https://api-dien.hdstteam.repl.co/googlethis?search=${req}`);
+	const encodedUrl = encodeURI(`https://api-dien.hdstteam.repl.co/googlethis?search=${finalReq}`);
 	global.sendReaction.inprocess(api, event);
 
 	await axios.get(encodedUrl).then( async function (response){

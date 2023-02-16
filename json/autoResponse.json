@@ -1,13 +1,4 @@
 {
-    "prefix": {
-        "matches": [
-            "prefix"
-        ],
-        "response": [
-            "Hey!, looking for me? This is my prefix\n❱ ${prefix} ❰"
-        ],
-        "single_message_only": true
-    },
     "meridiemAM": {
         "matches": [
             "good morning",

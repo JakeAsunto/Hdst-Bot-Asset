@@ -324,7 +324,7 @@ module.exports = function({ api, models, Users, Threads, Currencies }) {
 			
 			returns.invalid_usage = function () {
 				api.sendMessage(
-					textFormat('cmd', 'cmdWrongUsage', `${PREFIX_FINAL}${command.config.name} ${command.config.usages}`),
+					textFormat('cmd', 'cmdWrongUsage', `\n${PREFIX_FINAL}${command.config.name} ${command.config.usages}\nAlternatively you can use "${PREFIX_FINAL}help ${command.config.name}" for more information.`),
 					event.threadID,
 					(err, info) => {
 						if (err) return;
