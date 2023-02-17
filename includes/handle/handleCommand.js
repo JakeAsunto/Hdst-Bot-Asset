@@ -210,7 +210,7 @@ module.exports = function({ api, models, Users, Threads, Currencies }) {
 		
 		if (args.length < requiredArgs) {
 			
-			return api.sendMessage(
+			api.sendMessage(
 				textFormat('cmd', 'cmdWrongUsage', `${PREFIX_FINAL}${command.config.name} ${command.config.usages}`),
 				event.threadID,
 				(err, info) => {
@@ -219,6 +219,8 @@ module.exports = function({ api, models, Users, Threads, Currencies }) {
 				},
 				event.messageID
 			);
+			
+			return END_TYPING && END_TYPING();
 		}
 		
 		if (command.config.envConfig && command.config.envConfig.inProcessReaction) {
@@ -228,7 +230,7 @@ module.exports = function({ api, models, Users, Threads, Currencies }) {
         if (!eligible) {
         	
         	const permTxt = textFormat('system', 'perm' + cmdPerm)
-			return api.sendMessage(
+			api.sendMessage(
 				textFormat('cmd', 'cmdPermissionNotEnough', permTxt),
 				event.threadID,
 				(err, info) => {
@@ -238,7 +240,7 @@ module.exports = function({ api, models, Users, Threads, Currencies }) {
 				},
 				event.messageID
 			);
-			
+			return END_TYPING && END_TYPING();
 		}
 
         if (!client.cooldowns.has(command.config.name)) {
@@ -276,8 +278,8 @@ module.exports = function({ api, models, Users, Threads, Currencies }) {
 				},
 				event.messageID
 			);
-            return api.setMessageReaction(textFormat('reaction', 'userCmdCooldown'), event.messageID, err => (err) ? logger('unable to setMessageReaction for Cooling down command use user', '[ Reactions ]') : '', !![]);
-            
+            api.setMessageReaction(textFormat('reaction', 'userCmdCooldown'), event.messageID, err => (err) ? logger('unable to setMessageReaction for Cooling down command use user', '[ Reactions ]') : '', !![]);
+            return END_TYPING && END_TYPING();
 		}
 		
         var getText2;
@@ -326,6 +328,7 @@ module.exports = function({ api, models, Users, Threads, Currencies }) {
 			
 			returns.remove_usercooldown = function () {
 				timestamps.delete(senderID);
+				//return END_TYPING && END_TYPING();
 			}
 			
 			returns.invalid_usage = function () {
@@ -339,6 +342,7 @@ module.exports = function({ api, models, Users, Threads, Currencies }) {
 					},
 					event.messageID
 				);
+				//return END_TYPING && END_TYPING();
 			}
 			
 			returns.inaccessible_outside_gc = function () {
@@ -349,6 +353,7 @@ module.exports = function({ api, models, Users, Threads, Currencies }) {
 					global.autoUnsend,
 					event.messageID
 				);
+				//return END_TYPING && END_TYPING();
 			}
 
             const Obj = {};
@@ -385,16 +390,16 @@ module.exports = function({ api, models, Users, Threads, Currencies }) {
 
 			timestamps.set(senderID, dateNow);
 			
-            await command.run(Obj);
+            command.run(Obj);
             
 			return END_TYPING && END_TYPING();
 
         } catch (e) {
-
+			
 			global.sendReaction.failed(api, event);
 			
-            return api.sendMessage(global.getText('handleCommand', 'commandError', commandName, e), threadID);
-
+            api.sendMessage(global.getText('handleCommand', 'commandError', commandName, e), threadID);
+			return END_TYPING && END_TYPING();
         }
 
     };

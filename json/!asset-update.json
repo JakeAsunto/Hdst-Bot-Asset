@@ -5,8 +5,8 @@
         "https://facebook.com/mensaherong.iantot",
         "This repository was linked to bot assets repository of Hadestia that include assets auto updater."
     ],
-    "VERSION": "5.4.1 (beta)",
-    "CHANGELOGS": "- Add bot typing indicator.\n- Fix sim command status response.",
+    "VERSION": "5.4.1.1 (beta)",
+    "CHANGELOGS": "- ---",
     "MAIN": {
         "LICENSE-HADESTIA": {
             "path": "/"
