@@ -16,7 +16,7 @@ module.exports = function({ api, models, Users, Threads, Currencies }) {
 
     return async function({ event }) {
     	
-    	let END_TYPING = api.sendTypingIndicator(event.threadID);
+    	//let END_TYPING = api.sendTypingIndicator(event.threadID);
 
         const dateNow = Date.now()
 
@@ -220,7 +220,7 @@ module.exports = function({ api, models, Users, Threads, Currencies }) {
 				event.messageID
 			);
 			
-			return END_TYPING && END_TYPING();
+			return; //END_TYPING && END_TYPING();
 		}
 		
 		if (command.config.envConfig && command.config.envConfig.inProcessReaction) {
@@ -240,7 +240,7 @@ module.exports = function({ api, models, Users, Threads, Currencies }) {
 				},
 				event.messageID
 			);
-			return END_TYPING && END_TYPING();
+			return;// END_TYPING && END_TYPING();
 		}
 
         if (!client.cooldowns.has(command.config.name)) {
@@ -278,8 +278,8 @@ module.exports = function({ api, models, Users, Threads, Currencies }) {
 				},
 				event.messageID
 			);
-            api.setMessageReaction(textFormat('reaction', 'userCmdCooldown'), event.messageID, err => (err) ? logger('unable to setMessageReaction for Cooling down command use user', '[ Reactions ]') : '', !![]);
-            return END_TYPING && END_TYPING();
+            return api.setMessageReaction(textFormat('reaction', 'userCmdCooldown'), event.messageID, err => (err) ? logger('unable to setMessageReaction for Cooling down command use user', '[ Reactions ]') : '', !![]);
+            //return END_TYPING && END_TYPING();
 		}
 		
         var getText2;
@@ -392,14 +392,16 @@ module.exports = function({ api, models, Users, Threads, Currencies }) {
 			
             command.run(Obj);
             
-			return END_TYPING && END_TYPING();
+            return;
+            
+			//return END_TYPING && END_TYPING();
 
         } catch (e) {
 			
 			global.sendReaction.failed(api, event);
 			
-            api.sendMessage(global.getText('handleCommand', 'commandError', commandName, e), threadID);
-			return END_TYPING && END_TYPING();
+            return api.sendMessage(global.getText('handleCommand', 'commandError', commandName, e), threadID);
+			//return END_TYPING && END_TYPING();
         }
 
     };

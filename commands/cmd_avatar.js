@@ -4,7 +4,7 @@ module.exports.config = {
 	hasPermssion: 0,
 	cooldowns: 20,
 	commandCategory: 'edited images/meme',
-	description: 'make an anime avatar containing your name.',
+	description: 'Generate personalized avatar by giving information needed.',
 	usages: '< avatar ID (1-800) > | < color name > | < name > | < signature >\nsample: "$avatar 1 | pink | hadestia | hdst"',
 	envConfig: {
 		requiredArgument: 3,

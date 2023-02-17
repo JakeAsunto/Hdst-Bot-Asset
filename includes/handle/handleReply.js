@@ -63,6 +63,10 @@ module.exports = function({ api, models, Users, Threads, Currencies }) {
                 returns.invalid_reply_syntax = function () {
                 	api.sendMessage(global.textFormat('error', 'errCmdReplyInvalidSyntax', botPrefix, indexOfMessage.name), threadID);
                 }
+                // other user interaction failed
+                returns.interaction_failed_other = function () {
+                	api.sendMessage(global.textFormat('error', 'errCommandReplyInteractionFailed'), threadID, (err, info) => { global.autoUnsend(err, info, 5) }, messageID);
+                }
                 
                 returns.delete_data = deleteData;
 
@@ -79,6 +83,8 @@ module.exports = function({ api, models, Users, Threads, Currencies }) {
                 Obj.Threads = Threads;
 
                 Obj.Currencies = Currencies;
+                
+                Obj.Prefix = botPrefix;
 
                 Obj.handleReply = indexOfMessage;
 
