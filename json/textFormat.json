@@ -176,7 +176,7 @@
         "groupCmdAddInvalidSyntax": "🔴 Invalid syntax. No parameters given.\n● usage: %1group add [ user id | (user ids sperated with space) | (reply message) ]"
     },
     "canvas": {
-        "fbcoverFillOutFormDM": "● 𝙁𝙖𝙘𝙚𝙗𝙤𝙤𝙠 𝘾𝙤𝙫𝙚𝙧 𝙁𝙤𝙧𝙢\n━━━━━━━━━━━━━━━━━━━━\ncolor:\nname:\nsubname:\n\nemail:\naddress:\ncontact no.:\n━━━━━━━━━━━━━━━━━━━━\n✱ Kindly copy and fill out this form. Don't change anything on the form just fill it out, Once you're done, reply here together with the form you fill out to process your request. :)"
+        "fbcoverFillOutForm": "● 𝙁𝙖𝙘𝙚𝙗𝙤𝙤𝙠 𝘾𝙤𝙫𝙚𝙧 𝙁𝙤𝙧𝙢\n━━━━━━━━━━━━━━━━━━━━\ncolor:\nname:\nsubname:\n\nemail:\naddress:\ncontact no.:\n━━━━━━━━━━━━━━━━━━━━\n✱ Kindly copy and fill out this form. Don't change anything on the form just fill it out, Once you're done, 𝗿𝗲𝗽𝗹𝘆 to this message together with the form you fill out to process your request. :)"
     },
     "fonts": {
         "bold_sans_number": [

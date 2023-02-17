@@ -5,7 +5,7 @@
         "https://facebook.com/mensaherong.iantot",
         "This repository was linked to bot assets repository of Hadestia that include assets auto updater."
     ],
-    "VERSION": "5.5.1 (beta)",
+    "VERSION": "5.5.2",
     "CHANGELOGS": "- Add fbcover command for generating Facebook cover photo",
     "MAIN": {
         "LICENSE-HADESTIA": {

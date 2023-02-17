@@ -6,10 +6,6 @@ module.exports.config = {
 	commandCategory: 'edited images/meme',
 	description: 'Generate personalized Facebook cover by giving information needed.',
 	usages: ' (fill out the form that the bot will send to you) ',
-	envConfig: {
-		requiredArgument: 3,
-		inProcessReaction: true
-	},
 	dependencies: {
 		'axios': '',
 		'fs-extra': ''
@@ -25,7 +21,7 @@ module.exports.handleReply = async function ({ api, event, returns, handleReply,
 	
 	const { body, threadID, messageID, senderID } = event;
 	const axios= require('axios');
-	const fs = ('fs-extra');
+	const fs = require('fs-extra');
 	
 	const sendError = (msg) => {
 		api.sendMessage(textFormat('error', 'errOccured', `${msg}. Make sure you didn't change anything on the form and doesn't make any new lines for data.`), threadID, messageID);
@@ -35,23 +31,24 @@ module.exports.handleReply = async function ({ api, event, returns, handleReply,
 	let color = body.match(/(?<=color:).+?(?=\s|\s+)/) ?
 		(body.match(/(?<=color:).+?(?=\s|\s+)/))[0].trim() : null;
 
-	let top_name = body.match(/(?<=name:).+?(?=\s|\s+)/) ?
+	let top_name = body.match(/(?<=name:).+?(?=\n)/) ?
 		(body.match(/(?<=name:).+?(?=\s|\s+)/))[0].trim() : null;
 		
-	let sub_name = body.match(/(?<=subname:).+?(?=\s|\s+)/) ?
+	let sub_name = body.match(/(?<=subname:).+?(?=\n)/) ?
 		(body.match(/(?<=subname:).+?(?=\s|\s+)/))[0].trim() : null;
 	
 	let email = body.match(/(?<=email:).+?(?=\s|\s+)/) ?
 		(body.match(/(?<=email:).+?(?=\s|\s+)/))[0].trim() : null;
 	
-	let address = body.match(/(?<=address:).+?(?=\s|\s+)/) ?
+	let address = body.match(/(?<=address:).+?(?=\n)/) ?
 		(body.match(/(?<=address:).+?(?=\s|\s+)/))[0].trim() : null;
 	
 	let contact_no = body.match(/(?<=contact no.:).+?(?=\s|\s+)/) ?
 		(body.match(/(?<=contact no.:).+?(?=\s|\s+)/))[0].trim() : null;
 	
-	
-	if (!top_name) {
+	if (!color) {
+		return sendError(`Color not found pls specified via color name`);
+	} else if (!top_name) {
 		return sendError(`Name not found`);
 	} else if (!sub_name) {
 		return sendError(`Subname not found`);
@@ -61,8 +58,6 @@ module.exports.handleReply = async function ({ api, event, returns, handleReply,
 		return sendError(`Address not found`);
 	} else if (!contact_no) {
 		return sendError(`Contact number not found`);
-	} else if (!color) {
-		return sendError(`Color not found pls specified via color name`);
 	}
 	
 	// process if no violation found
@@ -103,13 +98,21 @@ module.exports.handleReply = async function ({ api, event, returns, handleReply,
 	}
 }
 
-module.exports.run = function ({ api, args, event, returns, textFormat }) {
+module.exports.run = async function ({ api, args, event, returns, textFormat }) {
 	
 	const { threadID, messageID, senderID } = event;
 	const replyTimeout = Date.now() + 300000; // 5 minutes timeout
+
+	const user = await api.getUserInfoV2(senderID) || {};
 	
 	return api.sendMessage(
-		textFormat('canvas', 'fbcoverFillOutForm'),
+		{
+			body: `${textFormat('canvas', 'fbcoverFillOutForm')} @${user.name || 'user'}`,
+			mentions: [{
+				tag: `@${user.name || 'user'}`,
+				id: senderID
+			}]
+		},
 		threadID,
 		async (err, info) => {
 			if (err) {
@@ -126,6 +129,6 @@ module.exports.run = function ({ api, args, event, returns, textFormat }) {
             	timeout: replyTimeout
 			});
 		},
-		messageID;
+		messageID
 	);
 }
