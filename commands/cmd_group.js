@@ -65,6 +65,11 @@ module.exports.run = async function ({ api, args, alias, event, returns, textFor
 		case 'add':
 			handleAddUserToGroup({ api, args, event, returns, textFormat, Prefix })
 			break;
+			
+		// set nickname
+		case 'set-nn':
+		
+			break;
 		default:
 			break;
 			

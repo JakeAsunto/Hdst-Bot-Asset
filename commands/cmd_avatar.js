@@ -7,7 +7,8 @@ module.exports.config = {
 	description: 'make an anime avatar containing your name.',
 	usages: '< avatar ID (1-800) > | < color name > | < name > | < signature >\nsample: "$avatar 1 | pink | hadestia | hdst"',
 	envConfig: {
-		requiredArgument: 3
+		requiredArgument: 3,
+		inProcessReaction: true
 	},
 	dependencies: {
 		'axios': '',

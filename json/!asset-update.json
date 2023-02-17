@@ -5,8 +5,8 @@
         "https://facebook.com/mensaherong.iantot",
         "This repository was linked to bot assets repository of Hadestia that include assets auto updater."
     ],
-    "VERSION": "5.4.0 (beta)",
-    "CHANGELOGS": "- Add response for inappropriate task for dall-e.\n- Add aliases for get-lyrics command\n- Make lyrics song title bold on respond.",
+    "VERSION": "5.4.1 (beta)",
+    "CHANGELOGS": "- Add bot typing indicator.\n- Fix sim command status response.",
     "MAIN": {
         "LICENSE-HADESTIA": {
             "path": "/"

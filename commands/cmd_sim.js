@@ -8,9 +8,9 @@ module.exports.config = {
     version: '4.3.7',
     hasPermssion: 0,
     credits: 'ProcodeMew', //change api sim Hoang Giap
-    description: '\u0043\u0068\u0061\u0074 \u0077\u0069\u0074\u0068 \u0074\u0068\u0065 \u0062\u0065\u0073\u0074 \u0041\u0049 \u0043\u0068\u0061\u0074 \u002d \u0053\u0069\u006d\u0073\u0069\u006d\u0069 \u0062\u0079 \u004a\u006f\u0068\u006e \u0050\u0061\u0075\u006c \u0043\u0061\u0069\u0067\u0061\u0073',
+    description: 'Chat with simisimi or enable or disable auto sim.',
     commandCategory: 'Chatbot',
-    usages: '<message>',
+    usages: '<message | on | off >',
     cooldowns: 5,
     envConfig: {
     	requiredArgument: 1
@@ -62,30 +62,30 @@ module.exports.handleEvent = async function ({ api, event }) {
     }
 }
 
-module.exports.run = async function ({ api, event, args }) {
+module.exports.run = async function ({ api, event, args, returns, textFormat }) {
 	
     const { threadID, messageID } = event;
 	const f = (text) => api.sendMessage(text, threadID, messageID);
     
-    if (args.length == 0) return f('\u26a0\ufe0f\u0059\u006f\u0075 \u0068\u0061\u0076\u0065 \u006e\u006f\u0074 \u0065\u006e\u0074\u0065\u0072\u0065\u0064 \u0074\u0068\u0065 \u006d\u0065\u0073\u0073\u0061\u0067\u0065');
+    if (args.length == 0) return returns.invalid_usage();
     
     switch (args[0]) {
         case 'on':
         
             if (global.simsimi.has(threadID)) {
-				f('\u26a0\ufe0f\u0059\u006f\u0075 \u0068\u0061\u0076\u0065 \u006e\u006f\u0074 \u0074\u0075\u0072\u006e\u0065\u0064 \u006f\u0066\u0066 \u0074\u0068\u0065 \u0073\u0069\u006d\u002e\n\n\u004d\u0061\u0064\u0065 \u0062\u0079\u003a \u004a\u006f\u0068\u006e \u0050\u0061\u0075\u006c \u0043\u0061\u0069\u0067\u0061\u0073');
+				f(textFormat('error', 'errOccured', 'Sim was already been set.'));;
 			} else {
 				global.simsimi.set(threadID, messageID);
-				f('\u2705\u0053\u0075\u0063\u0063\u0065\u0073\u0073\u0066\u0075\u006c\u006c\u0079 \u0065\u006e\u0061\u0062\u006c\u0065\u0064 \u0073\u0069\u006d\u002e');
+				f(textFormat('success', 'successfulFormat', 'Sim has been turned on.\n\nNOTE:\nWhile being turned on, bot will respond to any messages in this thread and seems like a spam if this was a group chat.'));
 			}
             break;
         case 'off':
         
             if (global.simsimi.has(threadID)) {
 				global.simsimi.delete(threadID);
-				f('\u2705\u0054\u0068\u0065 \u0073\u0069\u006d \u0068\u0061\u0073 \u0062\u0065\u0065\u006e \u0073\u0075\u0063\u0063\u0065\u0073\u0073\u0066\u0075\u006c\u006c\u0079 \u0074\u0075\u0072\u006e\u0065\u0064 \u006f\u0066\u0066.');
+				f(textFormat('success', 'successfulFormat', 'Sim has been turned off.'));
 			} else {
-				f('\u26a0\ufe0f\u0059\u006f\u0075 \u0068\u0061\u0076\u0065 \u006e\u006f\u0074 \u0074\u0075\u0072\u006e\u0065\u0064 \u006f\u006e \u0074\u0068\u0065 \u0073\u0069\u006d\u002e\n\n\u004d\u0061\u0064\u0065 \u0062\u0079 \u004a\u006f\u0068\u006e \u0050\u0061\u0075\u006c \u0043\u0061\u0069\u0067\u0061\u0073');
+				f(textFormat('error', 'errOccured', 'Sim is not been set.'));
 			}
             break;
         default:

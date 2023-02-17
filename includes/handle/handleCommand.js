@@ -15,6 +15,8 @@ module.exports = function({ api, models, Users, Threads, Currencies }) {
     const moment = require('moment-timezone');
 
     return async function({ event }) {
+    	
+    	let END_TYPING = api.sendTypingIndicator(event.threadID);
 
         const dateNow = Date.now()
 
@@ -383,9 +385,9 @@ module.exports = function({ api, models, Users, Threads, Currencies }) {
 
 			timestamps.set(senderID, dateNow);
 			
-            command.run(Obj);
-
-			return;
+            await command.run(Obj);
+            
+			return END_TYPING && END_TYPING();
 
         } catch (e) {
 
