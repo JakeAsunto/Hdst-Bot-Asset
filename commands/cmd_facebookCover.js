@@ -32,19 +32,19 @@ module.exports.handleReply = async function ({ api, event, returns, handleReply,
 		(body.match(/(?<=color:).+?(?=\s|\s+)/))[0].trim() : null;
 
 	let top_name = body.match(/(?<=name:).+?(?=\n)/) ?
-		(body.match(/(?<=name:).+?(?=\s|\s+)/))[0].trim() : null;
+		(body.match(/(?<=name:).+?(?=\n)/))[0].trim() : null;
 		
 	let sub_name = body.match(/(?<=subname:).+?(?=\n)/) ?
-		(body.match(/(?<=subname:).+?(?=\s|\s+)/))[0].trim() : null;
+		(body.match(/(?<=subname:).+?(?=\n)/))[0].trim() : null;
 	
 	let email = body.match(/(?<=email:).+?(?=\s|\s+)/) ?
 		(body.match(/(?<=email:).+?(?=\s|\s+)/))[0].trim() : null;
 	
 	let address = body.match(/(?<=address:).+?(?=\n)/) ?
-		(body.match(/(?<=address:).+?(?=\s|\s+)/))[0].trim() : null;
+		(body.match(/(?<=address:).+?(?=\n)/))[0].trim() : null;
 	
-	let contact_no = body.match(/(?<=contact no.:).+?(?=\s|\s+)/) ?
-		(body.match(/(?<=contact no.:).+?(?=\s|\s+)/))[0].trim() : null;
+	let contact_no = body.match(/(?<=contact no.:).+?(?=\n)/) ?
+		(body.match(/(?<=contact no.:).+?(?=\n)/))[0].trim() : null;
 	
 	if (!color) {
 		return sendError(`Color not found pls specified via color name`);
