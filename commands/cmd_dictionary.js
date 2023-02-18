@@ -47,7 +47,7 @@ module.exports.run = async function({ api, event, args, textFormat }) {
 		// download pronunciation voicemail
 		try {
 			
-			const path = `${__dirname}/../../cache/${(dictionary.audio).split('/').pop()}`;
+			const path = `${__dirname}/../../cache/${(dictionary.audio || '').split('/').pop()}`;
 			const voice = (await axios.get(`${dictionary.audio}`, { responseType: 'arraybuffer' })).data;
 			fs.writeFileSync(path, Buffer.from(voice, 'utf-8'));
 			

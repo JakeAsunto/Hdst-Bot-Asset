@@ -16,8 +16,6 @@ module.exports = function({ api, models, Users, Threads, Currencies }) {
 
     return async function({ event }) {
     	
-    	//let END_TYPING = api.sendTypingIndicator(event.threadID);
-
         const dateNow = Date.now()
 
 		//console.log(event.body)

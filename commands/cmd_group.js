@@ -31,13 +31,13 @@ module.exports.run = async function ({ api, args, alias, event, returns, textFor
 	// return if thread is not a group
 	if (!event.isGroup) return api.sendMessage(global.textFormat('cmd', 'cmdGroupThreadNotGroup'), threadID, messageID);
 	
+	const threadInfo = await api.getThreadInfo(threadID);
 	const commandType = args.shift();
 	
 	if (!commandTypeValid(commandType)) return api.sendMessage(global.textFormat('group', 'groupCmdGroupInvalidCommandType', validTypes.join(' | ')), threadID, messageID);
 	
 	// get group data
 	const GROUP_DATA = await Threads.getData(threadID);
-	const threadInfo = GROUP_DATA.threadInfo;
 	
 	// execute switch statement 
 	switch (commandType) {
@@ -63,7 +63,7 @@ module.exports.run = async function ({ api, args, alias, event, returns, textFor
 			
 		// add user to the group
 		case 'add':
-			handleAddUserToGroup({ api, args, event, returns, textFormat, Prefix })
+			handleAddUserToGroup({ threadInfo, api, args, event, returns, textFormat, Prefix })
 			break;
 			
 		// set nickname
@@ -87,10 +87,10 @@ function commandTypeValid(cmd) {
 
 // =============== COMMANDS FUNCTIONS =============== //
 
-async function handleAddUserToGroup({ api, args, event, returns, textFormat, Prefix }) {
+async function handleAddUserToGroup({ threadInfo, api, args, event, returns, textFormat, Prefix }) {
 	
 	const { threadID, messageID } = event;
-	var { participantIDs, approvalMode, adminIDs } = await api.getThreadInfo(threadID);
+	var { participantIDs, approvalMode, adminIDs } = threadInfo;
 	var participantIDs = participantIDs.map(e => parseInt(e));
 	
 	
@@ -152,8 +152,9 @@ async function handleAddUserToGroup({ api, args, event, returns, textFormat, Pre
 async function setAdminStatus({ threadInfo, returns, api, args, event }) {
 	
 	const { threadID, messageID, senderID } = event;
-	const user_is_admin = threadInfo.adminIDs.find(i => i.id == event.senderID);
-	const bot_is_admin = threadInfo.adminIDs.find(i => i.id == global.botUserID);
+	const admins = (threadInfo.adminIDs).map(e => parseInt(e.id));
+	//const user_is_admin = admins.includes(event.senderID);
+	const bot_is_admin = threadInfo.adminIDs.find(e => e.id == api.getCurrentUserID());
 	
 	
 	let matchedState = (args.join(' ').toLowerCase()).match(/add|remove|promote|demote/g);
@@ -167,17 +168,18 @@ async function setAdminStatus({ threadInfo, returns, api, args, event }) {
 		(['demote', 'remove'].includes(matchedState[0])) ? false : undefined;
 	
 	// return if command user is not an admin
-	if (!user_is_admin) {
+	/*if (!user_is_admin) {
 		api.sendMessage(global.textFormat('cmd', 'cmdPermissionNotEnough', 'Group Administrators'), event.threadID, event.messageID);
 		return returns.remove_usercooldown();
-	} else if (!bot_is_admin) {
+	}*/
+	if (!bot_is_admin) {
 		api.sendMessage(global.textFormat('group', 'groupBotNeedsAdminPerm', 'Group Administrators'), event.threadID, event.messageID);
 		return returns.remove_usercooldown();
 	}
 
 	// promote user if message reply
 	if (event.type == 'message_reply') {
-			//const user_is_admin = threadInfo.adminIDs.find(i => i.id == event.messageReply.senderID);
+		//const user_is_admin = threadInfo.adminIDs.find(i => i.id == event.messageReply.senderID);
 		api.changeAdminStatus(
 			threadID,
 			event.messageReply.senderID, state,

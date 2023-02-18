@@ -17,7 +17,7 @@ module.exports.handleMessageReply = async function ({ api, event }) {
 	if (event.type === 'message_reply' && !event.body.startsWith(global.config.PREFIX)) {
 		
 		if (event.messageReply.senderID !== global.botUserID) return;
-		if (event.messageReply.body.indexOf('𝗔𝗻𝗼𝗻𝘆𝗺𝗼𝘂𝘀 𝗠𝗲𝘀𝘀𝗮𝗴𝗲') !== -1) return;
+		if (event.messageReply.body.indexOf('Anonymous Message\n━━━━━━━━━━━━━━━━━━━━') !== -1) return;
 
 		const { messageReply, threadID, messageID, senderID, body } = event;
 		const { ADMINBOT } = global.config;
@@ -57,7 +57,7 @@ module.exports.handleMessageReply = async function ({ api, event }) {
 			// decide who will handle admin response
 			
 			//# handle admin reply to bot report
-			if (replyBody.indexOf('𝗔𝗱𝗺𝗶𝗻 𝗿𝗲𝗽𝗹𝘆') !== -1 || replyBody.indexOf('𝗕𝗼𝘁 𝗥𝗲𝗽𝗼𝗿𝘁') !== -1) {
+			if (replyBody.indexOf('Admin reply\n━━━━━━━━━━━━━━━━━━━━') !== -1 || replyBody.indexOf('● Bot Report\n━━━━━━━━━━━━━━━━━━━━') !== -1) {
 				return api.sendMessage(
 					textFormat('events', 'eventAdminReply', body), thread_id,
 					(err) => {
@@ -67,7 +67,7 @@ module.exports.handleMessageReply = async function ({ api, event }) {
 					track_id
 				);
 			//# handle admin reply normal
-			} else if (replyBody.indexOf('𝗠𝗲𝘀𝘀𝗮𝗴𝗲 𝗿𝗲𝗽𝗹𝘆') !== -1) {
+			} else if (replyBody.indexOf('Message reply\n━━━━━━━━━━━━━━━━━━━━') !== -1) {
 				return api.sendMessage(
 					body, thread_id, (err) => {
 					if (err) return global.sendReaction.failed(api, event);

@@ -83,7 +83,7 @@ module.exports.run = async function({ api, event, args, textFormat }) {
 	if (!command) {
 		
 		const arrayInfo = [];
-        const itemPerPage = 10;
+        const itemPerPage = 5;
         const requestPage = parseInt(args[0]) || 1;
         
         let index = 0;

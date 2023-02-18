@@ -5,8 +5,8 @@
         "https://facebook.com/mensaherong.iantot",
         "This repository was linked to bot assets repository of Hadestia that include assets auto updater."
     ],
-    "VERSION": "5.5.3",
-    "CHANGELOGS": "- Add support no prefix processing for fb cover command.",
+    "VERSION": "5.5.4",
+    "CHANGELOGS": "- Remove reply support for fbcover command and support auto generating cover request by just sending a form.\n\n- Fix admin reply events not parsing message body due to normalized strings.",
     "MAIN": {
         "LICENSE-HADESTIA": {
             "path": "/"
