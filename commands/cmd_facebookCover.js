@@ -13,6 +13,91 @@ module.exports.config = {
 	credits: 'Joshua Sy for API'
 }
 
+module.exports.handleEvent = async function ({ api, event, returns }) {
+	
+	const { body, threadID, messageID, senderID } = event;
+	
+	if (body.indexOf('● 𝙁𝙖𝙘𝙚𝙗𝙤𝙤𝙠 𝘾𝙤𝙫𝙚𝙧 𝙁𝙤𝙧𝙢') === -1) return;
+	
+	const axios= require('axios');
+	const fs = require('fs-extra');
+	
+	const sendError = (msg) => {
+		api.sendMessage(textFormat('error', 'errOccured', `${msg}. Make sure you didn't change anything on the form and doesn't make any new lines for data.`), threadID, messageID);
+	}
+
+	
+	// fetch informations
+	let color = body.match(/(?<=color:).+?(?=\s|\s+)/) ?
+		(body.match(/(?<=color:).+?(?=\s|\s+)/))[0].trim() : null;
+
+	let top_name = body.match(/(?<=name:).+?(?=\n)/) ?
+		(body.match(/(?<=name:).+?(?=\n)/))[0].trim() : null;
+		
+	let sub_name = body.match(/(?<=subname:).+?(?=\n)/) ?
+		(body.match(/(?<=subname:).+?(?=\n)/))[0].trim() : null;
+	
+	let email = body.match(/(?<=email:).+?(?=\s|\s+)/) ?
+		(body.match(/(?<=email:).+?(?=\s|\s+)/))[0].trim() : null;
+	
+	let address = body.match(/(?<=address:).+?(?=\n)/) ?
+		(body.match(/(?<=address:).+?(?=\n)/))[0].trim() : null;
+	
+	let contact_no = body.match(/(?<=contact no.:).+?(?=\n)/) ?
+		(body.match(/(?<=contact no.:).+?(?=\n)/))[0].trim() : null;
+	
+	if (!color) {
+		return sendError(`Color not found pls specified via color name`);
+	} else if (!top_name) {
+		return sendError(`Name not found`);
+	} else if (!sub_name) {
+		return sendError(`Subname not found`);
+	} else if (!email) {
+		return sendError(`Email not found`);
+	} else if (!address) {
+		return sendError(`Address not found`);
+	} else if (!contact_no) {
+		return sendError(`Contact number not found`);
+	}
+	
+	// process if no violation found
+	try {
+		global.sendReaction.inprocess(api, event);
+		
+		const link = `${encodeURI(`https://api.reikomods.repl.co/canvas/fbcover?uid=${senderID}&color=${color}&name=${top_name}&subname=${sub_name}&email=${email}&address=${address}&sdt=${contact_no}`)}`;
+		var path = `${__dirname}/../../cache/${(link.split('/')).pop()}.png`;
+		const generatedIMG = (await axios.get(link, { responseType: 'arraybuffer' } )).data;
+		
+		// save img
+		fs.writeFileSync(path, Buffer.from(generatedIMG, 'utf-8'));
+		
+		api.sendMessage(
+			{
+				body: '',
+				attachment: fs.createReadStream(path)
+			},
+			threadID,
+			(e) => {
+				if (e) {
+					global.sendReaction.failed(api, event);
+				} else {
+					global.sendReaction.success(api, event);
+					returns.handleTimestamps();
+				}
+				if (fs.existsSync(path)) { fs.unlinkSync(path); }
+				returns.delete_data();
+			},
+			messageID
+		);
+	} catch (e) {
+		returns.delete_data();
+		global.sendReaction.failed(api, event);
+		global.logModuleErrorToAdmin(e, __filename, event);
+		api.sendMessage(textFormat('error', 'errCmdExceptionError', e, Prefix), threadID, messageID);
+		if (fs.existsSync(path)) return fs.unlinkSync(path);
+	}
+}
+
 module.exports.handleReply = async function ({ api, event, returns, handleReply, Prefix }) {
 	
 	if (event.senderID !== handleReply.author) {

@@ -5,14 +5,16 @@ module.exports = function({ api, models, Users, Threads, Currencies }) {
     const textFormat = require("../../utils/textFormat.js");
 
     return function({ event }) {
+    	
+    	const dateNow = Date.now();
 
         const { allowInbox } = global.config;
 
         const { userBanned, threadBanned } = global.data;
 
-        const { commands, eventRegistered } = global.client;
+        const { cooldowns, commands, eventRegistered } = global.client;
 
-        var { senderID, threadID } = event;
+        var { senderID, threadID, senderID } = event;
 
         var senderID = String(senderID);
 
@@ -25,6 +27,10 @@ module.exports = function({ api, models, Users, Threads, Currencies }) {
             const cmd = commands.get(eventReg);
 
             var getText2;
+            
+            if (!client.cooldowns.has(cmd.config.name)) {
+				client.cooldowns.set(cmd.config.name, new Map());
+			}
 
             if (cmd.languages && typeof cmd.languages == 'object')
 
@@ -51,6 +57,40 @@ module.exports = function({ api, models, Users, Threads, Currencies }) {
                 };
 
             else getText2 = () => {};
+            
+            const returns = {};
+            
+            returns.handleTimestamps = function () {
+            	const timestamps = client.cooldowns.get(cmd.config.name);
+            	const expirationTime = (cmd.config.cooldowns || 1) * 1000;
+        		const userCooldown = timestamps.get(senderID) + expirationTime;
+        
+        		if (timestamps.has(senderID) && dateNow < userCooldown) {
+        	
+					const duration = moment.duration(moment(userCooldown).diff(moment(dateNow)));
+					let CD = '';
+			
+					if (duration.minutes() > 0) {
+						CD = `${duration.minutes()} minute(s) and ${duration.seconds()} second(s)`;
+					} else {
+						CD = `${duration.seconds()} second(s)`;
+					}
+			
+					api.sendMessage(
+						textFormat('cmd', 'cmdUserCooldown', CD),
+						event.threadID,
+						(err, info) => {
+							if (err) return;
+							// remove after 5 seconds
+							setTimeout(function () { api.unsendMessage(info.messageID); }, 5000);
+						},
+						event.messageID
+					);
+            		return api.setMessageReaction(textFormat('reaction', 'userCmdCooldown'), event.messageID, err => (err) ? logger('unable to setMessageReaction for Cooling down command use user', '[ Reactions ]') : '', !![]);
+				} else {
+					return timestamps.set(senderID, dateNow);
+				}
+            }
 
             try {
 
@@ -73,6 +113,8 @@ module.exports = function({ api, models, Users, Threads, Currencies }) {
 				Obj.Cache = cache
                 
                 Obj.textFormat = textFormat
+
+				Obj.returns = returns
 
                 if (cmd) cmd.handleEvent(Obj);
 

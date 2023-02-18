@@ -247,7 +247,7 @@ module.exports = function({ api, models, Users, Threads, Currencies }) {
 			client.cooldowns.set(command.config.name, new Map());
 		}
 
-        const timestamps = client.cooldowns.get(command.config.name);;
+        const timestamps = client.cooldowns.get(command.config.name);
 
         const expirationTime = (command.config.cooldowns || 1) * 1000;
         

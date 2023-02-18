@@ -78,7 +78,7 @@ module.exports.run = async function ({ api, args, event, logger, textFormat }) {
 	// handle search via link
 	if (song.indexOf('https://') !== -1) {
 		try {
-					
+			const path = `${directory}musicRequest-of-${senderID}.mp3`;
 			const data = await downloadMusicFromYoutube(song, path);
 			// if request was larger than 8mb
 			if (fs.statSync(path).size > 8388608) {
