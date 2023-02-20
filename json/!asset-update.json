@@ -5,8 +5,8 @@
         "https://facebook.com/mensaherong.iantot",
         "This repository was linked to bot assets repository of Hadestia that include assets auto updater."
     ],
-    "VERSION": "5.5.4",
-    "CHANGELOGS": "- Remove reply support for fbcover command and support auto generating cover request by just sending a form.\n\n- Fix admin reply events not parsing message body due to normalized strings.",
+    "VERSION": "5.6.0",
+    "CHANGELOGS": "- Add ai generated visual effects generator for  images via \"ai-art\" or  \"art\" command.",
     "MAIN": {
         "LICENSE-HADESTIA": {
             "path": "/"
@@ -84,7 +84,8 @@
         "cmd_group",
         "cmd_boldFont",
         "cmd_avatar",
-        "cmd_facebookCover"
+        "cmd_facebookCover",
+        "cmd_artAIEdit"
     ],
     "EVENTS": [
         "event_adminUpdate",

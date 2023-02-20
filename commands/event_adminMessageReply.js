@@ -20,6 +20,7 @@ module.exports.handleMessageReply = async function ({ api, event }) {
 		if (event.messageReply.body.indexOf('𝗔𝗻𝗼𝗻𝘆𝗺𝗼𝘂𝘀 𝗠𝗲𝘀𝘀𝗮𝗴𝗲') !== -1) return;
 
 		const { messageReply, threadID, messageID, senderID, body } = event;
+		const replyBody = event.messageReply.body;
 		const { ADMINBOT } = global.config;
 		
 		// handle reply from other thread
@@ -32,7 +33,15 @@ module.exports.handleMessageReply = async function ({ api, event }) {
 			const message = global.textFormat('events', 'eventMessageReplyToAdmin', (event.isGroup) ? group.threadName || '<No Data>' : sender.name, sender.name, body, messageReply.body, threadID, messageID);
 			
 			for (const adminID of ADMINBOT) {
-				api.sendMessage(message, adminID);
+				api.sendMessage(
+					message, adminID,
+					(e) => {
+						if (replyBody.indexOf('𝗔𝗱𝗺𝗶𝗻 𝗿𝗲𝗽𝗹𝘆') !== -1) {
+							if (e) return global.sendReaction.failed(api, event);
+							return global.sendReaction.success(api, event);
+						}
+					}
+				);
 			}
 			return;
 			

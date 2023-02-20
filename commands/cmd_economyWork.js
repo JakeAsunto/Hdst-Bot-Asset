@@ -1,4 +1,4 @@
-//////// WORK: ECONOMY FEATURE BY HADESTIA ///////
+//////// WORK: GROUP ECONOMY FEATURE BY HADESTIA ///////
 
 module.exports.config = {
 	name: 'work',
