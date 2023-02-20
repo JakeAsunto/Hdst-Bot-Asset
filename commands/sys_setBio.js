@@ -4,7 +4,7 @@ module.exports.config = {
 	hasPermssion: 2,
 	credits: 'Hadestia',
 	description: 'Change bot\'s biography',
-	commandCategory: 'admin',
+	commandCategory: 'system',
 	usages: '[text]',
 	cooldowns: 10
 }

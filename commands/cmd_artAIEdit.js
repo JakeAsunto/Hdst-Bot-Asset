@@ -6,7 +6,7 @@ module.exports.config = {
     credits: 'SaikiDesu', // learn to eat, learn to speak, don't learn the habit of replacing credits
     description: 'Adds ai-generated visual effects to images by replying into message phot attachments or via image link.',
     commandCategory: 'artificial intelligence',
-    usages: '[ link | (reply to image attachments) ]',
+    usages: '[ art-options (1-14) | link | (reply to image attachments) ]',
     cooldowns: 5,
     aliases: [ 'art' ]
 };

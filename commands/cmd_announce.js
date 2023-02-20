@@ -3,7 +3,7 @@ module.exports.config = {
 	version: '1.0.0',
 	credits: 'Hadestia',
 	hasPermssion: 2,
-	commandCategory: 'communication',
+	commandCategory: 'system',
 	cooldowns: 0,
 	description: 'announce a message to a thread',
 	usages: '<all | group id> <author> <message>',

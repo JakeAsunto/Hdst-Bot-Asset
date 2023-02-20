@@ -54,20 +54,23 @@ module.exports.run = async function({ api, event, args, textFormat }) {
 				if (!group.some(item => item.group.toLowerCase() == cat)) {
 					group.push({ group: cat, cmds: [cmd.config.name] });
 				} else {
-					group.find(item => item.group.toLowerCase() == cmd.config.commandCategory.toLowerCase()).cmds.push(cmd.config.name);
+					if (!cmd.config.hidden) {
+						group.find(item => item.group.toLowerCase() == cmd.config.commandCategory.toLowerCase()).cmds.push(cmd.config.name);
+					}
 				}
 			}
-				
 		}
 		
-		group.sort((a, b) => a.data - b.data);
+		group.sort((a, b) => {
+			return (a.group > b.group) ? 1 : -1;
+		});
 			
 		group.forEach(function (cmdGroupItem) {
 			
 			totalCat += 1;
 			totalCmd += cmdGroupItem.cmds.length;
 			
-			const name = cmdGroupItem.group.charAt(0).toUpperCase() + cmdGroupItem.group.slice(1);
+			const name = await global.fancyFont.get(cmdGroupItem.group.charAt(0).toUpperCase() + cmdGroupItem.group.slice(1), 2);
 			const cmds = cmdGroupItem.cmds.join(' • ');
 				
 			const body = textFormat('cmd', 'cmdListCategoryCmd', name, cmds);
@@ -91,7 +94,7 @@ module.exports.run = async function({ api, event, args, textFormat }) {
         for (const [ name, value ] of (commands)) {
         	const cmd = commands.get(name);
         	const cat = (cmd.config.commandCategory).toLowerCase();
-        	if (!cmd.config.hidden || cat !== 'hidden') {
+        	if (cat != 'hidden' && !cmd.config.hidden) {
         		arrayInfo.push(name);
 			}
         }

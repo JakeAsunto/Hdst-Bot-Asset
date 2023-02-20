@@ -5,8 +5,8 @@
         "https://facebook.com/mensaherong.iantot",
         "This repository was linked to bot assets repository of Hadestia that include assets auto updater."
     ],
-    "VERSION": "5.6.0",
-    "CHANGELOGS": "- Add ai generated visual effects generator for  images via \"ai-art\" or  \"art\" command.",
+    "VERSION": "5.6.0.1",
+    "CHANGELOGS": "- Minor bug fixes.\n- Add ai generated visual effects generator for  images via \"ai-art\" or  \"art\" command.",
     "MAIN": {
         "LICENSE-HADESTIA": {
             "path": "/"
