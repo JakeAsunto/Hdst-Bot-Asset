@@ -20,7 +20,7 @@ module.exports.run = async function ({api, args, event, textFormat}) {
 	
 	for (const admin of global.config.ADMINBOT) {
 		await api.sendMessage(
-			textFormat('events', 'eventBotReportSendToAdmin', '', message, sender.name, event.threadID, event.messageID),
+			textFormat('events', 'eventBotReportSendToAdmin', message, sender.name, event.threadID, event.messageID),
 			admin,
 			(err, info) => {
 				if (err) {

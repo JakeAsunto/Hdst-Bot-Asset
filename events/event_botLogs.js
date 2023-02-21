@@ -43,6 +43,7 @@ module.exports.run = async function({ api, event, Threads }) {
         
             if (event.logMessageData.leftParticipantFbId == api.getCurrentUserID()) {
 				action = "User kicked bot out of group";
+				Threads.delData(event.threadID);
 			}
             break;
         

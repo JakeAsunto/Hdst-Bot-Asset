@@ -70,7 +70,7 @@ module.exports.run = async function({ api, event, args, textFormat }) {
 			totalCat += 1;
 			totalCmd += cmdGroupItem.cmds.length;
 			
-			const name = await global.fancyFont.get(cmdGroupItem.group.charAt(0).toUpperCase() + cmdGroupItem.group.slice(1), 2);
+			const name = cmdGroupItem.group.charAt(0).toUpperCase() + cmdGroupItem.group.slice(1);
 			const cmds = cmdGroupItem.cmds.join(' • ');
 				
 			const body = textFormat('cmd', 'cmdListCategoryCmd', name, cmds);

@@ -75,7 +75,9 @@ module.exports = function({ Users, Threads, Currencies }) {
                 THREAD_ALL_DATA.threadInfo = dataThread;
 
                 THREAD_ALL_DATA.data = {
-					'rob_fail_probability': 0.5
+					'rob_fail_probability': 0.5,
+					'auto_resend_msg': true,
+					'auto_response_listener': true
 				};
 
                 // HADESTIA ECO & INV IMPLEMENTATIONS //

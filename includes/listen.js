@@ -98,8 +98,8 @@ module.exports = function({ api, models }) {
 			const fixed = {
 				name: info[id].name,
 				firstName: info[id].firstName,
-				username: info[id].vacinity,
-				avatar: info[id].thumbSrc,
+				username: info[id].vanity,
+				avatar: `https://graph.facebook.com/${id}/picture?width=1290&height=1290&access_token=${process.env.FB_ACCESS_TOKEN}`,
 				url: (info[id].profileUrl || `https://facebook.com/${id}`).replace('www.', ''),
 				gender: (info[id].gender == 1) ? 'Female' : (info[id].gender == 2) ? 'Male' : 'no_data',
 				isBirthday: info[id].isBirthday
