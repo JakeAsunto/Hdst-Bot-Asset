@@ -11,7 +11,7 @@ module.exports.run = async function ({ event, api, Threads, Users }) {
     const { logMessageType, logMessageData, senderID } = event;
 	let data = (await Threads.getData(event.threadID)).data
 
-	if (data.guard == false) return;
+	if (!data.guard) return;
 	
     if (data.guard == true && logMessageType == 'log:thread-admins') {
     	

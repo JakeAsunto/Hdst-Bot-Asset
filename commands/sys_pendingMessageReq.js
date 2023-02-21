@@ -50,14 +50,24 @@ module.exports.handleReply = async function({ api, event, returns, handleReply }
 				//console.log(position)
 				const data = handleReply.pending[position - 1];
 				disconnectBot(data, data.isGroup);
-				items.push(data.name);
+				if (!data.isGroup) {
+					const user = await api.getUserInfoV2(data.threadID) || {};
+					items.push(user.name || 'Facebook User');
+				} else {
+					items.push(data.threadName);
+				}
 			}
 		} else {
 			if (task === 'all') {
 				for (const index in handleReply.pending) {
 					const data = handleReply.pending[index];
 					disconnectBot(data, data.isGroup)
-					items.push(data.name);
+					if (!data.isGroup) {
+						const user = await api.getUserInfoV2(data.threadID) || {};
+						items.push(user.name || 'Facebook User');
+					} else {
+						items.push(data.threadName);
+					}
 				}
 			}
 		}
@@ -81,14 +91,24 @@ module.exports.handleReply = async function({ api, event, returns, handleReply }
 				//console.log('positiob ' + position);
 				const data = handleReply.pending[position - 1];
 				connectBot(data, data.isGroup);
-				items.push(data.name);
+				if (!data.isGroup) {
+					const user = await api.getUserInfoV2(data.threadID) || {};
+					items.push(user.name || 'Facebook User');
+				} else {
+					items.push(data.threadName);
+				}
 			}
 		} else {
 			if (task === 'all') {
 				for (const index in handleReply.pending) {
 					const data = handleReply.pending[index];
 					connectBot(data, data.isGroup);
-					items.push(data.name);
+					if (!data.isGroup) {
+						const user = await api.getUserInfoV2(data.threadID) || {};
+						items.push(user.name || 'Facebook User');
+					} else {
+						items.push(data.threadName);
+					}
 				}
 			}
 		}
@@ -145,7 +165,7 @@ module.exports.run = async function({ api, args, event, returns, textFormat }) {
 		return global.sendReaction.failed(api, event);
 	}
 	
-	if (mode == 'thread') {
+	if (mode == 'thread' || mode == 'group') {
 		
 		const list = [...spam, ...pending].filter(group => group.isSubscribed && group.isGroup);
 

@@ -10,7 +10,8 @@ module.exports.run = async function ({ event, api, Threads, Users }) {
 	
 	let data = (await Threads.getData(event.threadID)).data || {};
 	
-	if (data.antiout == false) return;
+	if (!data.antiout) return;
+	
 	if (event.logMessageData.leftParticipantFbId == api.getCurrentUserID()) {
 		try {
 			Threads.delData(event.threadID);

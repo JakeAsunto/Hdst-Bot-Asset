@@ -1,10 +1,10 @@
 module.exports.config = {
 	name: 'group-set',
-	version: '1.0.0',
+	version: '2.0.0',
 	hasPermssion: 3,
 	commandCategory: 'group',
 	description: 'Sets specific type for a group/thread',
-	usages: '[ name | admin ] < ... >',
+	usages: '\n[ name | admin | auto-response | anti-change | anti-join | anti-out ] [ ... ]',
 	credits: 'Hadestia',
 	cooldowns: 10,
 	aliases: [ 'group' ],
@@ -14,6 +14,10 @@ module.exports.config = {
 }
 
 const validTypes = [
+	'auto-response',
+	'anti-change',
+	'anti-join',
+	'anti-out',
 	'setting',
 	'admin',
 	'name',
@@ -37,7 +41,7 @@ module.exports.run = async function ({ api, args, alias, event, returns, textFor
 	if (!commandTypeValid(commandType)) return api.sendMessage(global.textFormat('group', 'groupCmdGroupInvalidCommandType', validTypes.join(' | ')), threadID, messageID);
 	
 	// get group data
-	const GROUP_DATA = await Threads.getData(threadID);
+	const GROUP_DATA = await Threads.getData(threadID) || {};
 	
 	// execute switch statement 
 	switch (commandType) {
@@ -71,15 +75,47 @@ module.exports.run = async function ({ api, args, alias, event, returns, textFor
 		
 			break;
 		
-		// group settings
-		case 'setting':
+		// group settings (SEE GROUP SETTINGS)
+		case 'settings':
 		
 			break;
+			
+		// anti out state
+		case 'anti-out':
+			GROUP_DATA.antiout = !GROUP_DATA.antiout
+			(GROUP_DATA.antiout) ?
+				api.sendMessage(textFormat('success', 'successfulFormat', 'Anti out mode was turned on.'), threadID, global.autoUnsend, messageID) :
+				api.sendMessage(textFormat('error', 'errOccured', 'Anti out mode was turned off.'), threadID, global.autoUnsend, messageID);
+			break;
+		case 'anti-join':
+			GROUP_DATA.antijoin = !GROUP_DATA.antijoin
+			(GROUP_DATA.antijoin) ?
+				api.sendMessage(textFormat('success', 'successfulFormat', 'Anti join mode was turned on.'), threadID, global.autoUnsend, messageID) :
+				api.sendMessage(textFormat('error', 'errOccured', 'Anti join mode was turned off.'), threadID, global.autoUnsend, messageID);
+			break;
+			
+		case 'auto-response':
+			GROUP_DATA.auto_response_listener = !GROUP_DATA.auto_response_listener;
+			api.sendMessage(
+				textFormat('cmd', `eventAutoResponse${(GROUP_DATA.auto_response_listener) ? 'On' : 'Off'}`),
+				threadID,
+				global.autoUnsend,
+				messageID
+			);
+			break;
+			
+		case 'anti-change':
+			GROUP_DATA.guard = !GROUP_DATA.guard;
+			(GROUP_DATA.guard) ?
+				api.sendMessage(textFormat('success', 'successfulFormat', 'Anti group change mode was turned on.'), threadID, global.autoUnsend, messageID) :
+				api.sendMessage(textFormat('error', 'errOccured', 'Anti group change mode was turned off.'), threadID, global.autoUnsend, messageID);
+			break
 		default:
 			break;
 			
 	}
-	
+	// set thread settings
+	await Threads.setData(threadID, GROUP_DATA);
 }
 
 // =============== CHECKER FUNCTIONS =============== // 

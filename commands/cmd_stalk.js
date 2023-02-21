@@ -81,7 +81,7 @@ module.exports.run = async function ({ api, event, args, utils, textFormat, Pref
 	} catch (err) {
 		global.sendReaction.failed(api, event);
 		global.logModuleErrorToAdmin(err, __filename, event);
-		api.sendMessage(textFormat('error', 'errCmdExceptionError', err, Prefix), theadID, messageID);
+		api.sendMessage(textFormat('error', 'errCmdExceptionError', err, Prefix), threadID, messageID);
 		return console.log(err);
 	}
 }

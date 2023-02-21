@@ -5,8 +5,8 @@
         "https://facebook.com/mensaherong.iantot",
         "This repository was linked to bot assets repository of Hadestia that include assets auto updater."
     ],
-    "VERSION": "5.6.4",
-    "CHANGELOGS": "- Fix bot report not showing sender name on admin side.\n\n● 5.6.3\n- Remove required report type for bot report command\n- Threads data will be automatically deleted once bot leave the group. (Data will reset on rejoin).\n- Auto resend deleted messages was now set as default for new groups, (can be disabled using \"resend\" command, accessible for group admins).\n- Auto reaction listener was now set as default for new groups, (can be disabled using \"auto-response\" command, accessible for group admins).",
+    "VERSION": "5.7.0",
+    "CHANGELOGS": "- Add more group settings on \"group\" command\n- Fix pending command not displaying touched users/groups with -\"log:true\" option.",
     "MAIN": {
         "LICENSE-HADESTIA": {
             "path": "/"

@@ -14,7 +14,7 @@ module.exports.run = async function ({ event, api, Threads, Users }) {
  	// if (typeof data.antijoin == 'undefined' || data.antijoin == false) data.antijoin = true; else data.antijoin = false;
  
  	if (event.logMessageData.addedParticipants.some(i => i.userFbId == api.getCurrentUserID())) {
-		return
+		return;
 	} else if (data.antijoin) {
 		
 		const memJoin = event.logMessageData.addedParticipants.map(info => info.userFbId);

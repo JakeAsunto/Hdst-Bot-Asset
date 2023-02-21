@@ -152,7 +152,7 @@
         "eventBotReportSendToAdmin": "● 𝗕𝗼𝘁 𝗥𝗲𝗽𝗼𝗿𝘁\n━━━━━━━━━━━━━━━━━━━━\n%1\n\n● 𝚏𝚛𝚘𝚖: %2\n● 𝚐𝚛𝚘𝚞𝚙: %3\n● 𝚝𝚛𝚊𝚌𝚔-𝚒𝚍:\n%4\n%5",
         "eventBotReportSendToRespondent": "🟢 Your feedback has been sent to admins, thank you for your cooperation.^^",
         "eventAdminReply": "𝗔𝗱𝗺𝗶𝗻 𝗿𝗲𝗽𝗹𝘆\n━━━━━━━━━━━━━━━━━━━━\n%1\n\n● reply to this message to continue your conversation with the admin.",
-        "eventModulesErrorToAdmin": "𝗠𝗼𝗱𝘂𝗹𝗲 𝗘𝗿𝗿𝗼𝗿\n━━━━━━━━━━━━━━━━━━━━\n● 𝚊𝚝: %1\n● 𝚎𝚛𝚛𝚘𝚛: %2\n\n● 𝚘𝚌𝚌𝚞𝚛𝚎𝚍 𝚊𝚝: %3\n● 𝚊𝚌𝚝𝚒𝚘𝚗 𝚋𝚢: %4"
+        "eventModulesErrorToAdmin": "𝗠𝗼𝗱𝘂𝗹𝗲 𝗘𝗿𝗿𝗼𝗿\n━━━━━━━━━━━━━━━━━━━━\n● 𝚊𝚝: %1\n● 𝚎𝚛𝚛𝚘𝚛: %2\n\n● 𝚘𝚌𝚌𝚞𝚛𝚎𝚍 𝚊𝚝: %3\n● 𝚐𝚛𝚘𝚞𝚙 𝚒𝚍: %4\n● 𝚊𝚌𝚝𝚒𝚘𝚗 𝚋𝚢: %5"
     },
     "group": {
         "groupAntiOutSuccess": "I bring %1 back!.",
