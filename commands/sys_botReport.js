@@ -1,6 +1,6 @@
 module.exports.config = {
 	name: 'bot-report',
-	version: '1.0.10',
+	version: '1.0.11',
 	hasPermssion: 0,
 	credits: 'Hadestia',
 	description: 'Report a bot issue directly to the developer',
@@ -16,11 +16,12 @@ module.exports.config = {
 module.exports.run = async function ({api, args, event, textFormat}) {
 	
 	const message = args.join(' ');
-	const sender = await api.getUserInfo(event.senderID);
+	const sender = await api.getUserInfoV2(event.senderID);
+	const group = (event.isGroup) ? await global.data.threadInfo.get(threadID) : {};
 	
 	for (const admin of global.config.ADMINBOT) {
 		await api.sendMessage(
-			textFormat('events', 'eventBotReportSendToAdmin', message, sender.name, event.threadID, event.messageID),
+			textFormat('events', 'eventBotReportSendToAdmin', message, sender.name, group.threadName || 'Direct Message', event.threadID, event.messageID),
 			admin,
 			(err, info) => {
 				if (err) {

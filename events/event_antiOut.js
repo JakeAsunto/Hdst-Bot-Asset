@@ -11,7 +11,12 @@ module.exports.run = async function ({ event, api, Threads, Users }) {
 	let data = (await Threads.getData(event.threadID)).data || {};
 	
 	if (data.antiout == false) return;
-	if (event.logMessageData.leftParticipantFbId == api.getCurrentUserID()) return;
+	if (event.logMessageData.leftParticipantFbId == api.getCurrentUserID()) {
+		try {
+			Threads.delData(event.threadID);
+		} catch {}
+		return;
+	}
 	
 	const name = global.data.userName.get(event.logMessageData.leftParticipantFbId) || await Users.getNameUser(event.logMessageData.leftParticipantFbId);
 	const type = (event.author == event.logMessageData.leftParticipantFbId) ? 'self-separation' : 'kicked' ;

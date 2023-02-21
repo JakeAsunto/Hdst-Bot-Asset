@@ -70,6 +70,11 @@ module.exports.run = async function ({ api, args, alias, event, returns, textFor
 		case 'set-nn':
 		
 			break;
+		
+		// group settings
+		case 'setting':
+		
+			break;
 		default:
 			break;
 			

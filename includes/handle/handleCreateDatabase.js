@@ -86,6 +86,7 @@ module.exports = function({ Users, Threads, Currencies }) {
 
 				THREAD_ALL_DATA.inventory = {};
 
+				//console.log(threadIn4);
 				
                 for (singleData of threadIn4.userInfo) {
 					
@@ -113,7 +114,7 @@ module.exports = function({ Users, Threads, Currencies }) {
 								
                             global.data.allUserID.push(String(singleData.id));
                             
-                            global.data.allUserID.push(String(singleData.name));
+                            global.data.userName.set(String(singleData.name), String(singleData.id));
 
                             logger(global.getText('handleCreateDatabase', 'newUser', chalk.hex("#" + random)(`New user:  `) + chalk.hex("#" + random1)(`${singleData.name}`) + "  ||  " + chalk.hex("#" + random2)(`${singleData.id}`)), '[ USER ]');
                             
