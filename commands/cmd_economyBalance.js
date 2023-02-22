@@ -13,12 +13,16 @@ module.exports.config = {
 }
 
 module.exports.run = async function ({ api, args, event, returns, textFormat, Prefix, Threads }) {
-	
+
+	const economySystem = require(`${__dirname}/../../json/economySystem.json`);
+
 	const { threadID, messageID, senderID } = event;
 	
 	try {
-		const economy = (await Threads.getData(threadID)).economy;
-		let ID;
+		const threadData = await Threads.getData(threadID);
+		const economy = threadData.economy;
+
+		let ID, NAME;
 		// if message reply
 		if (event.type == 'message_reply') {
 			ID = event.messageReply.senderID;
@@ -26,22 +30,20 @@ module.exports.run = async function ({ api, args, event, returns, textFormat, Pr
 		// if @mention
 		} else if (Object.keys(event.mentions).length > 0) {
 			ID = Object.keys(event.mentions)[0];
+			NAME = Object.values(event.mentions)[0].replace('@', '');
 		}
 		ID = (!ID) ? senderID : ID;
 		
-		// create user an account if not exist just to ensure
-		if (!economy[ID]) {
-			economy[ID] = { hand: 0, bank: 0 }
-			await Threads.setData(threadID, { economy });
-		}
-	
 		const currency = threadData.data.default_currency || economySystem.config.default_currency;
 	
+		const owner = await api.getUserInfoV2(ID) || {};
+		const ownerName = await global.fancyFont((NAME).split(' ')[0] || (owner.name).split(' ')[0] || 'User', 1);
+		
 		const formatOnHand = (economy[ID].hand).toLocaleString('en-US');
 		const formatOnBank = (economy[ID].bank).toLocaleString('en-US');
 		const formatTotal = (economy[ID].hand + economy[senderID].bank).toLocaleString('en-US');
 		
-		return api.sendMessage(textFormat('economy', 'cmdBalance', currency, formatOnHand, formatOnBank, formatTotal), threadID, messageID);
+		return api.sendMessage(textFormat('economy', 'cmdBalance', ownerName, currency, formatOnHand, formatOnBank, formatTotal), threadID, messageID);
 		
 	} catch (err) {
 		returns.remove_usercooldown();

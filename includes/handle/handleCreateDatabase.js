@@ -118,7 +118,7 @@ module.exports = function({ Users, Threads, Currencies }) {
 								
                             global.data.allUserID.push(String(singleData.id));
                             
-                            global.data.userName.set(String(singleData.name), String(singleData.id));
+                            global.data.userName.set(String(singleData.id), String(singleData.name));
 
                             logger(global.getText('handleCreateDatabase', 'newUser', chalk.hex("#" + random)(`New user:  `) + chalk.hex("#" + random1)(`${singleData.name}`) + "  ||  " + chalk.hex("#" + random2)(`${singleData.id}`)), '[ USER ]');
                             
@@ -154,7 +154,7 @@ module.exports = function({ Users, Threads, Currencies }) {
 
             }
 
-            if (!allCurrenciesID.includes(senderID)) {
+            /*if (!allCurrenciesID.includes(senderID)) {
 
                 const CURRENCY_ALL_DATA = {};
 
@@ -164,7 +164,7 @@ module.exports = function({ Users, Threads, Currencies }) {
 
                 allCurrenciesID.push(senderID);
 
-            }
+            }*/
 
             return;
 
