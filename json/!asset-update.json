@@ -5,8 +5,8 @@
         "https://facebook.com/mensaherong.iantot",
         "This repository was linked to bot assets repository of Hadestia that include assets auto updater."
     ],
-    "VERSION": "5.7.0",
-    "CHANGELOGS": "- Add more group settings on \"group\" command\n- Fix pending command not displaying touched users/groups with -\"log:true\" option.",
+    "VERSION": "5.8.0",
+    "CHANGELOGS": "- Add more group settings specially for economy system.\n- Add beta test for \"work\" & \"balance\" command for economy system.\n- All Group data has been reset due to the implementation.",
     "MAIN": {
         "LICENSE-HADESTIA": {
             "path": "/"
@@ -42,6 +42,10 @@
             "path": "includes/handle/"
         },
         "textFormat.json": {
+            "path": "json/",
+            "folder": "json"
+        },
+        "economySystem.json": {
             "path": "json/",
             "folder": "json"
         },
@@ -85,7 +89,9 @@
         "cmd_boldFont",
         "cmd_avatar",
         "cmd_facebookCover",
-        "cmd_artAIEdit"
+        "cmd_artAIEdit",
+        "cmd_economyWork",
+        "cmd_economyBalance"
     ],
     "EVENTS": [
         "event_adminUpdate",

@@ -41,8 +41,8 @@ module.exports.run = async function ({ api, args, alias, event, returns, textFor
 	if (!commandTypeValid(commandType)) return api.sendMessage(global.textFormat('group', 'groupCmdGroupInvalidCommandType', validTypes.join(' | ')), threadID, messageID);
 	
 	// get group data
-	const GROUP_DATA = await Threads.getData(threadID) || {};
-	
+	const GROUP_DATA = (await Threads.getData(threadID)).data;
+	//console.log(GROUP_DATA)
 	// execute switch statement 
 	switch (commandType) {
 		// group name
@@ -82,13 +82,13 @@ module.exports.run = async function ({ api, args, alias, event, returns, textFor
 			
 		// anti out state
 		case 'anti-out':
-			GROUP_DATA.antiout = !GROUP_DATA.antiout
+			GROUP_DATA.antiout = !GROUP_DATA.antiout;
 			(GROUP_DATA.antiout) ?
 				api.sendMessage(textFormat('success', 'successfulFormat', 'Anti out mode was turned on.'), threadID, global.autoUnsend, messageID) :
 				api.sendMessage(textFormat('error', 'errOccured', 'Anti out mode was turned off.'), threadID, global.autoUnsend, messageID);
 			break;
 		case 'anti-join':
-			GROUP_DATA.antijoin = !GROUP_DATA.antijoin
+			GROUP_DATA.antijoin = !GROUP_DATA.antijoin;
 			(GROUP_DATA.antijoin) ?
 				api.sendMessage(textFormat('success', 'successfulFormat', 'Anti join mode was turned on.'), threadID, global.autoUnsend, messageID) :
 				api.sendMessage(textFormat('error', 'errOccured', 'Anti join mode was turned off.'), threadID, global.autoUnsend, messageID);
@@ -114,8 +114,8 @@ module.exports.run = async function ({ api, args, alias, event, returns, textFor
 			break;
 			
 	}
-	// set thread settings
-	await Threads.setData(threadID, GROUP_DATA);
+	await Threads.setData(threadID, { data: GROUP_DATA });
+	global.data.threadData.set(event.threadID, data);
 }
 
 // =============== CHECKER FUNCTIONS =============== // 

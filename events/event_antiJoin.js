@@ -8,14 +8,22 @@ module.exports.config = {
 
 module.exports.run = async function ({ event, api, Threads, Users }) {
 	
- 	let data = (await Threads.getData(event.threadID)).data;
- 
+	const threadInfo = await api.getThreadInfo(event.threadID);
+	let data = (await Threads.getData(event.threadID)).data;
  	// set data state (should be don with cmd)
  	// if (typeof data.antijoin == 'undefined' || data.antijoin == false) data.antijoin = true; else data.antijoin = false;
  
  	if (event.logMessageData.addedParticipants.some(i => i.userFbId == api.getCurrentUserID())) {
 		return;
 	} else if (data.antijoin) {
+		
+		const bot_is_admkn = threadInfo.adminIDs.find(e => e.id == api.getCurrentUserID());
+		if (!bot_is_admin) {
+			return api.sendMessage(
+				global.textFormat('error', 'errOccured', 'Unable to perform "Anti Join Mode"\n● reason: Bot needs to be an admin.'),
+				event.threadID
+			);
+		}
 		
 		const memJoin = event.logMessageData.addedParticipants.map(info => info.userFbId);
 		
@@ -37,7 +45,6 @@ module.exports.run = async function ({ event, api, Threads, Users }) {
 					global.data.threadData.set(event.threadID, data);
 				}
 			);
-			
 		}
     }
 }

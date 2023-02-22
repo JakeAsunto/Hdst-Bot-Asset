@@ -4,6 +4,7 @@
 
 module.exports = function({ Users, Threads, Currencies }) {
 
+	const economySystem = require(`${__dirname}/../../json/economySystem.json`); 
     const logger = require("../../utils/log.js");
     const chalk = require("chalk");
 
@@ -75,10 +76,13 @@ module.exports = function({ Users, Threads, Currencies }) {
                 THREAD_ALL_DATA.threadInfo = dataThread;
 
                 THREAD_ALL_DATA.data = {
-					'rob_fail_probability': 0.5,
 					'auto_resend_msg': true,
 					'auto_response_listener': true
 				};
+				// default configuration for economy system for this group
+				for (const item in economySystem.config) {
+					THREAD_ALL_DATA.data[item] = economySystem.config[item];
+				}
 
                 // HADESTIA ECO & INV IMPLEMENTATIONS //
                 

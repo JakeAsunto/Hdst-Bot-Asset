@@ -65,6 +65,8 @@ module.exports.run = async function({ api, event, args, client, __GLOBAL, Users 
 	const fs = require('fs-extra');
 	const axios = require('axios')
 	
+	global.sendReaction.inprocess(api, event);
+	
 	let avatar = __dirname + '/cache/avt.png';
 	let pathImg = __dirname + '/cache/porn.png';
 	var text = args.join(' ');
@@ -117,8 +119,9 @@ module.exports.run = async function({ api, event, args, client, __GLOBAL, Users 
 		(e) => {
 			fs.unlinkSync(pathImg);
 			if (!e) {
-				global.sendReaction.success(api, event);
+				return global.sendReaction.success(api, event);
 			}
+			return global.sendReaction.failed(api, event);
 		},
 		messageID
 	);
