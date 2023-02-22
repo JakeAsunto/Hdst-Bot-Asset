@@ -559,7 +559,7 @@ async function onBot({ models: botModel }) {
 		
 		global.logModuleErrorToAdmin = async function (err, filename, event) {
 			//loginApiData.sendMessage(textFormar('error', 'errOccured', err), event.threadID, event.messageID);
-			const group = (event.isGroup) ? await global.data.threadInfo.get(threadID) : {};
+			const group = (event.isGroup) ? await global.data.threadInfo.get(event.threadID) : {};
 			for (const admin of botAdmins) {
 				loginApiData.sendMessage(textFormat('events', 'eventModulesErrorToAdmin', filename, err, group.threadName || 'No Data', event.threadID, event.senderID), admin);
 			}

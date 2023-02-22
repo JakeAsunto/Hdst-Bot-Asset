@@ -2,7 +2,7 @@
 
 module.exports.config = {
 	name: 'leaderboard',
-	version: '1.0.0',
+	version: '1.0.1',
 	hasPermssion: 0,
 	commandCategory: 'economy',
 	usages: '[ page number ]',
@@ -16,7 +16,8 @@ module.exports.config = {
 }
 
 module.exports.run = async function ({ api, args, event, returns, textFormat, Prefix, Threads }) {
-	
+
+	const economySystem = require(`${__dirname}/../../json/economySystem.json`);
 	const { threadID, messageID, senderID } = event;
 	const threadData = await Threads.getData(threadID);
 	const economy = threadData.economy;
@@ -37,7 +38,7 @@ module.exports.run = async function ({ api, args, event, returns, textFormat, Pr
 	}
 	// sort leaderboard top-lowest
 	rankingInfo.sort((a, b) => {
-		return (a.total > b.total) ? 1 : -1;
+		return (a.total < b.total) ? 1 : -1;
 	});
 	
 	// get specific list for specific page.
@@ -46,16 +47,20 @@ module.exports.run = async function ({ api, args, event, returns, textFormat, Pr
     const pageSlice = itemPerPage * page - itemPerPage;
     const returnArray = rankingInfo.slice(pageSlice, pageSlice + itemPerPage);
 	
-	const index = pageSlice;
+	let index = pageSlice;
 	// loop again (TF im doing)
-	for (const data of returnArray) {
-		index += 1;
-		const number = await global.fancyFont.get(`${index}`, 1);
-		rankingMsg += `${number}. ${((data.name).split(' ')).pop()} • ${currency}${data.total}\n`;
+	// basically track requester current leaderboard position
+	for (const data of rankingInfo) {
 		if (data.id == senderID) {
 			const ordinals = (index == 1) ? 'st' : (index == 2) ? 'nd' : (index == 3) ? 'rd' : 'th';
 			thisUserCurrentRank = await global.fancyFont.get(`${number}${ordinals}`, 2);
 		}
+	}
+	
+	for (const data of returnArray) {
+		index += 1;
+		const number = await global.fancyFont.get(`${index}`, 1);
+		rankingMsg += `${number}. ${(data.name == 'Facebook User') ? data.name : ((data.name).split(' ')).shift()} • ${currency}${(data.total).toLocaleString('en-US')}\n`;
 	}
 	
 	//const fontedThreadName = await global.fancyFont.get(threadData.threadName || '', 1);

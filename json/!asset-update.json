@@ -5,8 +5,8 @@
         "https://facebook.com/mensaherong.iantot",
         "This repository was linked to bot assets repository of Hadestia that include assets auto updater."
     ],
-    "VERSION": "5.9.0",
-    "CHANGELOGS": "- Disable inbuilt Currencies database.\n- Add \"deposit\" and \"withdraw\" command for economy system.\n- Add \"leaderboard\" command for viewing group leaderboards regarding on economy system.\n\nSide Note:\nThese newly added commands are on 𝗕𝗘𝗧𝗔 test and has its own aliases,\nuse $help <command name> for full details.\n\n● 5.8.0\n- Add more group settings specially for economy system.\n- Add beta test for \"work\" & \"balance\" command for economy system.\n- All Group data has been reset due to the implementation.",
+    "VERSION": "5.9.0 public",
+    "CHANGELOGS": "- Disable inbuilt Currencies database.\n- Add \"deposit\" and \"withdraw\" command for economy system.\n- Add \"leaderboard\" command for viewing group leaderboards regarding on economy system.\n\nSide Note:\nThese newly added commands has its own aliases,\nuse $help <command name> for full details.\n\n● 5.8.0\n- Add more group settings specially for economy system.\n- Add beta test for \"work\" & \"balance\" command for economy system.\n- All Group data has been reset due to the implementation.",
     "MAIN": {
         "LICENSE-HADESTIA": {
             "path": "/"

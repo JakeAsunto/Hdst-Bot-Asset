@@ -2,7 +2,7 @@
 
 module.exports.config = {
 	name: 'balance',
-	version: '1.0.0',
+	version: '1.0.1',
 	hasPermssion: 0,
 	commandCategory: 'economy',
 	usages: '',
@@ -37,7 +37,7 @@ module.exports.run = async function ({ api, args, event, returns, textFormat, Pr
 		const currency = threadData.data.default_currency || economySystem.config.default_currency;
 	
 		const owner = await api.getUserInfoV2(ID) || {};
-		const ownerName = await global.fancyFont((NAME).split(' ')[0] || (owner.name).split(' ')[0] || 'User', 1);
+		const ownerName = await global.fancyFont((NAME).split(' ')[0] || (owner.name) ? (owner.name == 'Facebook User') ? owner.name : (owner.name).split(' ')[0] : 'Facebook User', 1);
 		
 		const formatOnHand = (economy[ID].hand).toLocaleString('en-US');
 		const formatOnBank = (economy[ID].bank).toLocaleString('en-US');

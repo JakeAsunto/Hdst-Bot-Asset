@@ -27,6 +27,7 @@ module.exports.run = async function ({ api, args, event, returns, textFormat, Pr
 		
 		const currency = threadData.data.default_currency || economySystem.config.default_currency;
 		const moneyOnHand = economy[senderID].hand;
+		const moneyOnHandText = (moneyOnHand).toLocaleString('en-US');
 		
 		if (moneyOnHand <= 0) return api.sendMessage(textFormat('error', 'errOccured', 'You don\'t have any money to deposit.'), threadID, messageID);
 		
@@ -41,16 +42,17 @@ module.exports.run = async function ({ api, args, event, returns, textFormat, Pr
 			if (!amount) return returns.invalid_usage();
 			amount = Math.abs(amount); // make negative numbers as positive
 
-			if (amount > moneyOnHand) return api.sendMessage(textFormat('error', 'errOccured', `You don't have that much money to deposit. You currently have ${currency}${moneyOnHand} on hand.`), threadID, messageID);
+			if (amount > moneyOnHand) return api.sendMessage(textFormat('error', 'errOccured', `You don't have that much money to deposit. You currently have ${currency}${moneyOnHandText} on hand.`), threadID, messageID);
 			
 			economy[senderID].bank += amount;
 			economy[senderID].hand -= amount;
 		}
-		
+		const amountText = (amount).toLocaleString('en-US');
 		await Threads.setData(threadID, { economy });
-		return api.sendMessage(textFormat('success', 'successfulFormat', `Deposited ${currency}${amount} on bank.`), threadID, messageID);
+		return api.sendMessage(textFormat('success', 'successfulFormat', `Deposited ${currency}${amountText} on bank.`), threadID, messageID);
+		
 	} catch (err) {
-		returns.remove_usercooldown();
+		//returns.remove_usercooldown();
 		global.sendReaction.failed(api, event);
 		global.logger(err, 'error');
 		global.logModuleErrorToAdmin(err, __filename, event);

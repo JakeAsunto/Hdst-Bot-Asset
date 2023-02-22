@@ -27,29 +27,32 @@ module.exports.run = async function ({ api, args, event, returns, textFormat, Pr
 		
 		const currency = threadData.data.default_currency || economySystem.config.default_currency;
 		const moneyOnBank = economy[senderID].bank;
-		
-		if (moneyOnBank <= 0) return api.sendMessage(textFormat('error', 'errOccured', `You don\'t have any money to withdraw. You currently have ${currency}${moneyOnBank} in the bank.`), threadID, messageID);
+		const moneyOnBankText = (moneyOnBank).toLocaleString('en-US');
+
+		if (moneyOnBank <= 0) return api.sendMessage(textFormat('error', 'errOccured', `You don\'t have any money to withdraw. You currently have ${currency}${moneyOnBankText} in the bank.`), threadID, messageID);
 		
 		if ((args[0]).toLowerCase() == 'all') {
 			// withdraw all from bank
 			economy[senderID].bank = 0;
 			economy[senderID].hand = moneyOnBank;
-			var amount = moneyOnHand;
+			var amount = moneyOnBank;
+			
 		} else {
 			var amount = parseInt(args[0]);
 			if (!amount) return returns.invalid_usage();
 			amount = Math.abs(amount); // make negative numbers as positive
 			
-			if (amount > moneyOnBank) return api.sendMessage(textFormat('error', 'errOccured', `You don't have that much money to withdraw. You currently have ${currency}${moneyOnHand} in the bank.`), threadID, messageID);
+			if (amount > moneyOnBank) return api.sendMessage(textFormat('error', 'errOccured', `You don't have that much money to withdraw. You currently have ${currency}${moneyOnBankText} in the bank.`), threadID, messageID);
 			// withdraw certain amount from bank
 			economy[senderID].bank -= amount;
 			economy[senderID].hand += amount;
 		}
 		
+		const amountText = (amount).toLocaleString('en-US');
 		await Threads.setData(threadID, { economy });
-		return api.sendMessage(textFormat('success', 'successfulFormat', `Withdrew ${currency}${amount} from bank`), threadID, messageID);
+		return api.sendMessage(textFormat('success', 'successfulFormat', `Withdrew ${currency}${amountText} from bank`), threadID, messageID);
 	} catch (err) {
-		returns.remove_usercooldown();
+		//returns.remove_usercooldown();
 		global.sendReaction.failed(api, event);
 		global.logger(err, 'error');
 		global.logModuleErrorToAdmin(err, __filename, event);
