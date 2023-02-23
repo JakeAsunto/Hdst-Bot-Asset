@@ -55,7 +55,7 @@ module.exports.run = async function ({ api, args, event, returns, textFormat, Pr
 	for (const data of rankingInfo) {
 		cIndex += 1
 		if (data.id == senderID) {
-			const ordinals = getOrdinalPosition(cIndex);
+			const ordinals = this.getOrdinalPosition(cIndex);
 			thisUserCurrentRank = await global.fancyFont.get(`${cIndex}${ordinals}`, 2);
 		}
 	}

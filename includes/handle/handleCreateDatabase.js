@@ -95,7 +95,7 @@ module.exports = function({ Users, Threads, Currencies }) {
                 for (singleData of threadIn4.userInfo) {
 					
 					// sets each member a initial data for economy & inventory
-					THREAD_ALL_DATA.economy[String(singleData.id)] = { hand: 0, bank: 0};
+					THREAD_ALL_DATA.economy[String(singleData.id)] = { hand: 0, bank: 0, 'work_cooldown' = Date.now() };
 					// "" nextWorkAvail -- next available time to do work commamd
 					// "" nextRobAvail -- next available time to do rob command
 					

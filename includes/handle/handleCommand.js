@@ -270,9 +270,9 @@ module.exports = function({ api, models, Users, Threads, Currencies }) {
 			let CD = '';
 			
 			if (duration.minutes() > 0) {
-				CD = `${duration.minutes()} ${(duration.minutes() > 1) ? 'minutes' : 'minute'} and ${(duration.seconds() > 1) ? 'seconds' : 'second'}`;
+				CD = `${duration.minutes()} ${(duration.minutes() > 1) ? 'minutes' : 'minute'} and ${duration.seconds()} ${(duration.seconds() > 1) ? 'seconds' : 'second'}`;
 			} else {
-				CD = `${duration.seconds()} ${(duration.seconds() > 1) ? 'seconds' : 'second'}`;
+				CD = `${duration.seconds()} ${duration.seconds()}${(duration.seconds() > 1) ? 'seconds' : 'second'}`;
 			}
 			
 			api.sendMessage(

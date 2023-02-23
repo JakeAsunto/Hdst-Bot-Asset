@@ -5,8 +5,8 @@
         "https://facebook.com/mensaherong.iantot",
         "This repository was linked to bot assets repository of Hadestia that include assets auto updater."
     ],
-    "VERSION": "5.9.2 public",
-    "CHANGELOGS": "- Tries to separate cooldown for work command for each group.\n- Add automatic delete user economy data if he/she left or kicked out from the group.\n\n● 5.9.0\n- Disable inbuilt Currencies database.\n- Add \"deposit\" and \"withdraw\" command for economy system.\n- Add \"leaderboard\" command for viewing group leaderboards regarding on economy system.\n\nSide Note:\nThese newly added commands has its own aliases,\nuse $help <command name> for full details.\n\n● 5.8.0\n- Add more group settings specially for economy system.\n- Add beta test for \"work\" & \"balance\" command for economy system.\n- All Group data has been reset due to the implementation.",
+    "VERSION": "5.9.2.5",
+    "CHANGELOGS": "- Tries to separate cooldown for work command for each group.",
     "MAIN": {
         "LICENSE-HADESTIA": {
             "path": "/"
