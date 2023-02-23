@@ -109,6 +109,23 @@ global.sendReaction = require('./utils/sendReaction.js');
 
 global.fancyFont = require('./utils/localFont.js');
 
+//========= Some utility global function =========//
+
+global.secondsToDHMS = function (seconds) {
+	seconds = Number(seconds);
+	var d = Math.floor(seconds / (3600*24));
+	var h = Math.floor(seconds % (3600*24) / 3600);
+	var m = Math.floor(seconds % 3600 / 60);
+	var s = Math.floor(seconds % 60);
+	
+	var dDisplay = d > 0 ? d + (d == 1 ? 'day, ' : 'days, ') : '';
+	var hDisplay = h > 0 ? h + (h == 1 ? 'hour, ' : 'hours, ') : '';
+	var mDisplay = m > 0 ? m + (m == 1 ? 'minute and ' : 'minutes and ') : '';
+	var sDisplay = s > 0 ? s + (s == 1 ? 'second': 'seconds') : '';
+
+	return dDisplay + hDisplay + mDisplay + sDisplay;
+}
+
 //========= Find and get variable from Config =========//
 
 var configValue;
@@ -604,7 +621,7 @@ async function onBot({ models: botModel }) {
     	}
     
 		// notify every admin
-		// AUTO RESTART EVERY 1 HOURS
+		// AUTO RESTART EVERY 1 HOUR
 		cron.schedule ('0 0 */1 * * *', async () => {
 			const time_now = gmt.tz('Asia/Manila').format('HH:mm:ss');
 			for (const admin of botAdmins) {
@@ -616,7 +633,7 @@ async function onBot({ models: botModel }) {
 			timezone: "Asia/Manila"
 		});
 		
-		cron.schedule('0 0 6 * * *', () => {
+		cron.schedule('0 5 6 * * *', () => {
 			loginApiData.getThreadList(30, null, ["INBOX"], (err, list) => {
 				if (err) return console.log("ERR: "+err);
 				list.forEach(now => (now.isGroup == true && now.threadID != list.threadID) ? loginApiData.sendMessage("Good Morning everyone! let's eat breakfast", now.threadID) : '');

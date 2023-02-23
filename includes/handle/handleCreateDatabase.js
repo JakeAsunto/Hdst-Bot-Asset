@@ -77,8 +77,12 @@ module.exports = function({ Users, Threads, Currencies }) {
 
                 THREAD_ALL_DATA.data = {
 					'auto_resend_msg': true,
-					'auto_response_listener': true
+					'auto_response_listener': true,
+					'antiout': true,
+					'antijoin': false,
+					'guard': false
 				};
+				
 				// default configuration for economy system for this group
 				for (const item in economySystem.config) {
 					THREAD_ALL_DATA.data[item] = economySystem.config[item];
@@ -95,7 +99,7 @@ module.exports = function({ Users, Threads, Currencies }) {
                 for (singleData of threadIn4.userInfo) {
 					
 					// sets each member a initial data for economy & inventory
-					THREAD_ALL_DATA.economy[String(singleData.id)] = { hand: 0, bank: 0, 'work_cooldown' = Date.now() };
+					THREAD_ALL_DATA.economy[String(singleData.id)] = economySystem.userConfig;
 					// "" nextWorkAvail -- next available time to do work commamd
 					// "" nextRobAvail -- next available time to do rob command
 					

@@ -266,15 +266,15 @@ module.exports = function({ api, models, Users, Threads, Currencies }) {
         const userCooldown = timestamps.get(senderID) + expirationTime
 
 		const userInCooldown = (timer, currentDate) => {
-			const duration = moment.duration(moment(timer).diff(moment(currentDate)));
+			/*const duration = moment.duration(moment(timer).diff(moment(currentDate)));
 			let CD = '';
 			
 			if (duration.minutes() > 0) {
 				CD = `${duration.minutes()} ${(duration.minutes() > 1) ? 'minutes' : 'minute'} and ${duration.seconds()} ${(duration.seconds() > 1) ? 'seconds' : 'second'}`;
 			} else {
-				CD = `${duration.seconds()} ${duration.seconds()}${(duration.seconds() > 1) ? 'seconds' : 'second'}`;
-			}
-			
+				CD = `${duration.seconds()} ${(duration.seconds() > 1) ? 'seconds' : 'second'}`;
+			}*/
+			const CD = global.secondsToDHMS(Math.abs(timer - currentDate));
 			api.sendMessage(
 				textFormat('cmd', 'cmdUserCooldown', CD),
 				event.threadID,

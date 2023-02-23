@@ -17,22 +17,22 @@ module.exports.run = async function ({ api, args, event, returns, textFormat, Pr
 	const economySystem = require(`${__dirname}/../../json/economySystem.json`);
 
 	const { threadID, messageID, senderID } = event;
-	const expirationTime = 1200 * 1000; // 20 minutes
 	const dateNow = Date.now();
 	
 	try {
 		const threadData = await Threads.getData(threadID);
 		const economy = threadData.economy;
 		
+		const expirationTime = (threadData.data.work_cooldown || economySystem.config.work_cooldown) * 1000; // 20 minutes default
 		const userCooldown = economy[senderID].work_cooldown + expirationTime;
 		
 		if (dateNow < userCooldown) {
 			return returns.user_in_cooldown(userCooldown, dateNow);
 		}
 		
-		const currency = threadData.data.economy_currency || economySystem.config.default_currency;
-		const minWage = threadData.data.economy_work_min_wage || economySystem.config.work_min_wage || 500;
-		const maxWage = threadData.data.economy_work_max_wage || economySystem.config.work_max_wage || 1000;
+		const currency = threadData.data.default_currency || economySystem.config.default_currency;
+		const minWage = threadData.data.work_min_wage || economySystem.config.work_min_wage || 500;
+		const maxWage = threadData.data.work_max_wage || economySystem.config.work_max_wage || 1000;
 	
 		const randomSalary = Math.floor(Math.random() * (maxWage - minWage + 1)) + minWage;
 	

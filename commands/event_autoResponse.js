@@ -115,7 +115,7 @@ async function constructMessage(api, event, text, Users) {
 	const moment = require('moment-timezone');
 	const hour = moment.tz('Asia/Manila').format('HH');
 	
-	const threadSetting = global.data.threadData.get(event.threadID);
+	const threadSetting = global.data.threadData.get(event.threadID) || {};
 	const botPrefix = (threadSetting.hasOwnProperty('PREFIX')) ? threadSetting.PREFIX : global.config.PREFIX;
 	// get user name
 	const sender = await Users.getNameUser(event.senderID);

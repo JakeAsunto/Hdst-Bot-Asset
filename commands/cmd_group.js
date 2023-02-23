@@ -9,7 +9,8 @@ module.exports.config = {
 	cooldowns: 10,
 	aliases: [ 'group' ],
 	envConfig: {
-		requiredArgument: 1
+		requiredArgument: 1,
+		groupCommandOnly: true
 	}
 }
 
@@ -31,9 +32,6 @@ module.exports.handleReply = async function ({ api, args, event, returns, textFo
 module.exports.run = async function ({ api, args, alias, event, returns, textFormat, Threads, Prefix }) {
 	
 	const { threadID, messageID, senderID } = event;
-	
-	// return if thread is not a group
-	if (!event.isGroup) return api.sendMessage(global.textFormat('cmd', 'cmdGroupThreadNotGroup'), threadID, messageID);
 	
 	const threadInfo = await api.getThreadInfo(threadID);
 	const commandType = args.shift();

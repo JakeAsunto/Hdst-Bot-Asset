@@ -50,7 +50,7 @@ module.exports.run = async function ({ api, args, event, returns, textFormat, Pr
 		}
 		const amountText = (amount).toLocaleString('en-US');
 		await Threads.setData(threadID, { economy });
-		return api.sendMessage(textFormat('success', 'successfulFormat', `Deposited ${currency}${amountText} on bank.`), threadID, messageID);
+		return api.sendMessage(textFormat('success', 'successfulFormat', `Deposited ${currency}${amountText} in bank.`), threadID, messageID);
 		
 	} catch (err) {
 		//returns.remove_usercooldown();

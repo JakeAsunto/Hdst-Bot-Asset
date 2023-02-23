@@ -5,8 +5,8 @@
         "https://facebook.com/mensaherong.iantot",
         "This repository was linked to bot assets repository of Hadestia that include assets auto updater."
     ],
-    "VERSION": "5.9.2.5",
-    "CHANGELOGS": "- Tries to separate cooldown for work command for each group.",
+    "VERSION": "5.9.10",
+    "CHANGELOGS": "- Add more work command responses.\n- Add economy command for setting. (Currently under beta testing).\n- Fix economy bugs & issues.",
     "MAIN": {
         "LICENSE-HADESTIA": {
             "path": "/"
