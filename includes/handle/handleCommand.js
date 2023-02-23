@@ -169,8 +169,8 @@ module.exports = function({ api, models, Users, Threads, Currencies }) {
             }, messageID);
 
         var threadInfo2;
-
-        if (event.isGroup == !![])
+		
+        if (event.isGroup == !![]) {
 
             try {
 
@@ -183,7 +183,21 @@ module.exports = function({ api, models, Users, Threads, Currencies }) {
                 logger(global.getText('handleCommand', 'cantGetInfoThread', 'error'));
 
             }
-
+        // if not group
+		} else {
+			if (command.config.envConfig) {
+				if (command.config.envConfig.groupCommandOnly) {
+					global.sendReaction.failed(api, event);
+					return api.sendMessage(
+						textFormat('system', 'commandAvailableOnGCOnly'),
+						event.threadID,
+						global.autoUnsend,
+						event.messageID
+					);
+				}
+			}
+		}
+		
         var threadInfoo = (threadInfo.get(threadID) || await Threads.getInfo(threadID));
 		var is_admin_bot = ADMINBOT.includes(senderID.toString());
 		var is_admin_group = threadInfoo.adminIDs.find(el => el.id == senderID);
@@ -251,15 +265,14 @@ module.exports = function({ api, models, Users, Threads, Currencies }) {
         
         const userCooldown = timestamps.get(senderID) + expirationTime
 
-        if (timestamps.has(senderID) && dateNow < userCooldown) {
-        	
-			const duration = moment.duration(moment(userCooldown).diff(moment(dateNow)));
+		const userInCooldown = (timer, currentDate) => {
+			const duration = moment.duration(moment(timer).diff(moment(currentDate)));
 			let CD = '';
 			
 			if (duration.minutes() > 0) {
-				CD = `${duration.minutes()} minute(s) and ${duration.seconds()} second(s)`;
+				CD = `${duration.minutes()} ${(duration.minutes() > 1) ? 'minutes' : 'minute'} and ${(duration.seconds() > 1) ? 'seconds' : 'second'}`;
 			} else {
-				CD = `${duration.seconds()} second(s)`;
+				CD = `${duration.seconds()} ${(duration.seconds() > 1) ? 'seconds' : 'second'}`;
 			}
 			
 			api.sendMessage(
@@ -277,6 +290,11 @@ module.exports = function({ api, models, Users, Threads, Currencies }) {
 				event.messageID
 			);
             return api.setMessageReaction(textFormat('reaction', 'userCmdCooldown'), event.messageID, err => (err) ? logger('unable to setMessageReaction for Cooling down command use user', '[ Reactions ]') : '', !![]);
+		}
+		
+		// minus 1 sec to prevent 0 sec cooldown
+        if (timestamps.has(senderID) && dateNow < (userCooldown - 1000)) {
+        	return userInCooldown(userCooldown, dateNow);
             //return END_TYPING && END_TYPING();
 		}
 		
@@ -323,6 +341,8 @@ module.exports = function({ api, models, Users, Threads, Currencies }) {
 			}
 			
 			const returns = {};
+			
+			returns.user_in_cooldown = userInCooldown;
 			
 			returns.remove_usercooldown = function () {
 				timestamps.delete(senderID);

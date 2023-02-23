@@ -8,13 +8,16 @@ module.exports.config = {
 
 module.exports.run = async function ({ event, api, Threads, Users }) {
 	
-	let data = (await Threads.getData(event.threadID)).data || {};
+	let threadData = await Threads.getData(event.threadID);
 	
-	if (!data.antiout) return;
+	// will update the threadData if user left the group and anti out was turned off
+	if (!data.antiout) {
+		return removeUserEconomy(event.logMessageData.leftParticipantFbId);
+	};
 	
 	if (event.logMessageData.leftParticipantFbId == api.getCurrentUserID()) {
 		try {
-			Threads.delData(event.threadID);
+			await Threads.delData(event.threadID);
 		} catch {}
 		return;
 	}
@@ -30,19 +33,32 @@ module.exports.run = async function ({ event, api, Threads, Users }) {
 				event.threadID,
 				(error, info) => {
 					if (error) {
+						removeUserEconomy(event.logMessageData.leftParticipantFbId);
     					return api.sendMessage(global.textFormat('group', 'groupAntiOutFailed', name), event.threadID)
 					}
 					api.sendMessage(global.textFormat('group', 'groupAntiOutSuccess', name), event.threadID);
 				}
 			);
-		} catch (e) {}
+		} catch (e) {
+			
+		}
 		
 	} else if (type == 'kicked') {
 		
-		api.sendMessage(
+		return api.sendMessage(
 			global.textFormat('group', 'groupAntiOutKicked', name),
 			event.threadID
 		);
+		removeUserEconomy(event.logMessageData.leftParticipantFbId);
+	}
+	
+	
+	async function removeUserEconomy (id) {
+		const economy = threadData.economy;
+		const inventory = threadData.inventory;
+		economy[id] = null;
+		inventory[id] = null;
 		
+		await Threads.setData(event.threadID, { economy, inventory });
 	}
 }

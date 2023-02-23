@@ -8,7 +8,7 @@ module.exports.config = {
 	usages: '',
 	description: 'Earn some money',
 	credits: 'Hadestia',
-	cooldowns: 1200,
+	cooldowns: 0,
 	aliases: [ 'earn' ]
 }
 
@@ -17,10 +17,24 @@ module.exports.run = async function ({ api, args, event, returns, textFormat, Pr
 	const economySystem = require(`${__dirname}/../../json/economySystem.json`);
 
 	const { threadID, messageID, senderID } = event;
+	const dateNow = Date.now();
 	
 	try {
 		const threadData = await Threads.getData(threadID);
 		const economy = threadData.economy;
+		
+		if (!economy[senderID].work_cooldown) {
+			// add minus 1 sec to let this person use this command
+			economy[senderID].work_cooldown = dateNow - 1000
+		}
+		// if user is in cooldown for this group only
+		if (economy[senderID].work_cooldown > dateNow) {
+			const timer = economy[senderID].work_cooldown;
+			return returns.user_in_cooldown(timer, dateNow);
+		}
+		
+		// add cooldowns (to let user use this command on each group that bot was there also)
+		const nextWork = Date.now() + (1200 * 1000) // 20 minutes
 	
 		const currency = threadData.data.economy_currency || economySystem.config.default_currency;
 		const minWage = threadData.data.economy_work_min_wage || economySystem.config.work_min_wage || 500;

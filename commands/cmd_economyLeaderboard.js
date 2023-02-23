@@ -11,7 +11,8 @@ module.exports.config = {
 	cooldowns: 0,
 	aliases: [ 'lb' ],
 	envConfig: {
-		requiredArgument: 0
+		requiredArgument: 0,
+		groupCommandOnly: true
 	}
 }
 
@@ -48,19 +49,21 @@ module.exports.run = async function ({ api, args, event, returns, textFormat, Pr
     const returnArray = rankingInfo.slice(pageSlice, pageSlice + itemPerPage);
 	
 	let index = pageSlice;
+	let cIndex = 0;
 	// loop again (TF im doing)
 	// basically track requester current leaderboard position
 	for (const data of rankingInfo) {
+		cIndex += 1
 		if (data.id == senderID) {
-			const ordinals = (index == 1) ? 'st' : (index == 2) ? 'nd' : (index == 3) ? 'rd' : 'th';
-			thisUserCurrentRank = await global.fancyFont.get(`${number}${ordinals}`, 2);
+			const ordinals = getOrdinalPosition(cIndex);
+			thisUserCurrentRank = await global.fancyFont.get(`${cIndex}${ordinals}`, 2);
 		}
 	}
 	
 	for (const data of returnArray) {
 		index += 1;
 		const number = await global.fancyFont.get(`${index}`, 1);
-		rankingMsg += `${number}. ${(data.name == 'Facebook User') ? data.name : ((data.name).split(' ')).shift()} • ${currency}${(data.total).toLocaleString('en-US')}\n`;
+		rankingMsg += `${number}. ${((data.name).toLowerCase() == 'facebook user') ? data.name : ((data.name).split(' ')).shift()} • ${currency}${(data.total).toLocaleString('en-US')}\n`;
 	}
 	
 	//const fontedThreadName = await global.fancyFont.get(threadData.threadName || '', 1);
@@ -69,4 +72,15 @@ module.exports.run = async function ({ api, args, event, returns, textFormat, Pr
 		threadID,
 		messageID
 	);
+}
+
+
+module.exports.getOrdinalPosition = function (pos) {
+	if (pos <= 20) {
+		return (pos == 1) ? 'st' : (pos == 2) ? 'nd' : (pos == 3) ? 'rd' : 'th';
+	} else {
+		const numberString = toString(pos);
+		const endNum = parseInt(numberString.charAt(numberString.length - 1));
+		return (endNum == 1) ? 'st' : (endNum == 2) ? 'nd' : (endNum == 3) ? 'rd' : 'th';
+	}
 }

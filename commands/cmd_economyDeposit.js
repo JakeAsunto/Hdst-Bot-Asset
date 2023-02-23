@@ -11,7 +11,8 @@ module.exports.config = {
 	cooldowns: 0,
 	aliases: [ 'dep' ],
 	envConfig: {
-		requiredArgument: 1
+		requiredArgument: 1,
+		groupCommandOnly: true
 	}
 }
 

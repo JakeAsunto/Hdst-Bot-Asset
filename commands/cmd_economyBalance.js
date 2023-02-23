@@ -9,7 +9,10 @@ module.exports.config = {
 	description: 'View your balance.',
 	credits: 'Hadestia',
 	cooldowns: 0,
-	aliases: [ 'bal' ]
+	aliases: [ 'bal' ],
+	envConfig: {
+		groupCommandOnly: true
+	}
 }
 
 module.exports.run = async function ({ api, args, event, returns, textFormat, Prefix, Threads }) {
@@ -37,11 +40,11 @@ module.exports.run = async function ({ api, args, event, returns, textFormat, Pr
 		const currency = threadData.data.default_currency || economySystem.config.default_currency;
 	
 		const owner = await api.getUserInfoV2(ID) || {};
-		const ownerName = await global.fancyFont((NAME).split(' ')[0] || (owner.name) ? (owner.name == 'Facebook User') ? owner.name : (owner.name).split(' ')[0] : 'Facebook User', 1);
+		const ownerName = await global.fancyFont.get((NAME && (NAME).split(' ')[0]) || (owner.name) ? (owner.name == 'Facebook User') ? owner.name : (owner.name).split(' ')[0] : 'Facebook User', 1);
 		
 		const formatOnHand = (economy[ID].hand).toLocaleString('en-US');
 		const formatOnBank = (economy[ID].bank).toLocaleString('en-US');
-		const formatTotal = (economy[ID].hand + economy[senderID].bank).toLocaleString('en-US');
+		const formatTotal = (economy[ID].hand + economy[ID].bank).toLocaleString('en-US');
 		
 		return api.sendMessage(textFormat('economy', 'cmdBalance', ownerName, currency, formatOnHand, formatOnBank, formatTotal), threadID, messageID);
 		
