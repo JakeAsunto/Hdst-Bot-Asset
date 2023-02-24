@@ -35,7 +35,7 @@ module.exports.run = async function ({ api, args, event, returns, textFormat, Pr
 		if ((args[0]).toLowerCase() == 'all') {
 			// withdraw all from bank
 			economy[senderID].bank = 0;
-			economy[senderID].hand = moneyOnBank;
+			economy[senderID].hand += moneyOnBank;
 			var amount = moneyOnBank;
 			
 		} else {

@@ -24,6 +24,7 @@ module.exports.run = async function ({ api, args, event, returns, textFormat, Pr
 	try {
 		const threadData = await Threads.getData(threadID);
 		const economy = threadData.economy;
+		const inventory = threadData.inventory;
 
 		let ID, NAME;
 		// if message reply
@@ -36,6 +37,13 @@ module.exports.run = async function ({ api, args, event, returns, textFormat, Pr
 			NAME = Object.values(event.mentions)[0].replace('@', '');
 		}
 		ID = (!ID) ? senderID : ID;
+		
+		if (!economy[ID]) {
+			economy[ID] = economySystem.userConfig;
+		}
+		if (!inventory[ID]) {
+			inventory[ID] = {};
+		}
 		
 		const currency = threadData.data.default_currency || economySystem.config.default_currency;
 	

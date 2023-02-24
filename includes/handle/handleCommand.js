@@ -274,7 +274,10 @@ module.exports = function({ api, models, Users, Threads, Currencies }) {
 			} else {
 				CD = `${duration.seconds()} ${(duration.seconds() > 1) ? 'seconds' : 'second'}`;
 			}*/
-			const CD = global.secondsToDHMS(Math.abs(timer - currentDate));
+			const timeA = new Date(timer);
+			const timeB = new Date(currentDate);
+			
+			const CD = global.secondsToDHMS(Math.abs(timeA - timeB)/1000);
 			api.sendMessage(
 				textFormat('cmd', 'cmdUserCooldown', CD),
 				event.threadID,

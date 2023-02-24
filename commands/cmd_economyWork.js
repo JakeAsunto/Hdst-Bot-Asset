@@ -22,8 +22,16 @@ module.exports.run = async function ({ api, args, event, returns, textFormat, Pr
 	try {
 		const threadData = await Threads.getData(threadID);
 		const economy = threadData.economy;
+		const inventory = threadData.inventory;
 		
-		const expirationTime = (threadData.data.work_cooldown || economySystem.config.work_cooldown) * 1000; // 20 minutes default
+		if (!economy[senderID]) {
+			economy[senderID] = economySystem.userConfig;
+		}
+		if (!inventory[senderID]) {
+			inventory[senderID] = {};
+		}
+		
+		const expirationTime = (threadData.data.work_cooldown || economySystem.config.work_cooldown); // 20 minutes default
 		const userCooldown = economy[senderID].work_cooldown + expirationTime;
 		
 		if (dateNow < userCooldown) {

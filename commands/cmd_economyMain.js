@@ -5,18 +5,18 @@ module.exports.config = {
 	version: '1.0.1',
 	hasPermssion: 3,
 	commandCategory: 'economy',
-	usages: '\n[ currency | set-money | remove-money | work-cooldown | set-wage ] < ... >',
+	usages: '[ currency | add-money | remove-money | work-cooldown | set-wage ] < ... >',
 	description: 'Economy settings.',
 	credits: 'Hadestia',
 	cooldowns: 0,
-	aliases: [ 'lb' ],
+	aliases: [ 'eco' ],
 	envConfig: {
 		requiredArgument: 2,
 		groupCommandOnly: true
 	}
 }
 
-module.exports.run = async function ({ api, args, event, returns, textFormat, Threads }) {
+module.exports.run = async function ({ api, args, event, returns, textFormat, Prefix, Threads }) {
 	
 	const economySystem = require(`${__dirname}/../../json/economySystem.json`);
 	const { threadID, messageID, senderID } = event;
@@ -25,9 +25,27 @@ module.exports.run = async function ({ api, args, event, returns, textFormat, Th
 	const threadData = await Threads.getData(threadID);
 	const settings = threadData.data;
 	const economy = threadData.economy;
+	const inventory = threadData.inventory;
 	
 	const command = (args.shift()).toLowerCase();
-	const currency = settings.data.default_currency || economySystem.config.default_currency; 
+	const currency = settings.default_currency || economySystem.config.default_currency; 
+	
+	const recheckEconomy = (id) => {
+		if (!economy[id]) {
+			economy[id] = economySystem.userConfig;
+		}
+		if (!inventory[id]) {
+			inventory[id] = {};
+		}
+		return;
+	}
+	
+	const getUserName = (id, name) => {
+		const owner = await api.getUserInfoV2(id) || {};
+		const ownerName = await global.fancyFont.get((name && (name).split(' ')[0]) || (owner.name) ? (owner.name == 'Facebook User') ? owner.name : (owner.name).split(' ')[0] : 'Facebook User', 1);
+		return ownerName;
+	}
+	
 	
 	switch (command) {
 		////// CURRENCY /////
@@ -41,11 +59,51 @@ module.exports.run = async function ({ api, args, event, returns, textFormat, Th
 			break;
 			
 			
-		////// SET MONEY /////
-		case 'set-money':
+		////// ADD MONEY /////
+		case 'add-money':
+			if (args.length < 2) {
+				api.sendMessage(textFormat('error', 'errOccured', 'Must include the target user via mention or "me" followed by the amount to set.'), threadID, messageID);
+				break;
+			}
 			
+			let amount = (args.join(' ')).match(/\d+/g);
+			if (!amount) {
+				api.sendMessage(textFormat('error', 'errOccured', 'Invalid input, set an amount to set.'), threadID, messageID);
+				break;
+			} else if (Math.abs(parseInt(amount[0])) <= 0) {
+				api.sendMessage(textFormat('error', 'errOccured', 'Invalid amount, amount cannot be less than or equal to zero.'), threadID, messageID);
+				break;
+			}
+			
+			amount = Math.abs(parseInt(amount[0]));
+			
+			if (Object.keys(event.mentions).length > 0) {
+				const id = Object.keys(event.mentions)[0];
+				await recheckEconomy(id);
+				
+				economy[id].bank += amount;
+				api.sendMessage(textFormat('success', 'successfulFormat', `${currency}${amount.toLocaleString('en-US')} was added to ${getUserName(id, Object.values(event.mentions)[0].replace('@', ''))}'s bank.`), threadID, messageID);
+				break;
+				
+			} else if ((args[0]).toLowerCase() == 'me') {
+				await recheckEconomy(senderID);
+				
+				economy[senderID].bank += amount;
+				api.sendMessage(textFormat('success', 'successfulFormat', `${currency}${amount.toLocaleString('en-US')} was added to your bank.`), threadID, messageID);
+				break;
+				
+			} else {
+				api.sendMessage(textFormat('error', 'errOccured', 'Must include the target user via mention or "me" followed by the amount to set.'), threadID, messageID);
+				break;
+			}
+
 			break;
-			
+		
+		////// REMOVE MONEY /////
+		case 'remove-money': 
+		
+		
+			break;
 			
 		////// SET WAGE /////
 		case 'set-wage':
@@ -81,7 +139,7 @@ module.exports.run = async function ({ api, args, event, returns, textFormat, Th
 			break;
 			
 		////// SET WORK COOLDOWN /////
-		case 'set-work-cooldown':
+		case 'work-cooldown':
 			let seconds = (args.join(' ')).match(/\d+/g);
 			if (!seconds) {
 				api.sendMessage(textFormat('error', 'errOccured', 'Invalid input, cooldown must be a seconds.'), threadID, messageID);

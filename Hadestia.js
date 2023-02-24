@@ -118,11 +118,15 @@ global.secondsToDHMS = function (seconds) {
 	var m = Math.floor(seconds % 3600 / 60);
 	var s = Math.floor(seconds % 60);
 	
-	var dDisplay = d > 0 ? d + (d == 1 ? 'day, ' : 'days, ') : '';
-	var hDisplay = h > 0 ? h + (h == 1 ? 'hour, ' : 'hours, ') : '';
-	var mDisplay = m > 0 ? m + (m == 1 ? 'minute and ' : 'minutes and ') : '';
-	var sDisplay = s > 0 ? s + (s == 1 ? 'second': 'seconds') : '';
-
+	// seconds
+	var sDisplay = s > 0 ? s + (s == 1 ? ' second': ' seconds') : '';
+	
+	var mDisplay = m > 0 ? m + (m == 1 ? (s > 0) ? ' minute and ' : ' minute' : (s > 0) ? ' minutes and ' : ' minutes') : '';
+	
+	var hDisplay = h > 0 ? h + (h == 1 ? (m > 0) ? ((s > 0) ? ' hour, ' : ' hour and ') : ((s > 0) ? ' hour and ' : ' hour') : (m > 0) ? ((s > 0) ? ' hours, ' : ' hours and ') : ((s > 0) ? ' hours and ' : ' hours')) : '';
+	
+	var dDisplay = d > 0 ? d + (d == 1 ? (h > 0) ? ((m > 0) ? ' day, ' : ' day and ') : ((h > 0) ? ' day and ' : ' day') : (h > 0) ? ((m > 0) ? ' days, ' : ' days and ') : ((h > 0 ) ? ' days and ' : ' days')) : '';
+	
 	return dDisplay + hDisplay + mDisplay + sDisplay;
 }
 

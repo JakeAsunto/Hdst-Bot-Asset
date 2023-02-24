@@ -5,8 +5,8 @@
         "https://facebook.com/mensaherong.iantot",
         "This repository was linked to bot assets repository of Hadestia that include assets auto updater."
     ],
-    "VERSION": "5.9.10",
-    "CHANGELOGS": "- Add more work command responses.\n- Add economy command for setting. (Currently under beta testing).\n- Fix economy bugs & issues.",
+    "VERSION": "5.9.10.5",
+    "CHANGELOGS": "- Fix withdraw command.\n- Fix economy for Re-added member.\n- Add more options for economy command.",
     "MAIN": {
         "LICENSE-HADESTIA": {
             "path": "/"
@@ -94,7 +94,8 @@
         "cmd_economyBalance",
         "cmd_economyDeposit",
         "cmd_economyWithdraw",
-        "cmd_economyLeaderboard"
+        "cmd_economyLeaderboard",
+        "cmd_economyMain"
     ],
     "EVENTS": [
         "event_adminUpdate",

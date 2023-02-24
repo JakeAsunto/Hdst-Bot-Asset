@@ -39,7 +39,7 @@ module.exports.run = async function ({ api, args, alias, event, returns, textFor
 	if (!commandTypeValid(commandType)) return api.sendMessage(global.textFormat('group', 'groupCmdGroupInvalidCommandType', validTypes.join(' | ')), threadID, messageID);
 	
 	// get group data
-	const GROUP_DATA = (await Threads.getData(threadID)).data;
+	const GROUP_DATA = (await Threads.getData(threadID)).data;	
 	//console.log(GROUP_DATA)
 	// execute switch statement 
 	switch (commandType) {
