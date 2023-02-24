@@ -9,7 +9,10 @@ module.exports.config = {
 	description: 'Earn some money',
 	credits: 'Hadestia',
 	cooldowns: 0,
-	aliases: [ 'earn' ]
+	aliases: [ 'earn' ],
+	envConfig: {
+		groupCommandOnly: true
+	}
 }
 
 module.exports.run = async function ({ api, args, event, returns, textFormat, Prefix, Threads }) {
@@ -24,12 +27,12 @@ module.exports.run = async function ({ api, args, event, returns, textFormat, Pr
 		const economy = threadData.economy;
 		const inventory = threadData.inventory;
 		
-		if (!economy[senderID]) {
+		/*if (!economy[senderID]) {
 			economy[senderID] = economySystem.userConfig;
 		}
 		if (!inventory[senderID]) {
 			inventory[senderID] = {};
-		}
+		}*/
 		
 		const expirationTime = (threadData.data.work_cooldown || economySystem.config.work_cooldown); // 20 minutes default
 		const userCooldown = economy[senderID].work_cooldown + expirationTime;

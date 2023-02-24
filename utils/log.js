@@ -13,6 +13,9 @@ module.exports = (data, option) => {
         case "assets":
             console.log(chalk.bold.hex('#ffb400').bold('[ Assets ] » ') + chalk.hex('#ffb400')(data));
             break;
+        case "economy":
+        	console.log(chalk.bold.hex('#ffb400').bold('[ ECONOMY ] » ') + chalk.hex('#ffb400')(data));
+        	break;
         case "hl":
             console.log(chalk.bold.hex('#ff00a3').bold('━━━━━ » ') + chalk.hex('#ff00a3')(data));
             break;

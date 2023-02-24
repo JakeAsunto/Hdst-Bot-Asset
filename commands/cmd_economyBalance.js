@@ -38,12 +38,12 @@ module.exports.run = async function ({ api, args, event, returns, textFormat, Pr
 		}
 		ID = (!ID) ? senderID : ID;
 		
-		if (!economy[ID]) {
+		/*if (!economy[ID]) {
 			economy[ID] = economySystem.userConfig;
 		}
 		if (!inventory[ID]) {
 			inventory[ID] = {};
-		}
+		}*/
 		
 		const currency = threadData.data.default_currency || economySystem.config.default_currency;
 	

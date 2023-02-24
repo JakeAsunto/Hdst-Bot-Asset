@@ -683,7 +683,7 @@ async function onBot({ models: botModel }) {
 //========= Connecting to Database =========//
 
 (async () => {
-	
+
     try {
 
         await sequelize.authenticate();
