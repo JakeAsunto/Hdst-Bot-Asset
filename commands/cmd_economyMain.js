@@ -8,7 +8,7 @@ module.exports.config = {
 	usages: '[ currency | add-money | remove-money | work-cooldown | set-wage ] < ... >',
 	description: 'Economy settings.',
 	credits: 'Hadestia',
-	cooldowns: 0,
+	cooldowns: 60,
 	aliases: [ 'eco' ],
 	envConfig: {
 		requiredArgument: 2,
@@ -40,12 +40,15 @@ module.exports.run = async function ({ api, args, event, returns, textFormat, Pr
 		return;
 	}
 	
-	const getUserName = (id, name) => {
+	const getUserName = async (id, name) => {
 		const owner = await api.getUserInfoV2(id) || {};
 		const ownerName = await global.fancyFont.get((name && (name).split(' ')[0]) || (owner.name) ? (owner.name == 'Facebook User') ? owner.name : (owner.name).split(' ')[0] : 'Facebook User', 1);
 		return ownerName;
 	}
 	
+	const userMoneyToMuch = (id, toAdd = 0) => {
+		return (economy[id].hand + economy[id].bank + toAdd) > 1000000000000;
+	}
 	
 	switch (command) {
 		////// CURRENCY /////
@@ -81,13 +84,23 @@ module.exports.run = async function ({ api, args, event, returns, textFormat, Pr
 				const id = Object.keys(event.mentions)[0];
 				await recheckEconomy(id);
 				
+				if (userMoneyToMuch(id, amount)) {
+					api.sendMessage(textFormat('error', 'errOccured', 'The maximum amount of money for each user was 1 Billion.'), threadID, messageID);
+					break;
+				}
+				
 				economy[id].bank += amount;
-				api.sendMessage(textFormat('success', 'successfulFormat', `${currency}${amount.toLocaleString('en-US')} was added to ${getUserName(id, Object.values(event.mentions)[0].replace('@', ''))}'s bank.`), threadID, messageID);
+				api.sendMessage(textFormat('success', 'successfulFormat', `${currency}${amount.toLocaleString('en-US')} was added to ${await getUserName(id, Object.values(event.mentions)[0].replace('@', ''))}'s bank.`), threadID, messageID);
 				break;
 				
 			} else if ((args[0]).toLowerCase() == 'me') {
 				await recheckEconomy(senderID);
 				
+				if (userMoneyToMuch(senderID, amount)) {
+					api.sendMessage(textFormat('error', 'errOccured', 'The maximum amount of money for each user was 1 Billion.'), threadID, messageID);
+					break;
+				}
+
 				economy[senderID].bank += amount;
 				api.sendMessage(textFormat('success', 'successfulFormat', `${currency}${amount.toLocaleString('en-US')} was added to your bank.`), threadID, messageID);
 				break;
@@ -100,9 +113,9 @@ module.exports.run = async function ({ api, args, event, returns, textFormat, Pr
 			break;
 		
 		////// REMOVE MONEY /////
-		case 'remove-money': 
+		case 'remove-money':
 		
-		
+			
 			break;
 			
 		////// SET WAGE /////
@@ -145,9 +158,14 @@ module.exports.run = async function ({ api, args, event, returns, textFormat, Pr
 				api.sendMessage(textFormat('error', 'errOccured', 'Invalid input, cooldown must be a seconds.'), threadID, messageID);
 				break;
 			}
-			const cooldown = parseInt(seconds[0]);
+			const cooldown = parseInt(seconds[0]) * 1000;
 			const cdInText = global.secondsToDHMS(cooldown);
-			settings.work_cooldown = cooldown * 1000;
+			
+			if (cooldown < 300 || cooldown > 604800) {
+				api.sendMessage(textFormat('error', 'errOccured', 'Cooldown must not be greater than 5 minutes or greater than 7 days.'), threadID, messageID);
+				break;
+			}
+			settings.work_cooldown = cooldown;
 			
 			api.sendMessage(textFormat('success', 'successfulFormat', `Work command cooldown was set to: ${cdInText}.`), threadID, messageID);
 			break;

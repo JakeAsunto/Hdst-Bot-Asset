@@ -5,8 +5,8 @@
         "https://facebook.com/mensaherong.iantot",
         "This repository was linked to bot assets repository of Hadestia that include assets auto updater."
     ],
-    "VERSION": "5.9.10.5",
-    "CHANGELOGS": "- Fix withdraw command.\n- Fix economy for Re-added member.\n- Add more options for economy command.",
+    "VERSION": "5.9.10.7",
+    "CHANGELOGS": "- Add cooldowns for economy commands\n- Add minimum to maximum cooldown for setting work command per group.\n- Set maximum money for each user can have to 1 Billion.",
     "MAIN": {
         "LICENSE-HADESTIA": {
             "path": "/"

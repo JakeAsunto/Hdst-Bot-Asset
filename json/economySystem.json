@@ -7,7 +7,7 @@
         "slut_fail_probability": 0.5,
         "crime_fail_probability": 0.5,
         "rob_success_percentage": 0.2,
-        "work_cooldown": 1200
+        "work_cooldown": 1200000
     },
     "userConfig": {
         "hand": 0,

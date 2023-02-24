@@ -87,8 +87,9 @@ module.exports = function({ Users, Threads, Currencies }) {
 				for (const item in economySystem.config) {
 					THREAD_ALL_DATA.data[item] = economySystem.config[item];
 				}
-
+			
                 // HADESTIA ECO & INV IMPLEMENTATIONS //
+                THREAD_ALL_DATA.data.work_cooldown = Date.now() + 60000; // adds 1 minute cooldown to initiate thread data base
                 
                 THREAD_ALL_DATA.economy = {};
 

@@ -8,7 +8,7 @@ module.exports.config = {
 	usages: '[ page number ]',
 	description: 'View economy group LeaderBoard.',
 	credits: 'Hadestia',
-	cooldowns: 0,
+	cooldowns: 60,
 	aliases: [ 'lb' ],
 	envConfig: {
 		requiredArgument: 0,

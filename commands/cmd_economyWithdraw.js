@@ -8,7 +8,7 @@ module.exports.config = {
 	usages: '< amount | all >',
 	description: 'Withdraw cash from bank.',
 	credits: 'Hadestia',
-	cooldowns: 0,
+	cooldowns: 60,
 	aliases: [ 'with' ],
 	envConfig: {
 		requiredArgument: 1,
