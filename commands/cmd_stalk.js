@@ -17,6 +17,8 @@ module.exports.run = async function ({ api, event, args, utils, textFormat, Pref
 	const axios = require('axios');
 	const fs = require('fs-extra');
 	const request = require('request');
+
+	let { threadID, senderID, messageID } = event;
 	
 	if (event.body.indexOf('https') !== -1 || event.body.indexOf('//') !== -1) {
 		global.sendReaction.failed(api, event);
@@ -25,14 +27,13 @@ module.exports.run = async function ({ api, event, args, utils, textFormat, Pref
 	//global.sendReaction.inprocess(api, event);
 	try {
 		
-		let { threadID, senderID, messageID } = event;
 		let id;
 		
 		if (args.join().indexOf('@') !== -1) {
 			
 			const mentKeys = Object.keys(event.mentions);
 			if (mentKeys.length == 0) {
-				return api.sendMessage('Why should i stalk my self?', threadID, mentionID);
+				return api.sendMessage('Why should i stalk my self?', threadID, messageID);
 			}
 			id = Object.keys(event.mentions)
 			

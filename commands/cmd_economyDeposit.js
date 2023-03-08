@@ -25,12 +25,16 @@ module.exports.run = async function ({ api, args, event, returns, textFormat, Pr
 		
 		const threadData = await Threads.getData(threadID);
 		const economy = threadData.economy;
+
+		if (!economy[senderID]) {
+			economy[senderID] = economySystem.userConfig;
+		}
 		
 		const currency = threadData.data.default_currency || economySystem.config.default_currency;
 		const moneyOnHand = economy[senderID].hand;
 		const moneyOnHandText = (moneyOnHand).toLocaleString('en-US');
 		
-		if (moneyOnHand <= 0) return api.sendMessage(textFormat('error', 'errOccured', 'You don\'t have any money to deposit.'), threadID, messageID);
+		if (moneyOnHand <= 0) return api.sendMessage(textFormat('error', 'errOccured', 'You don\'t have any money to deposit.'), threadID, global.autoUnsend, messageID);
 		
 		if ((args[0]).toLowerCase() == 'all') {
 			// transfer cash to bank
@@ -43,7 +47,7 @@ module.exports.run = async function ({ api, args, event, returns, textFormat, Pr
 			if (!amount) return returns.invalid_usage();
 			amount = Math.abs(amount); // make negative numbers as positive
 
-			if (amount > moneyOnHand) return api.sendMessage(textFormat('error', 'errOccured', `You don't have that much money to deposit. You currently have ${currency}${moneyOnHandText} on hand.`), threadID, messageID);
+			if (amount > moneyOnHand) return api.sendMessage(textFormat('error', 'errOccured', `You don't have that much money to deposit. You currently have ${currency}${moneyOnHandText} on hand.`), threadID, global.autoUnsend, messageID);
 			
 			economy[senderID].bank += amount;
 			economy[senderID].hand -= amount;

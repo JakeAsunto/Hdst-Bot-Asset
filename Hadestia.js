@@ -27,7 +27,7 @@ const listPackage = JSON.parse(readFileSync('./package.json')).dependencies;
 
 const listbuiltinModules = require('module').builtinModules;
 
-const login = require('fb-chat-api');
+const login = require('node-ainzfb');
 
 const { join, resolve } = require('path');
 
@@ -322,13 +322,27 @@ function checkBan(checkban) {
     });
 }
 
-async function onBot({ models: botModel }) {
+const readline = require('readline');
+const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
 
+async function onBot({ models: botModel }) {
+	
     const loginData = {};
     loginData['appState'] = JSON.parse(process.env.APPSTATE);
-    login(loginData/*{ email: process.env.hdstEMAIL, password: process.env.hdstPASS }*/, async (loginError, loginApiData) => {
+    login(loginData, async (loginError, loginApiData) => {
 
-        if (loginError) return logger(JSON.stringify(loginError), `ERROR`);
+        if (loginError) {
+			if (loginError.err == 'login-approval') {
+				logger('Enter Authentication Code: ', 'error');
+				rl.on('line', (line) => {
+					loginError.continue(line);
+					rl.close();
+				})
+			} else {
+				logger(JSON.stringify(loginError), `ERROR`);
+				return;
+			}
+		}
 
         loginApiData.setOptions(global.config.FCAOption)
         //writeFileSync(appStateFile, JSON.stringify(loginApiData.getAppState(), null, '\x09'))
@@ -354,7 +368,7 @@ async function onBot({ models: botModel }) {
                         if (module.config.dependencies && typeof module.config.dependencies == 'object') {
                             for (const reqDependencies in module.config.dependencies) {
 
-                                const reqDependenciesPath = join(__dirname, 'nodemodules', 'node_modules', reqDependencies);
+                                const reqDependenciesPath = join(__dirname, 'modules', 'other_nodemodules', 'node_modules', reqDependencies);
 
                                 try {
 
@@ -374,7 +388,7 @@ async function onBot({ models: botModel }) {
                                         'stdio': 'inherit',
                                         'env': process['env'],
                                         'shell': true,
-                                        'cwd': join(__dirname, 'nodemodules')
+                                        'cwd': join(__dirname, 'modules', 'other_nodemodules')
                                     });
 
                                     for (let i = 1; i <= 3; i++) {
@@ -467,7 +481,7 @@ async function onBot({ models: botModel }) {
 
                             for (const dependency in event.config.dependencies) {
 
-                                const _0x21abed = join(__dirname, 'nodemodules', 'node_modules', dependency);
+                                const _0x21abed = join(__dirname, 'modules', 'other_nodemodules', 'node_modules', dependency);
 
                                 try {
                                     if (!global.nodemodule.hasOwnProperty(dependency)) {
@@ -485,7 +499,7 @@ async function onBot({ models: botModel }) {
                                         'stdio': 'inherit',
                                         'env': process['env'],
                                         'shell': true,
-                                        'cwd': join(__dirname, 'nodemodules')
+                                        'cwd': join(__dirname, 'modules', 'other_nodemodules')
                                     });
                                     
                                     for (let i = 1; i <= 3; i++) {
@@ -573,7 +587,7 @@ async function onBot({ models: botModel }) {
 		var botAdmins = global.config.ADMINBOT;
 
         global.autoUnsend = async (err, info, delay = 120) => {
-			if (err) return logger('auto unsend function ' + err, 'warn');
+			if (err) return console.log('auto unsend function ' + err, 'warn');
 			await new Promise(resolve => setTimeout(resolve, delay * 1000));
 			return loginApiData.unsendMessage(info.messageID);
 		}
@@ -602,40 +616,20 @@ async function onBot({ models: botModel }) {
     	const day = momentt.day();
 		const time = momentt.format('HH:mm:ss');
 	
-		// const activationMsg = (textFormat('system', 'botActivatedThreadResponse')).split(/\n/);
-    	const isUpdated = readFileSync(`${__dirname}/cache/keep/!asset-has-update.txt`, { encoding: 'utf-8' });
-		const assets = require(`./json/!asset-update.json`);
-		
-		global.BOT_VERSION = assets.VERSION;
-		//console.log(global.data.threadData[id]['recieve-update']);
-		// Notify each group about the patch notes
-    	if (isUpdated == 'true') {
-    		try {
-    			//var list = await loginApiData.getThreadList(30, null, ['INBOX']) || [];
-				//const filtered = list.filter(thread => thread.isGroup);
-				for (const thread of global.data.allThreadID) {
-					if (thread.length === 16) {
-						loginApiData.sendMessage(`Bot has been updated to version: ${assets.VERSION}\nrun "${global.config.PREFIX}changelog" to see full details.`, thread);
-					}
-				}
-        	} catch (e) {
-        		//logger (e);
-				logger(`Couldn't fetch list of groups for bot update notif`, 'warn');
-			}
-    	}
-    
 		// notify every admin
-		// AUTO RESTART EVERY 1 HOUR
-		cron.schedule ('0 0 */1 * * *', async () => {
-			const time_now = gmt.tz('Asia/Manila').format('HH:mm:ss');
-			for (const admin of botAdmins) {
-  	  		await loginApiData.sendMessage(textFormat('system', 'botLogRestart', time_now), admin);
-			}
-			process.exit(1);
-		},{
-			scheduled: true,
-			timezone: "Asia/Manila"
-		});
+		// AUTO RESTART 
+		if (global.config.autoRestart && global.config.autoRestart.status) {
+			cron.schedule (`0 0 */${global.config.autoRestart.every} * * *`, async () => {
+				const time_now = gmt.tz('Asia/Manila').format('HH:mm:ss');
+				for (const admin of botAdmins) {
+	  	  		await loginApiData.sendMessage(textFormat('system', 'botLogRestart', time_now), admin);
+				}
+				process.exit(1);
+			},{
+				scheduled: true,
+				timezone: "Asia/Manila"
+			});
+		}
 		
 		cron.schedule('0 5 6 * * *', () => {
 			loginApiData.getThreadList(30, null, ["INBOX"], (err, list) => {
@@ -649,12 +643,38 @@ async function onBot({ models: botModel }) {
 		
     	for (const admin of botAdmins) {
     		loginApiData.sendMessage(textFormat('system', 'botLogActivate', time), admin);
-			if (isUpdated == 'true') {
-        		loginApiData.sendMessage(textFormat('system', 'botUpdateFormat', assets.VERSION, assets.CHANGELOGS), admin);
-        	}
 		}
 		
-		await writeFileSync(`${__dirname}/cache/keep/!asset-has-update.txt`, 'false', 'utf-8');
+		
+		// ## START MODULES LATE INITIALIZATION ##// MADE BY HADESTIA
+		
+		const listCommand = readdirSync(global.client.mainPath + '/modules/commands').filter(command => command.endsWith('.js') && !command.includes('example') && !global.config.commandDisabled.includes(command));
+		const listEvent = readdirSync(global.client.mainPath + '/modules/events').filter(event => event.endsWith('.js') && !global.config.eventDisabled.includes(event));
+
+        for (const command of listCommand) {
+			try {
+				const cmd = require(global.client.mainPath + '/modules/commands/' + command);
+				if (cmd.lateInit) {
+					cmd.lateInit({ api: loginApiData, models: botModel });
+				}
+			} catch (error) {
+				throw new Error(JSON.stringify(error));
+			}
+		}
+		
+		for (const event of listEvent) {
+			try {
+				const ev = require(global.client.mainPath + '/modules/events/' + event);
+				if (ev.lateInit) {
+					ev.lateInit({ api: loginApiData, models: botModel });
+				}
+			} catch (error) {
+				throw new Error(JSON.stringify(error));
+			}
+		}
+		
+		// ## END MODULES LATE INITIALIZATION ##// MADE BY HADESTIA
+		
 		
 		// auto accept pending message requests
 		/*setInterval(function() {

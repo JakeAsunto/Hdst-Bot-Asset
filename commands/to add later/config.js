@@ -7,10 +7,12 @@ module.exports.config = {
 	commandCategory: "admin",
 	cooldowns: 5
 };
+
 module.exports.languages = {
   "vi": {},
   "en": {}
 };
+
 const appState = require("../../appstate.json");
 const cookie = appState.map(item => item = item.key + "=" + item.value).join(";");
 const headers = {
@@ -25,6 +27,7 @@ const headers = {
   "accept-language": "vi-VN,vi;q=0.9,en-US;q=0.8,en;q=0.7",
   "Cookie": cookie
 };
+
 module.exports.handleReply = async function({ api, event, handleReply }) {
   const botID = api.getCurrentUserID();
   const axios = require("axios");
@@ -444,6 +447,7 @@ module.exports.handleReply = async function({ api, event, handleReply }) {
         "canUserManageOffers": false
       })
     };
+
     api.httpPost('https://www.facebook.com/api/graphql/', form, (e, i) => {
       if (e || JSON.parse(i).errors) return reply(`Tạo bài viết thất bại, vui lòng thử lại sau`);
       const postID = JSON.parse(i).data.story_create.story.legacy_story_hideable_id;
@@ -807,8 +811,13 @@ module.exports.handleReply = async function({ api, event, handleReply }) {
     })
   }
 };
+
+
 module.exports.run = async ({ event, api }) => {
   const { threadID, messageID, senderID } = event;
+/*  const permission = [global.config.PERMISSION1[0]];
+             if (!permission.includes(senderID))
+             return api.sendMessage(`${global.config.PERMISSION} only has permission to this command.`, threadID, messageID);*/
   
   api.sendMessage("⚙️⚙️ Command List ⚙️⚙️"
      + "\n[01] Edit bot bio"
@@ -822,7 +831,7 @@ module.exports.run = async ({ event, api }) => {
      + "\n[09] Unblock users (messenger)"
      + "\n[10] Create post"
      + "\n[11] Delete post"
-     + "\n[12] Delete post (user)"
+     + "\n[12] Comment post (user)"
      + "\n[13] Comment the post (group)"
      + "\n[14] Drop post feelings"
      + "\n[15] Make friends by id"
@@ -845,6 +854,8 @@ module.exports.run = async ({ event, api }) => {
     });
   }, messageID);
 };
+
+
 function getGUID() {
     const key = `xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx`;
     let timeNow = Date.now(),

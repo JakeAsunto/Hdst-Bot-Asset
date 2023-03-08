@@ -21,8 +21,8 @@ module.exports.handleMessageReply = async function ({ api, event }) {
 	if (event.type === 'message_reply' && !event.body.startsWith(global.config.PREFIX)) {
 		
 		const { messageReply, threadID, messageID, senderID, body } = event;
-		
-		if (messageReply.senderID !== global.botUserID) return;
+		//console.log(messageReply);
+		if (!messageReply.senderID || messageReply.senderID !== global.botUserID) return;
 		
 		// IF this thread was the receiver of the sent anonymous message
 		if (messageReply.body.indexOf('𝗔𝗻𝗼𝗻𝘆𝗺𝗼𝘂𝘀 𝗠𝗲𝘀𝘀𝗮𝗴𝗲') !== -1 && messageReply.body.indexOf('replied to your anonymous message.') === -1) {
@@ -95,6 +95,8 @@ module.exports.handleMessageReply = async function ({ api, event }) {
 				// get the info of the user who replied to this anonymous message.
 				const target_data = await api.getUserInfoV2(recipient_senderID); // expecting this was a direct message
 				senderName = target_data.name || target_data.username || recipient_senderID;
+			} else {
+				senderName = recipient_name.join(' ');
 			}
 
 			const messageBody = {

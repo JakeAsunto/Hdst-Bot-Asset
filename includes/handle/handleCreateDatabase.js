@@ -76,6 +76,7 @@ module.exports = function({ Users, Threads, Currencies }) {
                 THREAD_ALL_DATA.threadInfo = dataThread;
 
                 THREAD_ALL_DATA.data = {
+                	'recieve_update': true,
 					'auto_resend_msg': true,
 					'auto_response_listener': true,
 					'antiout': true,
@@ -88,21 +89,25 @@ module.exports = function({ Users, Threads, Currencies }) {
 					THREAD_ALL_DATA.data[item] = economySystem.config[item];
 				}
 			
-                // HADESTIA ECO & INV IMPLEMENTATIONS //
-                THREAD_ALL_DATA.data.work_cooldown = Date.now() + 60000; // adds 1 minute cooldown to initiate thread data base
+                // HADESTIA IMPLEMENTATIONS //
                 
                 THREAD_ALL_DATA.economy = {};
 
 				THREAD_ALL_DATA.inventory = {};
+				
+				THREAD_ALL_DATA.afk = {};
 
 				//console.log(threadIn4);
 				
                 for (singleData of threadIn4.userInfo) {
 					
 					// sets each member a initial data for economy & inventory
-					THREAD_ALL_DATA.economy[String(singleData.id)] = economySystem.userConfig;
-					// "" nextWorkAvail -- next available time to do work commamd
-					// "" nextRobAvail -- next available time to do rob command
+					const userEco = economySystem.userConfig;
+					// update user work cooldown to 1 minute so that data base for this group would be created first
+					userEco.work_cooldown = Date.now() + 60000;
+					
+					THREAD_ALL_DATA.economy[String(singleData.id)] = userEco;
+					
 					
 					THREAD_ALL_DATA.inventory[String(singleData.id)] = {};
 					

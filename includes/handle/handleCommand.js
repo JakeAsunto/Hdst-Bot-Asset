@@ -24,7 +24,7 @@ module.exports = function({ api, models, Users, Threads, Currencies }) {
 
         const { allowInbox, PREFIX, ADMINBOT, DeveloperMode, adminOnly } = global.config;
 
-        const { userBanned, threadBanned, threadInfo, threadData, commandBanned } = global.data;
+        const { userBanned, threadBanned, allThreadID, threadInfo, threadData, commandBanned } = global.data;
 
         const { commands, commandAliases, cooldowns } = global.client;
 
@@ -197,10 +197,20 @@ module.exports = function({ api, models, Users, Threads, Currencies }) {
 				}
 			}
 		}
-		
-        var threadInfoo = (threadInfo.get(threadID) || await Threads.getInfo(threadID));
-		var is_admin_bot = ADMINBOT.includes(senderID.toString());
-		var is_admin_group = threadInfoo.adminIDs.find(el => el.id == senderID);
+		try {
+        	var threadInfoo = (threadInfo.get(threadID) || await Threads.getInfo(threadID));
+			var is_admin_bot = ADMINBOT.includes(senderID.toString());
+			var is_admin_group = threadInfoo.adminIDs.find(el => el.id == senderID);
+		} catch (err) {
+			try {
+				const index = allThreadID.indexOf(event.threadID);
+				(index !== -1) ? (global.data.allThreadID).splice(index, 1) : '';
+				await Threads.delData(event.threadID);
+			} catch (e) {
+				
+			}
+			return;
+		}
 		
 		var cmdPerm = command.config.hasPermssion;
 		var requiredArgs = (command.config.envConfig) ? command.config.envConfig.requiredArgument || 0 : 0;
@@ -348,11 +358,12 @@ module.exports = function({ api, models, Users, Threads, Currencies }) {
 			returns.user_in_cooldown = userInCooldown;
 			
 			returns.remove_usercooldown = function () {
-				timestamps.delete(senderID);
+				try { timestamps.delete(senderID); } catch {}
 				//return END_TYPING && END_TYPING();
 			}
 			
 			returns.invalid_usage = function () {
+				returns.remove_usercooldown();
 				global.sendReaction.failed(api, event);
 				api.sendMessage(
 					textFormat('cmd', 'cmdWrongUsage', `\n${PREFIX_FINAL}${command.config.name} ${command.config.usages}\nAlternatively you can use "${PREFIX_FINAL}help ${command.config.name}" for more information.`),

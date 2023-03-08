@@ -18,14 +18,14 @@ module.exports.config = {
 module.exports.run = async function ({ api, args, event, returns, textFormat, Prefix, Threads }) {
 
 	const economySystem = require(`${__dirname}/../../json/economySystem.json`);
-
+	const leaderboard = require('./cmd_economyLeaderboard.js');
+	
 	const { threadID, messageID, senderID } = event;
 	
 	try {
 		const threadData = await Threads.getData(threadID);
 		const economy = threadData.economy;
-		const inventory = threadData.inventory;
-
+		
 		let ID, NAME;
 		// if message reply
 		if (event.type == 'message_reply') {
@@ -38,12 +38,13 @@ module.exports.run = async function ({ api, args, event, returns, textFormat, Pr
 		}
 		ID = (!ID) ? senderID : ID;
 		
-		/*if (!economy[ID]) {
+		if (!economy[ID]) {
 			economy[ID] = economySystem.userConfig;
+			await Threads.setData(threadID, { economy });
 		}
-		if (!inventory[ID]) {
-			inventory[ID] = {};
-		}*/
+		
+		// GET CURRENT USER LEADERBOARD POSITION
+		const leaderboards = await leaderboard.sortLeaderboard(ID, economy);
 		
 		const currency = threadData.data.default_currency || economySystem.config.default_currency;
 	
@@ -54,7 +55,7 @@ module.exports.run = async function ({ api, args, event, returns, textFormat, Pr
 		const formatOnBank = (economy[ID].bank).toLocaleString('en-US');
 		const formatTotal = (economy[ID].hand + economy[ID].bank).toLocaleString('en-US');
 		
-		return api.sendMessage(textFormat('economy', 'cmdBalance', ownerName, currency, formatOnHand, formatOnBank, formatTotal), threadID, messageID);
+		return api.sendMessage(textFormat('economy', 'cmdBalance', ownerName, leaderboards.userPosition, currency, formatOnHand, formatOnBank, formatTotal), threadID, messageID);
 		
 	} catch (err) {
 		returns.remove_usercooldown();

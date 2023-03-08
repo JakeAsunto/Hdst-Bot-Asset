@@ -17,7 +17,7 @@ module.exports.run = async function ({api, args, event, textFormat}) {
 	
 	const message = args.join(' ');
 	const sender = await api.getUserInfoV2(event.senderID);
-	const group = (event.isGroup) ? await global.data.threadInfo.get(threadID) : {};
+	const group = (event.isGroup) ? await global.data.threadInfo.get(event.threadID) : {};
 	
 	for (const admin of global.config.ADMINBOT) {
 		await api.sendMessage(

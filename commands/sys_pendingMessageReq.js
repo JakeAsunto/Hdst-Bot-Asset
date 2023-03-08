@@ -3,7 +3,7 @@ module.exports.config = {
 	version: '1.2.3',
 	credits: 'Hadestia',
 	hasPermssion: 2,
-	usages: '< thread | user >',
+	usages: '< group | user >',
 	replyUsages: '< c | cancel > < all | position | [positions] >\n< a | accept > < all | position | [positions] >',
 	description: 'Manage bot\'s pending messages',
 	commandCategory: 'system',
@@ -22,7 +22,7 @@ module.exports.handleReply = async function({ api, event, returns, handleReply }
     }
     
     const { body, threadID, messageID } = event;
-    let items = [];
+    const items = [];
     
     const args = body.split(' ');
     const mode = (args.shift()).toLowerCase();
@@ -73,8 +73,13 @@ module.exports.handleReply = async function({ api, event, returns, handleReply }
 		}
 		if (items.length != 0) {
 			if (seeLog) {
+				let msg = '';
+				for (const name of items) {
+					msg += `${name}\n`;
+				}
+			
 				api.sendMessage(
-					global.textFormat('system', 'botMessagePendingRefused', (handleReply.isGroup) ? ((items.length > 1) ? 'Groups' : 'Group') : ((items.length > 1) ? 'Users' : 'User'), items.join('\n')),
+					global.textFormat('system', 'botMessagePendingRefused', (handleReply.isGroup) ? ((items.length > 1) ? 'Groups' : 'Group') : ((items.length > 1) ? 'Users' : 'User'), msg),
 					threadID, messageID
 				);
 			}
@@ -114,8 +119,12 @@ module.exports.handleReply = async function({ api, event, returns, handleReply }
 		}
 		if (items.length != 0) {
 			if (seeLog) {
+				let msg = '';
+				for (const name of items) {
+					msg += `${name}\n`;
+				}
 				api.sendMessage(
-					global.textFormat('system', 'botMessagePendingApproved', (handleReply.isGroup) ? ((items.length > 1) ? 'Groups' : 'Group') : ((items.length > 1) ? 'Users' : 'User'), items.join('\n')),
+					global.textFormat('system', 'botMessagePendingApproved', (handleReply.isGroup) ? ((items.length > 1) ? 'Groups' : 'Group') : ((items.length > 1) ? 'Users' : 'User'), msg),
 					threadID, messageID
 				);
 			}
@@ -153,7 +162,7 @@ module.exports.run = async function({ api, args, event, returns, textFormat }) {
     
     var msg_item = '', index = 0;
 	
-	if (!['thread', 'user'].includes(mode)) return returns.invalid_usage();
+	if (!['thread', 'group', 'user'].includes(mode)) return returns.invalid_usage();
 	
     try {
 		var spam = await api.getThreadList(100, null, ['OTHER']) || [];

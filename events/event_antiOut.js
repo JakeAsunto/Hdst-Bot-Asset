@@ -8,15 +8,13 @@ module.exports.config = {
 
 module.exports.run = async function ({ event, api, Threads, Users }) {
 	
-	let threadData = await Threads.getData(event.threadID);
-	
-	// will update the threadData if user left the group and anti out was turned off
-	if (!data.antiout) {
-		return removeUserEconomy(event.logMessageData.leftParticipantFbId);
-	};
+	const threadData = await Threads.getData(event.threadID);
+	const data = threadData.data;
 	
 	if (event.logMessageData.leftParticipantFbId == api.getCurrentUserID()) {
 		try {
+			const index = (global.data.allThreadID).indexOf(event.threadID);
+			(index !== -1) ? (global.data.allThreadID).splice(index, 1) : '';
 			await Threads.delData(event.threadID);
 		} catch {}
 		return;
@@ -25,7 +23,7 @@ module.exports.run = async function ({ event, api, Threads, Users }) {
 	const name = global.data.userName.get(event.logMessageData.leftParticipantFbId) || await Users.getNameUser(event.logMessageData.leftParticipantFbId);
 	const type = (event.author == event.logMessageData.leftParticipantFbId) ? 'self-separation' : 'kicked' ;
  
-	if (type == 'self-separation') {
+	if (type == 'self-separation' && data.antiout) {
 		
 		try {
 			api.addUserToGroup(
@@ -33,7 +31,7 @@ module.exports.run = async function ({ event, api, Threads, Users }) {
 				event.threadID,
 				(error, info) => {
 					if (error) {
-						removeUserEconomy(event.logMessageData.leftParticipantFbId);
+						//removeUserEconomy(event.logMessageData.leftParticipantFbId);
     					return api.sendMessage(global.textFormat('group', 'groupAntiOutFailed', name), event.threadID)
 					}
 					api.sendMessage(global.textFormat('group', 'groupAntiOutSuccess', name), event.threadID);
@@ -49,16 +47,5 @@ module.exports.run = async function ({ event, api, Threads, Users }) {
 			global.textFormat('group', 'groupAntiOutKicked', name),
 			event.threadID
 		);
-		removeUserEconomy(event.logMessageData.leftParticipantFbId);
-	}
-	
-	
-	async function removeUserEconomy (id) {
-		const economy = threadData.economy;
-		const inventory = threadData.inventory;
-		economy[id] = null;
-		inventory[id] = null;
-		
-		await Threads.setData(event.threadID, { economy, inventory });
 	}
 }

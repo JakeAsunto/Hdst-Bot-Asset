@@ -100,6 +100,13 @@ module.exports.get = async function (text, style) {
 			reference.fonts.bold_medieval_small,
 			reference.fonts.bold_medieval_number
 		);
+	} else if (styleNum == 6 || style == 'thin-font1') {
+		return replaceEachChar(
+			text,
+			reference.fonts.thin_font_1_caps,
+			reference.fonts.thin_font_1_small,
+			reference.fonts.thin_font_1_number
+		);
 	} else {
 		return textFormat('cmd', 'cmdFontNotFoundFont');
     }

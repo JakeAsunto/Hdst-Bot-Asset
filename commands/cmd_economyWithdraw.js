@@ -26,11 +26,15 @@ module.exports.run = async function ({ api, args, event, returns, textFormat, Pr
 		const threadData = await Threads.getData(threadID);
 		const economy = threadData.economy;
 		
+		if (!economy[senderID]) {
+			economy[senderID] = economySystem.userConfig;
+		}
+		
 		const currency = threadData.data.default_currency || economySystem.config.default_currency;
 		const moneyOnBank = economy[senderID].bank;
 		const moneyOnBankText = (moneyOnBank).toLocaleString('en-US');
 
-		if (moneyOnBank <= 0) return api.sendMessage(textFormat('error', 'errOccured', `You don\'t have any money to withdraw. You currently have ${currency}${moneyOnBankText} in the bank.`), threadID, messageID);
+		if (moneyOnBank <= 0) return api.sendMessage(textFormat('error', 'errOccured', `You don\'t have any money to withdraw. You currently have ${currency}${moneyOnBankText} in the bank.`), threadID, global.autoUnsend, messageID);
 		
 		if ((args[0]).toLowerCase() == 'all') {
 			// withdraw all from bank
@@ -43,7 +47,7 @@ module.exports.run = async function ({ api, args, event, returns, textFormat, Pr
 			if (!amount) return returns.invalid_usage();
 			amount = Math.abs(amount); // make negative numbers as positive
 			
-			if (amount > moneyOnBank) return api.sendMessage(textFormat('error', 'errOccured', `You don't have that much money to withdraw. You currently have ${currency}${moneyOnBankText} in the bank.`), threadID, messageID);
+			if (amount > moneyOnBank) return api.sendMessage(textFormat('error', 'errOccured', `You don't have that much money to withdraw. You currently have ${currency}${moneyOnBankText} in the bank.`), threadID, global.autoUnsend, messageID);
 			// withdraw certain amount from bank
 			economy[senderID].bank -= amount;
 			economy[senderID].hand += amount;

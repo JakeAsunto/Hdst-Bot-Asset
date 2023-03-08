@@ -9,6 +9,56 @@ module.exports.config = {
 	cooldowns: 30
 }
 
+module.exports.lateInit = async function ({ api, models }) {
+	
+	const { readFileSync, writeFileSync } = require('fs-extra');
+	
+	const Threads = require(`${__dirname}/../../includes/controllers/threads`)({ models, api });
+    const isUpdated = readFileSync(`${__dirname}/../../cache/keep/!asset-has-update.txt`, { encoding: 'utf-8' });
+	const assets = require(`${__dirname}/../../json/!asset-update.json`);
+	const botAdmins = global.config.ADMINBOT;
+
+	global.BOT_VERSION = assets.VERSION;
+	//console.log(global.data.threadData[id]['recieve-update']);
+	// Notify each group about the patch notes
+	if (isUpdated == 'true') {
+    	try {
+			for (const thread of global.data.allThreadID) {
+				try {
+					var data = (await Threads.getData(thread)).data;
+				} catch {
+					var data = {};
+				}
+				const idIndex = (global.data.allThreadID).indexOf(thread);
+				
+				if (data.recieve_update) {
+					api.sendMessage(
+						`Bot has been updated to version: ${assets.VERSION}\nrun "${global.config.PREFIX}changelog" to see full details.\n\nYou can also use "${global.config.PREFIX}changelog set" to turn on/off this update notification.`,
+						thread,
+						async (err) => {
+							// if this fails that means its an old thread data
+							// that probably bot are not a member anymore
+							if (err) {
+								(idIndex !== -1) ? (global.data.allThreadID).slice(idIndex, 1) : '';
+								await Threads.delData(event.threadID);
+							}
+						}
+					);
+				}
+			}
+			// notify admins too
+			for (const admin of botAdmins) {
+				api.sendMessage(global.textFormat('system', 'botUpdateFormat', assets.VERSION, assets.CHANGELOGS), admin);
+			}
+		} catch (e) {
+        	//logger (e);
+			console.log(`BOT update notif: ${e}`, 'warn');
+		}
+	}
+	
+	await writeFileSync(`${__dirname}/../../cache/keep/!asset-has-update.txt`, 'false', 'utf-8');
+}
+
 module.exports.run = async function ({ api, args, event, textFormat, Threads }) {
 	
 	const { threadID, messageID } = event;
@@ -20,7 +70,7 @@ module.exports.run = async function ({ api, args, event, textFormat, Threads }) 
 		}
 		
 		// if has argument and not GC
-		if (threadID.length < 16) {
+		if (!event.isGroup) {
 			return api.sendMessage(textFormat('system', 'botUpdateSettingOnlyGC'), threadID, messageID);
 		}
 		

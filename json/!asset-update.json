@@ -5,8 +5,8 @@
         "https://facebook.com/mensaherong.iantot",
         "This repository was linked to bot assets repository of Hadestia that include assets auto updater."
     ],
-    "VERSION": "5.9.11",
-    "CHANGELOGS": "- Fix and make more reliable initialization/deletion of economy for each user.",
+    "VERSION": "5.10.0",
+    "CHANGELOGS": "Im tired of stating what changes i made",
     "MAIN": {
         "LICENSE-HADESTIA": {
             "path": "/"
@@ -104,6 +104,7 @@
         "event_antiOut",
         "event_botJoined",
         "event_botLogs",
-        "event_economyUIO"
+        "event_economyUIO",
+        "event_joinNoti.js"
     ]
 }

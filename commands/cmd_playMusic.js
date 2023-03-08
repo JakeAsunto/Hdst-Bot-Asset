@@ -24,9 +24,11 @@ module.exports.handleReply = async function ({ api, event, returns, handleReply 
     const axios = require('axios');
     const { body, threadID, messageID, senderID } = event;
     const { createReadStream, unlinkSync, statSync } = require("fs-extra");
-    let selection = parseInt(body.split(' ')[0]);
+    let selection = body.match(/\d+/g);
     
-    if (!selection || selection < 1 || selection > handleReply.results.length) return returns.invalid_reply_syntax();
+    if (!selection || Math.abs(parseInt(selection[0])) < 1 || Math.abs(parseInt(selection[0])) > (handleReply.results).length) return returns.invalid_reply_syntax();
+    
+    selection = Math.abs(parseInt(selection[0]));
     
     try {
     	
@@ -50,9 +52,8 @@ module.exports.handleReply = async function ({ api, event, returns, handleReply 
 				global.sendReaction.success(api, { messageID: handleReply.requestMsgID });
 				// Also for the selection
 				global.sendReaction.success(api, event);
-				return unlinkSync(path);
-			} },
-			messageID
+			} try { return unlinkSync(path) } catch {} },
+			handleReply.requestMsgID
 		);
 		return returns.delete_data();
     }

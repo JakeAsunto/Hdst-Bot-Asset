@@ -24,9 +24,9 @@ module.exports.run = async function({ api, event, Threads }) {
 		case 'log:subscribe':
 			for (const user of event.logMessageData.addedParticipants) {
 				if (user.userFbId != global.botUserID) {
-					economy[user.userFbId] = economySystem.userConfig;
+					economy[user.userFbId] = JSON.parse(JSON.stringify(economySystem.userConfig));
 					inventory[user.userFbId] = {};
-					global.logger.log(`Initialize Economy for user ${user.userFbId}`, 'economy');
+					global.logger(`Initialize Economy for user ${user.userFbId}`, 'economy');
 				}
 			}
 			break;
@@ -34,7 +34,7 @@ module.exports.run = async function({ api, event, Threads }) {
 			if (event.logMessageData.leftParticipantFbId != global.botUserID) {
 				delete economy[event.logMessageData.leftParticipantFbId];
 				delete inventory[event.logMessageData.leftParticipantFbId];
-				global.logger.log(`Delete Economy for user ${event.logMessageData.leftParticipantFbId}`, 'economy');
+				global.logger(`Delete Economy for user ${event.logMessageData.leftParticipantFbId}`, 'economy');
 			}
 			break;
 		default:

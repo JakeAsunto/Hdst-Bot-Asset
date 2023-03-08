@@ -6,6 +6,7 @@ module.exports.config = {
 	credits: 'Hadestia',
 	commandCategory: 'system',
 	usages: '<command>',
+	aliases: [ 'sh' ],
 	cooldowns: 30,
 	hidden: true,
 	dependencies: {

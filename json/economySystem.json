@@ -1,8 +1,8 @@
 {
     "config": {
         "default_currency": "🪙",
-        "work_min_range": 500,
-        "work_max_range": 1000,
+        "work_min_wage": 500,
+        "work_max_wage": 1000,
         "rob_fail_probability": 0.5,
         "slut_fail_probability": 0.5,
         "crime_fail_probability": 0.5,
@@ -44,7 +44,8 @@
         "You steal your neighbours cat and sell it for ${salary}.",
         "You kill someone and sell their organs for ${salary}.",
         "You Stole a T-55 Tank and sold it for ${salary}.",
-        "You help an old lady cross the road, ${salary} falls out of her purse and you take it!"
+        "You help an old lady cross the road, ${salary} falls out of her purse and you take it!",
+        "You come across someone sitting on a bench playing a trash game called Mobile Legends. They are so disctracted, you can easily grab their wallet. It contained ${salary}."
     ],
     "crimeReponseFailed": [
         "You were about to rob a bank, but you saw a kid playing TheoTown game and got addicted. The police later came and fined ${fined} for trying to rob a bank.",

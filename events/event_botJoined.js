@@ -29,6 +29,5 @@ module.exports.run = async function({ api, event }) {
 				return api.unsendMessage(info.messageID);
 			}
 		);
-		
 	}
 }
