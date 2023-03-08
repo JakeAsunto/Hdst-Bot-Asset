@@ -1,4 +1,4 @@
-module.exports = function({ api, models, Users, Threads, Currencies }) {
+module.exports = function({ api, models, Users, Threads, PoliceStation }) {
     	
     const logger = require("../../utils/log.js");
 
@@ -46,7 +46,7 @@ module.exports = function({ api, models, Users, Threads, Currencies }) {
 
                     Obj.Threads = Threads
 
-                    Obj.Currencies = Currencies
+                    Obj.PoliceStation = PoliceStation
 
                     eventRun.run(Obj);
 

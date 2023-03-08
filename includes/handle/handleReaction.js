@@ -1,4 +1,4 @@
-module.exports = function({ api, models, Users,Threads, Currencies }) {
+module.exports = function({ api, models, Users,Threads, PoliceStation }) {
 
     return function({ event }) {
 
@@ -58,8 +58,6 @@ module.exports = function({ api, models, Users,Threads, Currencies }) {
                 Obj.Users = Users
 
                 Obj.Threads = Threads
-
-                Obj.Currencies = Currencies
 
                 Obj.handleReaction = indexOfMessage
 

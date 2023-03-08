@@ -1,4 +1,4 @@
-module.exports = function({ api, models, Users, Threads, Currencies }) {
+module.exports = function({ api, models, Users, Threads }) {
 	
 	const cache = require('../../utils/cache.js');
     const logger = require("../../utils/log.js");
@@ -8,7 +8,7 @@ module.exports = function({ api, models, Users, Threads, Currencies }) {
 
         const { allowInbox } = global.config;
 
-        const { threadData, userBanned, threadBanned } = global.data;
+        const { threadData, bannedUsers, bannedThreads } = global.data;
 
         const { commands, handleReply, messageReplyRegistered } = global.client;
 
@@ -25,17 +25,17 @@ module.exports = function({ api, models, Users, Threads, Currencies }) {
 
         //var threadID = String(threadID);
 
-        // if (userBanned.has(senderID) || threadBanned.has(threadID) || allowInbox == !![] && senderID == threadID) return;
+        // if (bannedUsers.has(senderID) || bannedThreads.has(threadID) || allowInbox == !![] && senderID == threadID) return;
 
         for (const mrReg of messageReplyRegistered) {
 
             const cmd = commands.get(mrReg);
 
-            var getText2;
+            var getText;
 
             if (cmd.languages && typeof cmd.languages == 'object')
 
-                getText2 = (...values) => {
+                getText = (...values) => {
 
                     const commandModule = cmd.languages || {};
 
@@ -57,29 +57,27 @@ module.exports = function({ api, models, Users, Threads, Currencies }) {
 
                 };
 
-            else getText2 = () => {};
+            else getText = () => {};
 
             try {
 
                 const Obj = {};
 
-                Obj.event = event
+                Obj.event = event;
 
-                Obj.api = api
+                Obj.api = api;
 
-                Obj.models = models
+                Obj.models = models;
 
-                Obj.Users = Users
+                Obj.Users = Users;
 
-                Obj.Threads = Threads
+                Obj.Threads = Threads;
 
-                Obj.Currencies = Currencies
+                Obj.getText = getText;
 
-                Obj.getText = getText2
-
-				Obj.Cache = cache
+				Obj.Cache = cache;
                 
-                Obj.textFormat = textFormat
+                Obj.textFormat = textFormat;
 
                 if (cmd) cmd.handleMessageReply(Obj);
 

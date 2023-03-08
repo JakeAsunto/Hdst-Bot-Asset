@@ -1,8 +1,7 @@
 module.exports = function({ api, models }) {
 
-	const Users = require("./controllers/users")({ models, api }),
-		Threads = require("./controllers/threads")({ models, api }),
-		Currencies = require("./controllers/currencies")({ models });
+	const Users = require("./controllers/controller_users")({ models, api }),
+		Threads = require("./controllers/controller_threads")({ models, api });
 		
 	const logger = require("../utils/log.js");
 	const fs = require("fs");
@@ -25,57 +24,67 @@ module.exports = function({ api, models }) {
 			logger(global.getText('listen', 'startLoadEnvironment'), '[ DATABASE ]');
 			
 			let threads = await Threads.getAll(),
-				users = await Users.getAll(['userID', 'name', 'data']),
-				currencies = await Currencies.getAll(['userID']);
+				users = await Users.getAll(['userID', 'name', 'data']);
 				
-			for (const data of threads) {
+			for (const threadData of threads) {
 				
-				const idThread = String(data.threadID);
+				const threadID = String(threadData.threadID);
 				
-				global.data.allThreadID.push(idThread)
-				global.data.threadData.set(idThread, data['data'] || {})
-				global.data.threadInfo.set(idThread, data.threadInfo || {});
+				global.data.allThreadID.push(threadID)
+				global.data.threadData.set(threadID, threadData.data || {})
+				global.data.threadInfo.set(threadID, threadData.threadInfo || {});
 				
 					
-				if (data['data'] && data['data']['banned'] == !![]) {
-					global.data.threadBanned.set(idThread, {
-						'reason': data['data']['reason'] || '',
-						'dateAdded': data['data']['dateAdded'] || ''
-					});
+				if (threadData.data && threadData.data.isBanned) {
+					global.data.bannedThreads.set(
+						threadID,
+						{
+							caseID: threadData.data.banned.caseID || -1,
+							reason: threadData.data.banned.reason || '<reason not set>',
+							dateIssued: threadData.data.banned.dateIssued '<unknown date>'
+						}
+					)
 				}
 				
-				if (data['data'] && data['data']['commandBanned'] && data['data']['commandBanned']['length'] != 0) {
-					global['data']['commandBanned']['set'](idThread, data['data']['commandBanned']);
+				if (threadData.data && threadData.data.bannedCommands && (threadData.data.bannedCommands).length > 0) {
+					(global.data.bannedCommands).set(threadID, threadData.data.bannedCommands)
 				}
 				
-				if (data['data'] && data['data']['NSFW']) {
-					global['data']['threadAllowNSFW']['push'](idThread);
+				if (threadData.data && threadData.data.allowNSFW) {
+					global.data.threadAllowNSFW[(global.data.threadAllowNSFW).length)] = threadID;
 				}
-				
 			}
 			
 			logger.loader(global.getText('listen', 'loadedEnvironmentThread'));
 			
-			for (const dataU of users) {
+			for (const userData of users) {
 				
-				const idUsers = String(dataU['userID']);
-				global.data['allUserID']['push'](idUsers);
+				const userID = String(userData['userID']);
 				
-				if (dataU.name && dataU.name['length'] != 0) global.data.userName['set'](idUsers, dataU.name);
-				if (dataU.data && dataU.data.banned == 1) {
-					global.data['userBanned']['set'](idUsers, {
-						'reason': dataU['data']['reason'] || '',
-						'dateAdded': dataU['data']['dateAdded'] || ''
-					});
+				// save data to global variable: allUserID
+				(global.data.allUserID[(global.data.allUserID).length] = idUsers;
+				
+				// save user name to global variable: userName
+				if (userData.name && userData.name['length'] != 0) {
+					(global.data.userName).set(userID, userData.name);
 				}
 				
-				if (dataU['data'] && dataU.data['commandBanned'] && dataU['data']['commandBanned']['length'] != 0) {
-					global['data']['commandBanned']['set'](idUsers, dataU['data']['commandBanned']);
+				// save this user to global variable banned User
+				if (userData.data && userData.data.isBanned) {
+					(global.data.bannedUsers).set(
+						userID,
+						{
+							caseID: userData.data.banned.caseID || -1,
+							reason: userData.data.banned.reason || '<reason not set>',
+							dateIssued: userData.data.banned.dateIssued || '<unknown date>'
+						}
+					);
 				}
-			}
-			
-			for (const dataC of currencies) {
-				global.data.allCurrenciesID.push(String(dataC['userID']));
+				
+				// save this user on global variable command banned if he/she has it
+				if (userData.data && userData.data.bannedCommands && (userData.data.bannedCommands).length > 0) {
+					(global.data.bannedCommands).set(userID, userData.data.bannedCommands);
+				}
 			}
 			
 			logger.loader(global.getText('listen', 'loadedEnvironmentUser'))
@@ -122,56 +131,49 @@ module.exports = function({ api, models }) {
 		api,
 		models,
 		Users,
-		Threads,
-		Currencies
+		Threads
 	});
 	
 	const handleCommandEvent = require("./handle/handleCommandEvent")({
 		api,
 		models,
 		Users,
-		Threads,
-		Currencies
+		Threads
 	});
 	
 	const handleCommandMessageReply = require("./handle/handleCommandMessageReply")({
 		api,
 		models,
 		Users,
-		Threads,
-		Currencies
+		Threads
 	});
 	
 	const handleReply = require("./handle/handleReply")({
 		api,
 		models,
 		Users,
-		Threads,
-		Currencies
+		Threads
 	});
 	
 	const handleReaction = require("./handle/handleReaction")({
 		api,
 		models,
 		Users,
-		Threads,
-		Currencies
+		Threads
 	});
 	
 	const handleEvent = require("./handle/handleEvent")({
 		api,
 		models,
 		Users,
-		Threads,
-		Currencies
+		Threads
 	});
 	
 	const handleCreateDatabase = require("./handle/handleCreateDatabase")({
 		api,
+		models,
 		Threads,
-		Users,
-		Currencies,
-		models
+		Users
 	});
 
 	logger.loader(`====== ${Date.now() - global.client.timeStart}ms ======`);

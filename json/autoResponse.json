@@ -1,4 +1,15 @@
 {
+    "autoban_bot_checker": {
+        "matches": [
+            "command not found",
+            "intereact with me using sim command",
+            "you have no permission to use command \"",
+            "unsent this message:",
+            "thats my prefix",
+            "that's my prefix",
+            "you are unable to use bot!"
+        ]
+    },
     "meridiemAM": {
         "matches": [
             "good morning",
@@ -198,11 +209,12 @@
             "lah",
             "naol",
             "sana all",
-            "hope all"
+            "hope all",
+            "tanga",
+            "baliw"
         ],
         "response": [
             "😆",
-            "😂",
             "🤣"
         ],
         "reaction": true

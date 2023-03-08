@@ -1,4 +1,4 @@
-module.exports = function({ api, models, Users, Threads, Currencies }) {
+module.exports = function({ api, models, Users, Threads }) {
 	
 	const cache = require('../../utils/cache.js');
     const logger = require("../../utils/log.js");
@@ -10,7 +10,7 @@ module.exports = function({ api, models, Users, Threads, Currencies }) {
 
         const { allowInbox } = global.config;
 
-        const { userBanned, threadBanned } = global.data;
+        const { bannedUsers, bannedThreads } = global.data;
 
         const { cooldowns, commands, eventRegistered } = global.client;
 
@@ -20,7 +20,7 @@ module.exports = function({ api, models, Users, Threads, Currencies }) {
 
         var threadID = String(threadID);
 
-        if (userBanned.has(senderID) || threadBanned.has(threadID) || allowInbox == !![] && senderID == threadID) return;
+        if (bannedUsers.has(senderID) || bannedThreads.has(threadID) || allowInbox == !![] && senderID == threadID) return;
 
         for (const eventReg of eventRegistered) {
 
@@ -96,25 +96,23 @@ module.exports = function({ api, models, Users, Threads, Currencies }) {
 
                 const Obj = {};
 
-                Obj.event = event
+                Obj.event = event;
 
-                Obj.api = api
+                Obj.api = api;
 
-                Obj.models = models
+                Obj.models = models;
 
-                Obj.Users = Users
+                Obj.Users = Users;
 
-                Obj.Threads = Threads
+                Obj.Threads = Threads;
 
-                Obj.Currencies = Currencies
+                Obj.getText = getText2;
 
-                Obj.getText = getText2
-
-				Obj.Cache = cache
+				Obj.Cache = cache;
                 
-                Obj.textFormat = textFormat
+                Obj.textFormat = textFormat;
 
-				Obj.returns = returns
+				Obj.returns = returns;
 
                 if (cmd) cmd.handleEvent(Obj);
 

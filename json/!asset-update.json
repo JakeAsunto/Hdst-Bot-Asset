@@ -5,8 +5,8 @@
         "https://facebook.com/mensaherong.iantot",
         "This repository was linked to bot assets repository of Hadestia that include assets auto updater."
     ],
-    "VERSION": "5.10.0",
-    "CHANGELOGS": "Im tired of stating what changes i made",
+    "VERSION": "6.0.0 (BETA)",
+    "CHANGELOGS": "- Reset databases.\n- Permanently removed Currencies database as of economy system on each group exists.\n- Rename global variables for ban data.\n- Add other bot auto ban detection.",
     "MAIN": {
         "LICENSE-HADESTIA": {
             "path": "/"
@@ -14,8 +14,8 @@
         "Hadestia.js": {
             "path": "/"
         },
-        "global_initializer.js": {
-            "path": "scripts/"
+        "model.js": {
+            "path": "includes/database/"
         },
         "listen.js": {
             "path": "includes/"
@@ -40,6 +40,18 @@
         },
         "handleReply.js": {
             "path": "includes/handle/"
+        },
+        "controller_users.js": {
+            "path": "includes/controllers/"
+        },
+        "controller_threads.js": {
+            "path": "includes/controllers/"
+        },
+        "model_users.js": {
+            "path": "includes/database/models/"
+        },
+        "model_threads.js": {
+            "path": "includes/database/models/"
         },
         "textFormat.json": {
             "path": "json/",

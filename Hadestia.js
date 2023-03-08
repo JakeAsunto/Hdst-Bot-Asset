@@ -69,7 +69,7 @@ global.data = new Object({
 	
 	threadAllowNSFW: new Array(),
 	
-	threadBanned: new Map(),
+	bannedThreads: new Map(),
 
     threadInfo: new Map(),
 
@@ -79,11 +79,11 @@ global.data = new Object({
     
     userName: new Map(),
 
-    userBanned: new Map(),
+    bannedUsers: new Map(),
     
     allUserID: new Array(),
 
-    commandBanned: new Map(),
+    bannedCommands: new Map(),
 
     allCurrenciesID: new Array()
 

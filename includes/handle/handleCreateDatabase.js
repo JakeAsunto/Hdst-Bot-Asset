@@ -2,7 +2,7 @@
 
 // ################ ANALYZED & DOCUMENTED By HADESTIA  ################ //
 
-module.exports = function({ Users, Threads, Currencies }) {
+module.exports = function({ Users, Threads }) {
 
 	const economySystem = require(`${__dirname}/../../json/economySystem.json`); 
     const logger = require("../../utils/log.js");
@@ -12,7 +12,7 @@ module.exports = function({ Users, Threads, Currencies }) {
 		
 		// get tables from global data
         const {
-        	allCurrenciesID,
+        	//allCurrenciesID,
 			allUserID,
 			allThreadID,
 			userName,
@@ -76,12 +76,20 @@ module.exports = function({ Users, Threads, Currencies }) {
                 THREAD_ALL_DATA.threadInfo = dataThread;
 
                 THREAD_ALL_DATA.data = {
-                	'recieve_update': true,
-					'auto_resend_msg': true,
-					'auto_response_listener': true,
-					'antiout': true,
-					'antijoin': false,
-					'guard': false
+                	recieve_update: true,
+					auto_resend_msg: true,
+					auto_response_listener: true,
+					antiout: true,
+					antijoin: false,
+					guard: false,
+					isBanned: false,
+					banned: {
+						caseID: -1,
+						reason: '',
+						dateIssued: '',
+						bannedUntil: 0
+					},
+					bannedCommands: []
 				};
 				
 				// default configuration for economy system for this group
@@ -152,7 +160,19 @@ module.exports = function({ Users, Threads, Currencies }) {
 
                 const USER_ALL_DATA = {};
 
-                USER_ALL_DATA.name = infoUsers.name
+                USER_ALL_DATA.name = infoUsers.name;
+                
+                USER_ALL_DATA.data = {
+                	afk: '',
+                	isBanned: false,
+                	bannedCommands = [],
+                	banned: {
+                		caseID: -1,
+                		reason: '',
+                		dateIssued: '',
+                		bannedUntil: 0
+                	}
+                }
 
                 await Users.createData(senderID, USER_ALL_DATA)
 

@@ -1,4 +1,4 @@
-module.exports = function({ api, models, Users, Threads, Currencies }) {
+module.exports = function({ api, models, Users, Threads }) {
 
     const stringSimilarity = require('string-similarity'),
 
@@ -24,7 +24,7 @@ module.exports = function({ api, models, Users, Threads, Currencies }) {
 
         const { allowInbox, PREFIX, ADMINBOT, DeveloperMode, adminOnly } = global.config;
 
-        const { userBanned, threadBanned, allThreadID, threadInfo, threadData, commandBanned } = global.data;
+        const { bannedUsers, bannedThreads, allThreadID, threadInfo, threadData, bannedCommands } = global.data;
 
         const { commands, commandAliases, cooldowns } = global.client;
 
@@ -32,7 +32,7 @@ module.exports = function({ api, models, Users, Threads, Currencies }) {
 
         var senderID = String(senderID), threadID = String(threadID);
 
-        const threadSetting = threadData.get(threadID) || {}
+        const threadSetting = threadData.get(threadID) || {};
 
 		//console.log('current-threadID: ' + threadID)
 		const botMent = (mentions && Object.keys(mentions).length > 0 && Object.keys(mentions)[0] == global.botUserID) ? (Object.values(mentions)[0]).replace('@', '') : global.botUserID;
@@ -43,17 +43,17 @@ module.exports = function({ api, models, Users, Threads, Currencies }) {
 		
 		if (!prefixRegex.test(body)) return;
 
-        if (userBanned.has(senderID) || threadBanned.has(threadID) || allowInbox == ![] && senderID == threadID) {
+        if (bannedUsers.has(senderID) || bannedThreads.has(threadID) || allowInbox == ![] && senderID == threadID) {
 
             if (!ADMINBOT.includes(senderID.toString())) {
 
-                if (userBanned.has(senderID)) {
+                if (bannedUsers.has(senderID)) {
 
-                    const { reason, dateAdded } = userBanned.get(senderID) || {};
+                    const { caseID, reason, dateIssued } = bannedUsers.get(senderID) || {};
 
-                    return api.sendMessage(textFormat('events', 'eventUserBannedForBot', reason, dateAdded), threadID, async (err, info) => {
-
-                        await new Promise(resolve => setTimeout(resolve, 5 * 1000));
+                    return api.sendMessage(textFormat('events', 'eventUserBannedForBot', caseID, reason, dateIssued), threadID, async (err, info) => {
+						if (err) return;
+                        await new Promise(resolve => setTimeout(resolve, 20 * 1000));
 
                         return api.unsendMessage(info.messageID);
 
@@ -61,13 +61,13 @@ module.exports = function({ api, models, Users, Threads, Currencies }) {
 
                 } else {
 
-                    if (threadBanned.has(threadID)) {
+                    if (bannedThreads.has(threadID)) {
 
-                        const { reason, dateAdded } = threadBanned.get(threadID) || {};
+                        const { caseID, reason, dateIssued } = bannedThreads.get(threadID) || {};
 
-                        return api.sendMessage(textFormat('events', 'eventThreadBannedForBot', reason, dateAdded), threadID, async (err, info) => {
-
-                            await new Promise(resolve => setTimeout(resolve, 5 * 1000));
+                        return api.sendMessage(textFormat('events', 'eventThreadBannedForBot', caseID, reason, dateIssued), threadID, async (err, info) => {
+							if (err) return;
+                            await new Promise(resolve => setTimeout(resolve, 20 * 1000));
 
                             return api.unsendMessage(info.messageID);
 
@@ -126,13 +126,13 @@ module.exports = function({ api, models, Users, Threads, Currencies }) {
 
         }
 
-        if (commandBanned.get(threadID) || commandBanned.get(senderID)) {
+        if (bannedCommands.get(threadID) || bannedCommands.get(senderID)) {
 
             if (!ADMINBOT.includes(senderID)) {
 
-                const banThreads = commandBanned.get(threadID) || [],
+                const banThreads = bannedCommands.get(threadID) || [],
 
-                    banUsers = commandBanned.get(senderID) || [];
+                    banUsers = bannedCommands.get(senderID) || [];
 
                 if (banThreads.includes(command.config.name))
 
@@ -401,8 +401,6 @@ module.exports = function({ api, models, Users, Threads, Currencies }) {
             Obj.Users = Users;
 
             Obj.Threads = Threads;
-
-            Obj.Currencies = Currencies;
 
             Obj.getText = getText2;
 

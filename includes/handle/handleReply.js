@@ -1,4 +1,4 @@
-module.exports = function({ api, models, Users, Threads, Currencies }) {
+module.exports = function({ api, models, Users, Threads, PoliceStation }) {
 
     return async function({ event }) {
 
@@ -81,8 +81,6 @@ module.exports = function({ api, models, Users, Threads, Currencies }) {
                 Obj.Users = Users;
 
                 Obj.Threads = Threads;
-
-                Obj.Currencies = Currencies;
                 
                 Obj.Prefix = botPrefix;
 
