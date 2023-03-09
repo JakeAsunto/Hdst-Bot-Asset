@@ -202,14 +202,10 @@ module.exports = function({ api, models, Users, Threads }) {
 			var is_admin_bot = ADMINBOT.includes(senderID.toString());
 			var is_admin_group = threadInfoo.adminIDs.find(el => el.id == senderID);
 		} catch (err) {
-			try {
-				const index = allThreadID.indexOf(event.threadID);
-				(index !== -1) ? (global.data.allThreadID).splice(index, 1) : '';
-				await Threads.delData(event.threadID);
-			} catch (e) {
-				
-			}
-			return;
+			global.sendReaction.failed(api, event);
+			global.logger(err, 'error');
+			global.logModuleErrorToAdmin(err, __filename, event);
+			return api.sendMessage(textFormat('error', 'errCmdExceptionError', err, PREFIX_FINAL), threadID, messageID);
 		}
 		
 		var cmdPerm = command.config.hasPermssion;
