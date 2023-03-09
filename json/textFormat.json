@@ -103,7 +103,7 @@
         "cmdDictionaryFormat": "❝ %1 ❞\n━━━━━━━━━━━━━━━━━━━━\n%2",
         "cmdDictionaryDefFormat": "● %1\n- %2 %3",
         "cmdDictionaryNotFound": "🔴 No definition found.",
-        "cmdPeriodicTableFormat": ""
+        "cmdTranslationFormat": "𝗧𝗿𝗮𝗻𝘀𝗹𝗮𝘁𝗶𝗼𝗻\n━━━━━━━━━━━━━━━━━━━━\n%1\n\n𝚝𝚛𝚊𝚗𝚜𝚕𝚊𝚝𝚎𝚍 𝚏𝚘𝚛𝚖 %2 𝚝𝚘 %3."
     },
     "comms": {
         "anonMsgSendSuccess": "🟢 Your anonymous message has successfully sent to:  %1",
@@ -160,7 +160,7 @@
     "group": {
         "groupAntiOutSuccess": "I bring %1 back!.",
         "groupAntiOutFailed": "I can't bring back %1 to the group. I'm sorry.",
-        "groupAntiOutKicked": "%1 was kicked by the administrator. labas ako diyan.(^_^メ)",
+        "groupAntiOutKicked": "%1 was kicked by the administrator.",
         "groupAntiChangeActiveResponse": "🔴 Cannot make changes while 'anti change' was active.",
         "groupAntiChangeError": "🔴 Anti change module: %1",
         "groupAntiJoinError": "🔴 There was an error while executing anti join module.\n\nAnti join was turned off.",
@@ -188,6 +188,23 @@
     },
     "discord": {
         "embedFormat": "{\n  \"content\": null,\n  \"embeds\": [\n    {\n      \"description\": \"\",\n      \"color\": 14291731,\n      \"url\": \"https://facebook.com\",\n      \"fields\": [\n        {\n          \"name\": \"User ID\",\n          \"value\": \"${user_id}\",\n          \"inline\": true\n        },\n        {\n          \"name\": \"Username\",\n          \"value\": \"${user_username}\",\n          \"inline\": true\n        },\n        {\n          \"name\": \"Group ID\",\n          \"value\": \"${group_id}\",\n          \"inline\": true\n        },\n        {\n          \"name\": \"Group name:\",\n          \"value\": \"${group_name}\",\n          \"inline\": true\n        }\n      ],\n      \"author\": {\n        \"name\": \"${user_name}\",\n        \"url\": \"${user_link}\",\n        \"icon_url\": \"${user_avatar}\"\n      },\n      \"footer\": {\n        \"text\": \"HadestiaBot: hadestia © 2022\"\n      },\n      \"timestamp\": \"${date}\",\n      \"image\": {}\n    }\n  ],\n  \"attachments\": []\n}"
+    },
+    "gamblingSystem": {
+        "slotItems": [
+            "🍇",
+            "🍉",
+            "🍊",
+            "🍏",
+            "7⃣",
+            "🍓",
+            "🍒",
+            "🍌",
+            "🥝",
+            "🥑",
+            "🌽"
+        ],
+        "errInvalidAmountOfBet": "🔴 Invalid amount of bet, bet cannot be a blank or 0.",
+        "slotResult": "𝗥𝗲𝘀𝘂𝗹𝘁.\n\n🎰 [%1 | %2 | %3] 🎰\n\n%4"
     },
     "fonts": {
         "bold_sans_number": [

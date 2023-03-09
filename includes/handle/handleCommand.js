@@ -48,7 +48,7 @@ module.exports = function({ api, models, Users, Threads }) {
             if (!ADMINBOT.includes(senderID.toString())) {
 
                 if (bannedUsers.has(senderID)) {
-
+                	
                     const { caseID, reason, dateIssued } = bannedUsers.get(senderID) || {};
 
                     return api.sendMessage(textFormat('events', 'eventUserBannedForBot', caseID, reason, dateIssued), threadID, async (err, info) => {

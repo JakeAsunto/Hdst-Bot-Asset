@@ -13,7 +13,7 @@ module.exports.lateInit = async function ({ api, models }) {
 	
 	const { readFileSync, writeFileSync } = require('fs-extra');
 	
-	const Threads = require(`${__dirname}/../../includes/controllers/threads`)({ models, api });
+	const Threads = require(`${__dirname}/../../includes/controllers/controller_threads`)({ models, api });
     const isUpdated = readFileSync(`${__dirname}/../../cache/keep/!asset-has-update.txt`, { encoding: 'utf-8' });
 	const assets = require(`${__dirname}/../../json/!asset-update.json`);
 	const botAdmins = global.config.ADMINBOT;

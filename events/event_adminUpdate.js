@@ -12,9 +12,6 @@ module.exports.config = {
 module.exports.run = async function ({ event, api, Threads, Users }) {
 	
 	const fs = require('fs');
-	// var iconPath = __dirname + '/emoji.json';
-	
-	//if (!fs.existsSync(iconPath)) fs.writeFileSync(iconPath, JSON.stringify({}));
 	
     const { threadID, logMessageType, logMessageData } = event;
     const { setData, getData } = Threads;

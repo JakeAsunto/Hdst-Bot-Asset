@@ -21,6 +21,9 @@ module.exports = function({ sequelize, Sequelize }) {
 			},
 			inventory: {
 				type: Sequelize.JSON
+			},
+			afk: {
+				type: Sequelize.JSON
 			}
 		}
 	);

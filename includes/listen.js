@@ -41,7 +41,7 @@ module.exports = function({ api, models }) {
 						{
 							caseID: threadData.data.banned.caseID || -1,
 							reason: threadData.data.banned.reason || '<reason not set>',
-							dateIssued: threadData.data.banned.dateIssued '<unknown date>'
+							dateIssued: threadData.data.banned.dateIssued || '<unknown date>'
 						}
 					)
 				}
@@ -51,7 +51,7 @@ module.exports = function({ api, models }) {
 				}
 				
 				if (threadData.data && threadData.data.allowNSFW) {
-					global.data.threadAllowNSFW[(global.data.threadAllowNSFW).length)] = threadID;
+					(global.data.threadAllowNSFW)[(global.data.threadAllowNSFW).length] = threadID;
 				}
 			}
 			
@@ -62,7 +62,7 @@ module.exports = function({ api, models }) {
 				const userID = String(userData['userID']);
 				
 				// save data to global variable: allUserID
-				(global.data.allUserID[(global.data.allUserID).length] = idUsers;
+				(global.data.allUserID)[(global.data.allUserID).length] = userID;
 				
 				// save user name to global variable: userName
 				if (userData.name && userData.name['length'] != 0) {

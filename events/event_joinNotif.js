@@ -32,7 +32,7 @@ module.exports.run = async function({ api, event, Threads }) {
 	const thread_name = removeNonASCII((threadName || 'This Group').normalize('NFKD'));
 	
 	const canvas = require('canvas');
-	const GIF = require(`${__dirname}/../../utils/editGif.js`);
+	const GIF = require(`${global.client.mainPath}/utils/editGif.js`);
 	const gifEncoder = require('gif-encoder-2');
 	const axios = require('axios');
 	const path = require('path');

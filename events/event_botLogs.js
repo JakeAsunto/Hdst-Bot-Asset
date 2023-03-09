@@ -13,7 +13,7 @@ module.exports.run = async function({ api, event, Threads }) {
 	
     // if (!global.configModule[this.config.name].enable) return;
     
-    const logger = require("../../utils/log");
+    const logger = require(`${global.client.mainPath}/utils/log`);
     const { threadName, participantIDs, imageSrc } = await api.getThreadInfo(event.threadID);
     const moment = require('moment-timezone');
 
@@ -42,7 +42,7 @@ module.exports.run = async function({ api, event, Threads }) {
         case "log:unsubscribe":
         
             if (event.logMessageData.leftParticipantFbId == api.getCurrentUserID()) {
-				action = "User kicked bot out of group";
+				action = "User kicked bot out of the group";
 				//try { await Threads.delData(event.threadID); } catch {}
 			}
             break;

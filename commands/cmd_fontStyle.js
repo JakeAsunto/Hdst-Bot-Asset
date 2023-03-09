@@ -27,7 +27,7 @@ module.exports.run = async function ({ api, args, event, returns, textFormat }) 
 	}
 	
 	if (!parseInt(type) || parseInt(type) > 6 || parseInt(type) < 1) {
-		return api.sendMessage(textFormat('error', 'errOccured', 'Invalid type, type must be a number from 1 - 5'), threadID, (e, i) => {global.autoUnsend(e, i, 5)}, messageID);
+		return api.sendMessage(textFormat('error', 'errOccured', 'Invalid type, type must be a number from 1 - 6'), threadID, (e, i) => {global.autoUnsend(e, i, 5)}, messageID);
 	}
 	
 	const types = [

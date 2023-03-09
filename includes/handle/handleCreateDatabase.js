@@ -76,20 +76,20 @@ module.exports = function({ Users, Threads }) {
                 THREAD_ALL_DATA.threadInfo = dataThread;
 
                 THREAD_ALL_DATA.data = {
-                	recieve_update: true,
-					auto_resend_msg: true,
-					auto_response_listener: true,
-					antiout: true,
-					antijoin: false,
-					guard: false,
-					isBanned: false,
-					banned: {
-						caseID: -1,
-						reason: '',
-						dateIssued: '',
-						bannedUntil: 0
+                	'recieve_update': true,
+					'auto_resend_msg': true,
+					'auto_response_listener': true,
+					'antiout': true,
+					'antijoin': false,
+					'guard': false,
+					'isBanned': false,
+					'banned': {
+						'caseID': -1,
+						'reason': '',
+						'dateIssued': '',
+						'bannedUntil': 0
 					},
-					bannedCommands: []
+					'bannedCommands': []
 				};
 				
 				// default configuration for economy system for this group
@@ -163,14 +163,14 @@ module.exports = function({ Users, Threads }) {
                 USER_ALL_DATA.name = infoUsers.name;
                 
                 USER_ALL_DATA.data = {
-                	afk: '',
-                	isBanned: false,
-                	bannedCommands = [],
-                	banned: {
-                		caseID: -1,
-                		reason: '',
-                		dateIssued: '',
-                		bannedUntil: 0
+                	'afk': '',
+                	'isBanned': false,
+                	'bannedCommands': [],
+                	'banned': {
+                		'caseID': -1,
+                		'reason': '',
+                		'dateIssued': '',
+                		'bannedUntil': 0
                 	}
                 }
 

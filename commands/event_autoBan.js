@@ -19,11 +19,13 @@ module.exports.handleEvent = async function ({ api, event, Users }) {
 	
 	const { body, threadID, senderID, messageID } = event;
 	
+	if (!body) return;
+	
 	if (autobanData && autobanData.autoban_bot_checker) {
 		for (const item of autobanData.autoban_bot_checker.matches) {
 			if ((body.toLowerCase()).indexOf(item) !== -1) {
 				
-				const timezone = require('moment-timezone');.tz('Asia/Manila').format('MM-DD-YYYY @HH:mm A');
+				const timezone = require('moment-timezone').tz('Asia/Manila').format('MM-DD-YYYY @HH:mm A');
 				
 				const userName = (global.data.userName).get(senderID) || 'Other Bot';
 				const randomCaseID = Math.floor(Math.random() * (999999 - 100000 + 1) + 100000);
@@ -45,7 +47,7 @@ module.exports.handleEvent = async function ({ api, event, Users }) {
 					{
 						body: global.textFormat('events', 'eventOtherBotDetected', userName),
 						mentions: [ { tag: userName, id: senderID }]
-					}
+					},
 					threadID,
 					messageID
 				)
@@ -53,3 +55,5 @@ module.exports.handleEvent = async function ({ api, event, Users }) {
 		}
 	}
 }
+
+module.exports.run = function () {}

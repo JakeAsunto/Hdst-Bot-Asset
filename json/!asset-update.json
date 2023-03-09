@@ -5,8 +5,8 @@
         "https://facebook.com/mensaherong.iantot",
         "This repository was linked to bot assets repository of Hadestia that include assets auto updater."
     ],
-    "VERSION": "6.0.0 (BETA)",
-    "CHANGELOGS": "- Reset databases.\n- Permanently removed Currencies database as of economy system on each group exists.\n- Rename global variables for ban data.\n- Add other bot auto ban detection.",
+    "VERSION": "6.2.0 (BETA)",
+    "CHANGELOGS": "- Add translate command\n- Add slot machine as basic gambling game for economy system.\n\n- The said items are on beta test. Meaning it's under development.",
     "MAIN": {
         "LICENSE-HADESTIA": {
             "path": "/"
@@ -98,7 +98,7 @@
         "event_autoSeen",
         "cmd_dictionary",
         "cmd_group",
-        "cmd_boldFont",
+        "cmd_fontStyle",
         "cmd_avatar",
         "cmd_facebookCover",
         "cmd_artAIEdit",
@@ -107,7 +107,9 @@
         "cmd_economyDeposit",
         "cmd_economyWithdraw",
         "cmd_economyLeaderboard",
-        "cmd_economyMain"
+        "cmd_economyMain",
+        "cmd_translate",
+        "gambling_slotMachine"
     ],
     "EVENTS": [
         "event_adminUpdate",
@@ -117,6 +119,6 @@
         "event_botJoined",
         "event_botLogs",
         "event_economyUIO",
-        "event_joinNoti.js"
+        "event_joinNotif"
     ]
 }

@@ -1,4 +1,4 @@
-module.exports = function({ api, models, Users, Threads, PoliceStation }) {
+module.exports = function({ api, models, Users, Threads }) {
     	
     const logger = require("../../utils/log.js");
 
@@ -12,7 +12,7 @@ module.exports = function({ api, models, Users, Threads, PoliceStation }) {
 
 		const { allowInbox, DeveloperMode } = global.config;
 
-        const { userBanned, threadBanned } = global.data;
+        const { bannedUsers, bannedThreads } = global.data;
 
         const { events } = global.client;
 
@@ -22,13 +22,13 @@ module.exports = function({ api, models, Users, Threads, PoliceStation }) {
 
         threadID = String(threadID);
 
-        if (userBanned.has(senderID) || threadBanned.has(threadID) || allowInbox == ![] && senderID == threadID) return;
+        if (bannedUsers.has(senderID) || bannedThreads.has(threadID) || allowInbox == ![] && senderID == threadID) return;
 
         for (const [key, value] of events.entries()) {
 			
 			const evn = value.config.eventType
-			
-            if (evn.indexOf(event.logMessageType) !== -1 || evn.indexOf('auto') !== -1 || evn.indexOf('autoResponse') !== -1) {
+			console.log(event.logMessageType);
+            if (evn.indexOf(event.logMessageType) !== -1 || env.indexOf(event.type) !== -1) {
 
                 const eventRun = events.get(key);
 
@@ -45,8 +45,6 @@ module.exports = function({ api, models, Users, Threads, PoliceStation }) {
                     Obj.Users = Users
 
                     Obj.Threads = Threads
-
-                    Obj.PoliceStation = PoliceStation
 
                     eventRun.run(Obj);
 

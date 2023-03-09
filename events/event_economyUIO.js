@@ -11,7 +11,7 @@ module.exports.config = {
 
 module.exports.run = async function({ api, event, Threads }) {
 	
-	const economySystem = require(`${__dirname}/../../json/economySystem.json`);
+	const economySystem = require(`${global.client.mainPath}/json/economySystem.json`);
 	const { threadID } = event;
 	
 	const threadData = await Threads.getData(threadID);
