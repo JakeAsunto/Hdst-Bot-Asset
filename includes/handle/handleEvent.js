@@ -27,8 +27,8 @@ module.exports = function({ api, models, Users, Threads }) {
         for (const [key, value] of events.entries()) {
 			
 			const evn = value.config.eventType
-			console.log(event.logMessageType);
-            if (evn.indexOf(event.logMessageType) !== -1 || env.indexOf(event.type) !== -1) {
+			
+            if (evn.indexOf(event.logMessageType) !== -1) {
 
                 const eventRun = events.get(key);
 
