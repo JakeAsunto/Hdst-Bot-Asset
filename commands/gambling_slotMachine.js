@@ -8,7 +8,6 @@ module.exports.config = {
     usages: '< bet >',
     aliases: [ 'slot' ],
     cooldowns: 5,
-    disabled: true,
     envConfig: {
 		groupCommandOnly: true
 	}
@@ -31,7 +30,7 @@ module.exports.config = {
     }
 }*/
 
-module.exports.run = async function({ api, event, args, returns, textFormat, Prefix }) {
+module.exports.run = async function({ api, event, args, returns, textFormat, Prefix, Threads }) {
 	
     const { threadID, messageID, senderID } = event;
     const Gambling = require(`${global.client.mainPath}/json/textFormat.json`).gamblingSystem;

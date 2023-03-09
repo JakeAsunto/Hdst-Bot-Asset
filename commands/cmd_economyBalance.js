@@ -8,7 +8,7 @@ module.exports.config = {
 	usages: '',
 	description: 'View your balance.',
 	credits: 'Hadestia',
-	cooldowns: 60,
+	cooldowns: 5,
 	aliases: [ 'bal' ],
 	envConfig: {
 		groupCommandOnly: true

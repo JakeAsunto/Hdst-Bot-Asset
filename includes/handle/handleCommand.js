@@ -198,7 +198,7 @@ module.exports = function({ api, models, Users, Threads }) {
 			}
 		}
 		try {
-        	var threadInfoo = (threadInfo.get(threadID) || await Threads.getInfo(threadID));
+        	var threadInfoo = (await Threads.getInfo(threadID) || threadInfo.get(threadID));
 			var is_admin_bot = ADMINBOT.includes(senderID.toString());
 			var is_admin_group = threadInfoo.adminIDs.find(el => el.id == senderID);
 		} catch (err) {
@@ -276,33 +276,28 @@ module.exports = function({ api, models, Users, Threads }) {
         const userCooldown = timestamps.get(senderID) + expirationTime
 
 		const userInCooldown = (timer, currentDate) => {
-			/*const duration = moment.duration(moment(timer).diff(moment(currentDate)));
-			let CD = '';
-			
-			if (duration.minutes() > 0) {
-				CD = `${duration.minutes()} ${(duration.minutes() > 1) ? 'minutes' : 'minute'} and ${duration.seconds()} ${(duration.seconds() > 1) ? 'seconds' : 'second'}`;
-			} else {
-				CD = `${duration.seconds()} ${(duration.seconds() > 1) ? 'seconds' : 'second'}`;
-			}*/
 			const timeA = new Date(timer);
 			const timeB = new Date(currentDate);
 			
-			const CD = global.secondsToDHMS(Math.abs(timeA - timeB)/1000);
-			api.sendMessage(
-				textFormat('cmd', 'cmdUserCooldown', CD),
-				event.threadID,
-				(err, info) => {
-					if (err) return;
-					// remove after 5 seconds
-					setTimeout(function () {
+			const { day, hour, minute, second, toString } = global.secondsToDHMS(Math.abs(timeA - timeB)/1000);
+			api.setMessageReaction(textFormat('reaction', 'userCmdCooldown'), event.messageID, err => (err) ? logger('unable to setMessageReaction for Cooling down command use user', '[ Reactions ]') : '', !![]);
+			
+			if (day > 0 || hour > 0 || minute > 2) {
+				api.sendMessage(
+					textFormat('cmd', 'cmdUserCooldown', toString),
+					event.threadID,
+					(err, info) => {
+						if (err) return;
+						// remove after 5 seconds
+						setTimeout(function () {
 							api.unsendMessage(info.messageID);
-						},
-						5000
-					);
-				},
-				event.messageID
-			);
-            return api.setMessageReaction(textFormat('reaction', 'userCmdCooldown'), event.messageID, err => (err) ? logger('unable to setMessageReaction for Cooling down command use user', '[ Reactions ]') : '', !![]);
+							},
+							5000
+						);
+					},
+					event.messageID
+				);
+			}
 		}
 		
 		// minus 1 sec to prevent 0 sec cooldown

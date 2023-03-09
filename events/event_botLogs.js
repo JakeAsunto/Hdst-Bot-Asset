@@ -27,7 +27,7 @@ module.exports.run = async function({ api, event, Threads }) {
     	
      	   case "log:thread-name":
         
-   	         const oldInfo = (await Threads.getData(event.threadID)).threadInfo;
+   	         const oldInfo = (global.data.threadInfo).get(threadID) || {};
   	          const oldName = oldInfo.threadName || 'Unknown';
       	      action = `Update the group name from ${oldName} to '${threadName}'`;
    	        // await Threads.setData(event.threadID, { name: threadName })

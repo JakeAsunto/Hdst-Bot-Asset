@@ -27,18 +27,10 @@ module.exports.run = async function ({ api, args, event, returns, textFormat, Pr
 		const economy = threadData.economy;
 		const inventory = threadData.inventory;
 		
-		/*if (!economy[senderID]) {
-			economy[senderID] = economySystem.userConfig;
-		}
-		if (!inventory[senderID]) {
-			inventory[senderID] = {};
-		}*/
-		
 		const expirationTime = (threadData.data.work_cooldown || economySystem.config.work_cooldown); // 20 minutes default
-		const userCooldown = economy[senderID].work_cooldown + expirationTime;
-		
-		if (dateNow < userCooldown) {
-			return returns.user_in_cooldown(userCooldown, dateNow);
+
+		if (dateNow < economy[senderID].work_cooldown) {
+			return returns.user_in_cooldown(economy[senderID].work_cooldown, dateNow);
 		}
 		
 		const currency = threadData.data.default_currency || economySystem.config.default_currency;
@@ -49,7 +41,7 @@ module.exports.run = async function ({ api, args, event, returns, textFormat, Pr
 	
 		// save data first
 		economy[senderID].hand = economy[senderID].hand + randomSalary;
-		economy[senderID].work_cooldown = Date.now();
+		economy[senderID].work_cooldown = Date.now() + expirationTime;
 		await Threads.setData(threadID, { economy });
 		
 		const formatSalary = randomSalary.toLocaleString('en-US');

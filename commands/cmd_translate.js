@@ -4,11 +4,10 @@ module.exports.config = {
 	hasPermssion: 0,
 	credits: 'Mirai Team', // beautify by Hadestia
 	commandCategory: 'media',
-	description: 'Translate text to a given language, if no given language it will translated to English as default.\n To translate text to specific language your request must include \'<space>-><space>\' followed by requested language to process.'
-	usages: '[ text | @message reply ] [ -> <language e.g(fil/en)> ]'
+	description: 'Translate text to a given language, if no given language it will translated to English as default.\n To translate text to specific language your request must include \'<space>-><space>\' followed by requested language to process.',
+	usages: '[ text | @message reply ] [ -> <language e.g(fil/en)> ]',
 	cooldowns: 5,
 	aliases: [ 'trans' ],
-	disabled: true,
 	dependencies: {
 		'request': ''
 	}

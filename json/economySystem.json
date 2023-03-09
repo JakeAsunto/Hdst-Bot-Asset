@@ -1,6 +1,6 @@
 {
     "default": {
-        "beg_cooldown": 259200,
+        "beg_cooldown": 259200000,
         "beg_success_rate": 0.2,
         "beg_min_salary": 15000,
         "beg_max_salary": 200000

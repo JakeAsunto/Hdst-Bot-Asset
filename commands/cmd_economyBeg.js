@@ -25,17 +25,22 @@ module.exports.run = async function ({ api, args, event, returns, textFormat, Pr
 		const threadData = await Threads.getData(threadID);
 		const economy = threadData.economy;
 		
-		economy[senderID].beg_cooldown = economy[senderID].beg_cooldown || 0;
+		if (!economy[senderID].beg_cooldown || economy[senderID].beg_cooldown == 0) {
+			economy[senderID].beg_cooldown = Date.now();
+		}
 		
 		const currency = threadData.data.default_currency || economySystem.config.default_currency;
 		const minWage = economySystem.default.beg_min_salary;
 		const maxWage = economySystem.default.beg_max_salary;
-		const expirationTime = economy[senderID].beg_cooldown + (economy[senderID].beg_cooldown || economySystem.default.beg_cooldown);
 		
 		// if user was in cooldown
-		if (Date.now() < expirationTime) {
+		if (Date.now() < economy[senderID].beg_cooldown) {
+			
+			const timeA = new Date(economy[senderID].beg_cooldown);
+			const timeB = new Date(Date.now());
+			const { toString } = await global.secondsToDHMS(Math.abs(timeA - timeB)/1000)
 			return api.sendMessage(
-				`Quit begging, You may ask me money again in ${await global.secondsToDHMS(Math.abs(Date.now() - expirationTime)/1000)}.`,
+				`Quit begging, You may ask me money again in ${toString}.`,
 				threadID,
 				global.autoUnsend,
 				messageID
@@ -43,10 +48,11 @@ module.exports.run = async function ({ api, args, event, returns, textFormat, Pr
 		}
 		
 		const randomSalary = Math.floor(Math.random() * (maxWage - minWage + 1)) + minWage;
-		const randomSuccessResponse = (economySytem.begResponseSuccess[Math.floor(Math.random() * (economySytem.begResponseSuccess).length)]).replace('${salary}', `${currency}${randomSalary}`);
+		const randomSuccessResponse = (economySystem.begResponseSuccess[Math.floor(Math.random() * (economySystem.begResponseSuccess).length)]).replace('${salary}', `${currency}${randomSalary.toLocaleString('en-US')}`);
 		const randomFailedResponse = economySystem.begResponseFailed[Math.floor(Math.random() * (economySystem.begResponseFailed).length)];
 		
-		economy[senderID].beg_cooldown = Date.now();
+		// set time for user for his/her next session
+		economy[senderID].beg_cooldown = (Date.now() + economySystem.default.beg_cooldown);
 
 		// if user was in debt just a lil consideration will do :)
 		if (economy[senderID].hand < 0) {

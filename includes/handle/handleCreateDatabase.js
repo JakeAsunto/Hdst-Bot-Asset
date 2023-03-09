@@ -112,7 +112,12 @@ module.exports = function({ Users, Threads }) {
 					// sets each member a initial data for economy & inventory
 					const userEco = economySystem.userConfig;
 					// update user work cooldown to 1 minute so that data base for this group would be created first
-					userEco.work_cooldown = Date.now();
+					const dateNow = Date.now();
+					for (const key in userEco) {
+						if (key.indexOf('cooldown') !== -1) {
+							userEco[key] = dateNow;
+						}
+					}
 					
 					THREAD_ALL_DATA.economy[String(singleData.id)] = userEco;
 					

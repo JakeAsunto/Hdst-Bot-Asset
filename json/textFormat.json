@@ -65,7 +65,7 @@
         "cmdPermissionNotEnough": "🔴 You don't have enough permission to use this command.\n✦❯ required: %1",
         "cmdNotFound": "🔴 No such command exist in my library, kindly use \"%1help\" to see available commands.",
         "cmdWrongUsage": "🔴 Invalid command syntax.\n● usage: '%1'",
-        "cmdUserCooldown": "🔴 You cannot use this command for %1.",
+        "cmdUserCooldown": "🔴 You may use this command again in %1.",
         "userBanned0": "🔴 You are unable to use bot commands while being ban.\n\n●❯ Your Case(s)\nreason : %1\nissued: %2",
         "userBanned1": "Ikaw ay banned pero baka pwede naman nating daanin sa mabuting usapan yan? 😋👉👌💦",
         "userBanned2": "🔴 You are banned for using bot commands, You know saying sorry and begging can't fix a lot of problems, but one blow can😏",

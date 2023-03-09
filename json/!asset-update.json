@@ -5,8 +5,8 @@
         "https://facebook.com/mensaherong.iantot",
         "This repository was linked to bot assets repository of Hadestia that include assets auto updater."
     ],
-    "VERSION": "6.5.0",
-    "CHANGELOGS": "- Fix error on anti-out script making the system crash when trying to re-add users who've blocked this bot.\n- Fix welcome message for new members not reading image/webp type of their profile pictures.\n\n- Add translate command\n- Add slot machine as basic gambling game for economy system.",
+    "VERSION": "6.5.2",
+    "CHANGELOGS": "- Bot can only reply for user's cooldown when the  remaining time was above 2 minutes.\n- Changes in cooldown calculations for beg and work command.",
     "MAIN": {
         "LICENSE-HADESTIA": {
             "path": "/"
@@ -103,6 +103,7 @@
         "cmd_facebookCover",
         "cmd_artAIEdit",
         "cmd_economyWork",
+        "cmd_economyBeg",
         "cmd_economyBalance",
         "cmd_economyDeposit",
         "cmd_economyWithdraw",

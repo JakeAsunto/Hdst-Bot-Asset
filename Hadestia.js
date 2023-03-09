@@ -127,7 +127,7 @@ global.secondsToDHMS = function (seconds) {
 	
 	var dDisplay = d > 0 ? d + (d == 1 ? (h > 0) ? ((m > 0) ? ' day, ' : ' day and ') : ((h > 0) ? ' day and ' : ' day') : (h > 0) ? ((m > 0) ? ' days, ' : ' days and ') : ((h > 0 ) ? ' days and ' : ' days')) : '';
 	
-	return dDisplay + hDisplay + mDisplay + sDisplay;
+	return { day: d, hour: h, minute: m, second: s, toString: dDisplay + hDisplay + mDisplay + sDisplay };
 }
 
 //========= Find and get variable from Config =========//
