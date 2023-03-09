@@ -23,9 +23,10 @@ module.exports.run = async function ({ event, api, Threads, Users }) {
 	const name = global.data.userName.get(event.logMessageData.leftParticipantFbId) || await Users.getNameUser(event.logMessageData.leftParticipantFbId);
 	const type = (event.author == event.logMessageData.leftParticipantFbId) ? 'self-separation' : 'kicked' ;
  
-	if (type == 'self-separation' && data.antiout) {
+
+	try {
+		if (data.antiout && type == 'self-separation') {
 		
-		try {
 			api.addUserToGroup(
 				event.logMessageData.leftParticipantFbId,
 				event.threadID,
@@ -37,15 +38,16 @@ module.exports.run = async function ({ event, api, Threads, Users }) {
 					api.sendMessage(global.textFormat('group', 'groupAntiOutSuccess', name), event.threadID);
 				}
 			);
-		} catch (e) {
-			
+		
+		} else if (type == 'kicked') {
+		
+			return api.sendMessage(
+				global.textFormat('group', 'groupAntiOutKicked', name),
+				event.threadID
+			);
 		}
-		
-	} else if (type == 'kicked') {
-		
-		return api.sendMessage(
-			global.textFormat('group', 'groupAntiOutKicked', name),
-			event.threadID
-		);
+	} catch (err) {
+		console.log(err);
+		global.logModuleErrorToAdmin(err, __filename, event);
 	}
 }

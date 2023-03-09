@@ -1,4 +1,10 @@
 {
+    "default": {
+        "beg_cooldown": 259200,
+        "beg_success_rate": 0.2,
+        "beg_min_salary": 15000,
+        "beg_max_salary": 200000
+    },
     "config": {
         "default_currency": "🪙",
         "work_min_wage": 500,
@@ -53,5 +59,18 @@
         "You see someone on their phone and try to grab it, but they were playing Wild Rift and are very angry. They chase after you and tackle you to the ground. After the police arrives you get ${fined} fined."
     ],
     "robFailedUserNoMoney": "You attempted to rob ${user}, but they had no money in cash for you to take.",
-    "robFailedBeingCaught": "You were caught attempting to rob ${user}, and have been fined ${fined}."
+    "robFailedBeingCaught": "You were caught attempting to rob ${user}, and have been fined ${fined}.",
+    "begResponseSuccess": [
+        "Uhhh, fine. Here's your ${salary}!",
+        "Ugh, fine, I guess you are my little pogchamp, come here, I'll give you ${salary}!",
+        "Your prayers have been answered. You may now have ${salary}!",
+        "I am feeling nice today, so here, have a sum of ${salary}!",
+        "Pssst! Have some ${salary}, because you're so nice to talk to."
+    ],
+    "begResponseFailed": [
+        "I wish I could give some shinies, but i won't.",
+        "Congratulations, you did beg me for the shinies, however I do not feel generous this time.",
+        "Uh, oh, I have an important meeting to attend. Sorry, I'll catch you up later.",
+        "I apologize, i gave my fund to someone else. Maybe next time?"
+    ]
 }

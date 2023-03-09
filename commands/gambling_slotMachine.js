@@ -38,7 +38,6 @@ module.exports.run = async function({ api, event, args, returns, textFormat, Pre
     const economySystem = require(`${global.client.mainPath}/json/economySystem.json`);
     
     const message = (msg) => { api.sendMessage(msg, threadID, messageID) };
-    const minimumBet = 100;
     
     let bet = ((args.join(' ')).match(/\d+/))
     if (!bet || parseInt(bet[0]) == 0) {
@@ -51,15 +50,18 @@ module.exports.run = async function({ api, event, args, returns, textFormat, Pre
     	const slotItems = Gambling.slotItems;
     	const threadData = await Threads.getData(threadID);
 		const economy = threadData.economy;
+		const data = threadData.data;
 		
 		const moneyOnHand = economy[senderID].hand;
 		const currency = threadData.data.default_currency || economySystem.config.default_currency;
+		
+		const minimumBet = data.gambling_slotmachine_minimum_bet || 20;
 		
 		let betAmount = Math.abs(parseInt(bet[0]));
 		// money not enough
 		if (betAmount < minimumBet) {
     		returns.remove_usercooldown();
-	    	return message(textFormat('error', 'errOccured', `Not enough amount of bet, the minimum bet for this game was ${currency}100.`));
+	    	return message(textFormat('error', 'errOccured', `Not enough amount of bet, the minimum bet for this game was ${currency}${minimumBet}.`));
   	  } else if (moneyOnHand < betAmount) {
 			returns.remove_usercooldown();
 			return message(textFormat('error', 'errOccured', `You currently have ${currency}${moneyOnHand} on hand.`));

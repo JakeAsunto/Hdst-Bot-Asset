@@ -1,7 +1,7 @@
 module.exports.config = {
 	name: 'memberJoin',
 	eventType: ['log:subscribe'],
-	version: '1.0.0',
+	version: '1.0.2',
 	credits: 'Hadestia',
 	description: 'Sent a welcome message to new member.',
 	dependencies: {
@@ -99,22 +99,28 @@ module.exports.run = async function({ api, event, Threads }) {
 			const user_name = shortenUserName(user.fullName, 16);
 			
 			const final_welcome_gif_path = path.join(CACHE, `joinNoti_${user.userFbId}_@${threadID}.gif`);
-			
 			// get user avatar && group image
+			const avatarPath = `${global.client.mainPath}/cache/avatar-${user.userFbId}.png`;
 			const avatar = (await axios.get(
 				`https://graph.facebook.com/${user.userFbId}/picture?height=1500&width=1500&access_token=${process.env.FB_ACCESS_TOKEN}`,
 				{ responseType: 'arraybuffer' }
 			)).data;
+			fs.writeFileSync(avatarPath, Buffer.from(avatar, 'utf-8'));
+			
 			// some of group don't have group photo
 			let groupAvatar;
 			if (imageSrc) {
-				const groupPhoto = (await axios.get(imageSrc, { responseType: 'arraybuffer' })).data
-				const circle_groupPhoto = await convertToCircleImg(groupPhoto);
+				const groupAvaPath = `${global.client.mainPath}/cache/groupAva-${threadID}.png`;
+				const groupPhoto = (await axios.get(imageSrc, { responseType: 'arraybuffer' })).data;
+				
+				fs.writeFileSync(groupAvaPath, Buffer.from(groupPhoto, 'utf-8'));
+				const circle_groupPhoto = await convertToCircleImg(groupAvaPath);
+				try { fs.unlinkSync(groupAvaPath); } catch (_) {}
 				groupAvatar = await canvas.loadImage(circle_groupPhoto);
 			}
 			
-			const circle_userAva = await convertToCircleImg(avatar);
-			
+			const circle_userAva = await convertToCircleImg(avatarPath);
+			try { fs.unlinkSync(avatarPath); } catch (_) {}
 			const userAvatar = await canvas.loadImage(circle_userAva);
 			//const groupAvatar = await canvas.loadImage(groupPath);
 			

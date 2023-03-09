@@ -22,45 +22,49 @@ module.exports.run = async function({ api, event, Threads }) {
 	const res = await api.getUserInfo(event.author);
 	let action;
 	
-    switch (event.logMessageType) {
+	try { 
+   	 switch (event.logMessageType) {
     	
-        case "log:thread-name":
+     	   case "log:thread-name":
         
-            const oldInfo = (await Threads.getData(event.threadID)).threadInfo;
-            //console.log(oldName);
-            action = `Update the group name to '${threadName}'`;
-           // await Threads.setData(event.threadID, { name: threadName })
-            break;
+   	         const oldInfo = (await Threads.getData(event.threadID)).threadInfo;
+  	          const oldName = oldInfo.threadName || 'Unknown';
+      	      action = `Update the group name from ${oldName} to '${threadName}'`;
+   	        // await Threads.setData(event.threadID, { name: threadName })
+   	         break;
         
-        case "log:subscribe":
+  	      case "log:subscribe":
         
-            if (event.logMessageData.addedParticipants.some(i => i.userFbId == api.getCurrentUserID())) {
-				action = "User added bot to the group";
-			}
-            break;
+   	         if (event.logMessageData.addedParticipants.some(i => i.userFbId == api.getCurrentUserID())) {
+					action = "User added bot to the group";
+				}
+ 	           break;
         
-        case "log:unsubscribe":
+  	      case "log:unsubscribe":
         
-            if (event.logMessageData.leftParticipantFbId == api.getCurrentUserID()) {
-				action = "User kicked bot out of the group";
-				//try { await Threads.delData(event.threadID); } catch {}
-			}
-            break;
+   	         if (event.logMessageData.leftParticipantFbId == api.getCurrentUserID()) {
+					action = "User kicked bot out of the group";
+					//try { await Threads.delData(event.threadID); } catch {}
+				}
+    	        break;
         
-        default: 
+   	     default: 
         
-            break;
-    }
+    	        break;
+  	  }
     
-    if (action) {
-    	
-    	const messageBody = global.textFormat('events', 'eventBotLogs', date, event.threadID, threadName, participantIDs.length, action, res.name || event.author, event.author);
-    	api.sendMessage(
-			messageBody,
-			global.config.ADMINBOT[0],
-			(err) => {
-				if (err) return logger('event_botLog.js ' + err, 'error');
-			}
-		);
+ 	   if (action) {
+  	  	const messageBody = global.textFormat('events', 'eventBotLogs', date, event.threadID, threadName, participantIDs.length, action, res.name || event.author, event.author);
+    		api.sendMessage(
+				messageBody,
+				global.config.ADMINBOT[0],
+				(err) => {
+					if (err) return logger('event_botLog.js ' + err, 'error');
+				}
+			);
+		}
+    } catch (err) {
+    	console.log(err);
+    	global.logModuleErrorToAdmin(err, __filename, event);
     }
 }

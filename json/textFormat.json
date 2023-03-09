@@ -190,6 +190,8 @@
         "embedFormat": "{\n  \"content\": null,\n  \"embeds\": [\n    {\n      \"description\": \"\",\n      \"color\": 14291731,\n      \"url\": \"https://facebook.com\",\n      \"fields\": [\n        {\n          \"name\": \"User ID\",\n          \"value\": \"${user_id}\",\n          \"inline\": true\n        },\n        {\n          \"name\": \"Username\",\n          \"value\": \"${user_username}\",\n          \"inline\": true\n        },\n        {\n          \"name\": \"Group ID\",\n          \"value\": \"${group_id}\",\n          \"inline\": true\n        },\n        {\n          \"name\": \"Group name:\",\n          \"value\": \"${group_name}\",\n          \"inline\": true\n        }\n      ],\n      \"author\": {\n        \"name\": \"${user_name}\",\n        \"url\": \"${user_link}\",\n        \"icon_url\": \"${user_avatar}\"\n      },\n      \"footer\": {\n        \"text\": \"HadestiaBot: hadestia © 2022\"\n      },\n      \"timestamp\": \"${date}\",\n      \"image\": {}\n    }\n  ],\n  \"attachments\": []\n}"
     },
     "gamblingSystem": {
+        "errNotEnoughBet": "🔴 Not enough amount of bet, the minimum bet for this game was %1",
+        "errInvalidAmountOfBet": "🔴 Invalid amount of bet, bet cannot be a blank or 0.",
         "slotItems": [
             "🍇",
             "🍉",
@@ -203,8 +205,15 @@
             "🥑",
             "🌽"
         ],
-        "errInvalidAmountOfBet": "🔴 Invalid amount of bet, bet cannot be a blank or 0.",
-        "slotResult": "𝗥𝗲𝘀𝘂𝗹𝘁.\n\n🎰 [%1 | %2 | %3] 🎰\n\n%4"
+        "slotResult": "𝗥𝗲𝘀𝘂𝗹𝘁.\n\n🎰 [%1 | %2 | %3] 🎰\n\n%4",
+        "colorGameItems": {
+            "red": "🔴",
+            "green": "🟢",
+            "orange": "🟠",
+            "yellow": "🟡",
+            "blue": "🔵",
+            "purple": "🟣"
+        }
     },
     "fonts": {
         "bold_sans_number": [
