@@ -108,6 +108,7 @@
         "cmd_economyWithdraw",
         "cmd_economyLeaderboard",
         "cmd_economyMain",
+        "cmd_config",
         "cmd_translate",
         "gambling_slotMachine"
     ],
