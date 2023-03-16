@@ -7,7 +7,7 @@ module.exports = function({ sequelize, Sequelize }) {
 				autoIncrement: true
 			},
 			threadID: {
-				type: Sequelize.BIGINT,
+				type: Sequelize.STRING,
 				unique: true
 			},
       	  threadInfo: {

@@ -84,15 +84,12 @@ module.exports = function({ api, models, Users, Threads }) {
         const [matchedPrefix] = body.match(prefixRegex);
 		const args = body.slice(matchedPrefix.length).trim().split(/ +/);
 		
+		//delete the mention about this bot if user used mentioning this bot as prefix
+		// it only deletes the 
 		if (Object.keys(mentions).length >= 1 && Object.keys(mentions)[0] === global.botUserID) {
-			const ment = {};
-			for (const id in mentions){
-				if (id !== global.botUserID) {
-					ment[id] = mentions[id]
-				}
-			}
-			event.mentions = ment;
+			delete event.mentions[global.botUserID];
 		}
+		
 		
 		//console.log(event.mentions);
 		// send under maintenance response

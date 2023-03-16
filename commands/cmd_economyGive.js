@@ -26,6 +26,8 @@ module.exports.run = async function ({ api, args, event, returns, textFormat, Pr
 		const threadData = await Threads.getData(threadID);
 		const economy = threadData.economy;
 		
+		global.initializeUserEconomy(senderID, threadID);
+		
 		const currency = threadData.data.default_currency || economySystem.config.default_currency;
 		
 		let ID, NAME;

@@ -27,6 +27,8 @@ module.exports.run = async function ({ api, args, event, returns, textFormat, Pr
 		const economy = threadData.economy;
 		const inventory = threadData.inventory;
 		
+		global.initializeUserEconomy(senderID, threadID);
+		
 		const expirationTime = (threadData.data.work_cooldown || economySystem.config.work_cooldown); // 20 minutes default
 
 		if (dateNow < economy[senderID].work_cooldown) {

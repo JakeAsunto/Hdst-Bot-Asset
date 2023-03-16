@@ -76,6 +76,7 @@ module.exports = function ({ models, api }) {
 		if (typeof defaults != 'object' && !Array.isArray(defaults)) throw global.getText("users", "needObject");
 		try {
 			await Users.findOrCreate({ where: { userID }, defaults });
+			//console.log(`Created DB for user ${userID}`);
 			return true;
 		}
 		catch (error) {

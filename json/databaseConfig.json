@@ -1,0 +1,29 @@
+{
+    "group_data_config": {
+        "receive_update": true,
+        "auto_resend_msg": true,
+        "auto_response_listener": true,
+        "antiout": true,
+        "antijoin": false,
+        "guard": false,
+        "isBanned": false,
+        "bannedCommands": [],
+        "banned": {
+            "caseID": -1,
+            "reason": "not set",
+            "dateIssued": "not set",
+            "bannedUntil": 0
+        }
+    },
+    "user_data_config": {
+        "afk": "",
+        "isBanned": false,
+        "bannedCommands": [],
+        "banned": {
+            "caseID": -1,
+            "reason": "not set",
+            "dateIssued": "not set",
+            "bannedUntil": 0
+        }
+    }
+}

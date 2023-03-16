@@ -15,6 +15,7 @@ module.exports.run = async function ({ event, api, Threads, Users }) {
 		try {
 			const index = (global.data.allThreadID).indexOf(event.threadID);
 			(index !== -1) ? (global.data.allThreadID).splice(index, 1) : '';
+			global.logger('Bot leave group: ${event.threadID}, Deleting group database...`, 'warn');
 			await Threads.delData(event.threadID);
 		} catch {}
 		return;
@@ -25,20 +26,20 @@ module.exports.run = async function ({ event, api, Threads, Users }) {
  
 
 	try {
-		if (data.antiout && type == 'self-separation') {
-		
-			api.addUserToGroup(
-				event.logMessageData.leftParticipantFbId,
-				event.threadID,
-				(error, info) => {
-					if (error) {
-						//removeUserEconomy(event.logMessageData.leftParticipantFbId);
+		if (type == 'self-separation') {
+			if (data && data.antiout) {
+				api.addUserToGroup(
+					event.logMessageData.leftParticipantFbId,
+					event.threadID,
+					(error, info) => {
+						if (error) {
+							//removeUserEconomy(event.logMessageData.leftParticipantFbId);
     					return api.sendMessage(global.textFormat('group', 'groupAntiOutFailed', name), event.threadID)
+						}
+						api.sendMessage(global.textFormat('group', 'groupAntiOutSuccess', name), event.threadID);
 					}
-					api.sendMessage(global.textFormat('group', 'groupAntiOutSuccess', name), event.threadID);
-				}
-			);
-		
+				);
+			}
 		} else if (type == 'kicked') {
 		
 			return api.sendMessage(

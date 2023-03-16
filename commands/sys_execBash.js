@@ -1,5 +1,5 @@
 module.exports.config = {
-	name: 'bash',
+	name: 'shell',
 	version: '1.0.0',
 	description: 'run shell command on the system.',
 	hasPermssion: 2,

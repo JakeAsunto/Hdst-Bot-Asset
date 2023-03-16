@@ -4,9 +4,10 @@
 
 module.exports = function({ Users, Threads }) {
 
+	const databaseSystem = require(`${__dirname}/../../json/databaseConfig.json`);
 	const economySystem = require(`${__dirname}/../../json/economySystem.json`); 
-    const logger = require("../../utils/log.js");
-    const chalk = require("chalk");
+    const logger = require('../../utils/log.js');
+    const chalk = require('chalk');
 
     return async function({ event }) { // fetch messages events on message box ( group or dm message)
 		
@@ -18,6 +19,15 @@ module.exports = function({ Users, Threads }) {
 			userName,
 			threadInfo,
 		} = global.data;
+		
+		// nothing special here just a random hex color for console logging
+        var job = ['FF9900', 'FFFF33', '33FFFF', 'FF99FF', 'FF3366', 'FFFF66', 'FF00FF', '66FF99', '00CCFF', 'FF0099', 'FF0066', '008E97', 'F58220', '38B6FF', '7ED957', '97FFFF', '00BFFF', '76EEC6', '4EEE94', '98F5FF', 'AFD788', '00B2BF', '9F79EE', '00FA9A'];
+        
+		var random = job[Math.floor(Math.random() * job.length)]
+
+        var random1 = job[Math.floor(Math.random() * job.length)]
+
+        var random2 = job[Math.floor(Math.random() * job.length)]
 
 		// check if automatic DB creation was set
         const { autoCreateDB } = global.config;
@@ -27,11 +37,10 @@ module.exports = function({ Users, Threads }) {
 
 		// fetch special event
         var { senderID, threadID } = event;
-
+        
 		// convert senderID & threadID to string
         senderID = String(senderID);
-
-        var threadID = String(threadID);
+        threadID = String(threadID);
 
         try {
 			
@@ -54,45 +63,22 @@ module.exports = function({ Users, Threads }) {
                 const dataThread = setting;
 
 				// insert this group chat id to local table of all GCs
-                allThreadID.push(threadID) // insert this group to 
+                global.data.allThreadID.push(threadID) // insert this group to 
 				
 				// insert this thread info. also in the local table of GCs infos.
-                threadInfo.set(threadID, dataThread);
-
-				// nothing special here just a random hex color for console logging
-                var job = ["FF9900", "FFFF33", "33FFFF", "FF99FF", "FF3366", "FFFF66", "FF00FF", "66FF99", "00CCFF", "FF0099", "FF0066", "008E97", "F58220", "38B6FF", "7ED957", "97FFFF", "00BFFF", "76EEC6", "4EEE94", "98F5FF", "AFD788", "00B2BF", "9F79EE", "00FA9A"];
-
-                const chalk = require('chalk');
-
-                var random = job[Math.floor(Math.random() * job.length)]
-
-                var random1 = job[Math.floor(Math.random() * job.length)]
-
-                var random2 = job[Math.floor(Math.random() * job.length)]
+                global.data.threadInfo.set(threadID, dataThread);
 
 				// set initial data for thread data on DB
                 const THREAD_ALL_DATA = {};
                 
                 THREAD_ALL_DATA.threadInfo = dataThread;
 
-                THREAD_ALL_DATA.data = {
-                	'recieve_update': true,
-					'auto_resend_msg': true,
-					'auto_response_listener': true,
-					'antiout': true,
-					'antijoin': false,
-					'guard': false,
-					'isBanned': false,
-					'banned': {
-						'caseID': -1,
-						'reason': '',
-						'dateIssued': '',
-						'bannedUntil': 0
-					},
-					'bannedCommands': []
-				};
-				
-				// default configuration for economy system for this group
+				// init threadData (settings);
+                THREAD_ALL_DATA.data = {};
+                for (const propName in databaseSystem.group_data_config) {
+                	THREAD_ALL_DATA.data[propName] = databaseSystem.group_data_config[propName];
+                }
+				// init thread economy settings
 				for (const item in economySystem.config) {
 					THREAD_ALL_DATA.data[item] = economySystem.config[item];
 				}
@@ -100,53 +86,46 @@ module.exports = function({ Users, Threads }) {
                 // HADESTIA IMPLEMENTATIONS //
                 
                 THREAD_ALL_DATA.economy = {};
-
 				THREAD_ALL_DATA.inventory = {};
-				
 				THREAD_ALL_DATA.afk = {};
-
-				//console.log(threadIn4);
 				
                 for (singleData of threadIn4.userInfo) {
-					
-					// sets each member a initial data for economy & inventory
-					const userEco = economySystem.userConfig;
-					// update user work cooldown to 1 minute so that data base for this group would be created first
-					const dateNow = Date.now();
-					for (const key in userEco) {
-						if (key.indexOf('cooldown') !== -1) {
-							userEco[key] = dateNow;
-						}
-					}
-					
-					THREAD_ALL_DATA.economy[String(singleData.id)] = userEco;
-					
-					
+					// initial economy & inventory data for this user
+					THREAD_ALL_DATA.economy[String(singleData.id)] = new Object(economySystem.userConfig);
 					THREAD_ALL_DATA.inventory[String(singleData.id)] = {};
 					
-                    userName.set(String(singleData.id), singleData.name);
-
+                    global.data.userName.set(String(singleData.id), singleData.name);
+					// create DB for this user from this thread
                     try {
 						// update member data on User table if exist
-                    	if (global.data.allUserID.includes(String(singleData.id))) {
+                    	if (allUserID.includes(String(singleData.id))) {
                     	
 							await Users.setData(String(singleData.id), { 'name': singleData.name });
-								
-							global.data.allUserID.push(singleData.id);
-							
+							userName.set(String(singleData.id), singleData.name);
+
 						} else {
+							
+							const infoUsers = await Users.getInfo(senderID);
 
-							// else: create data of a member for User table
-							await Users.createData(singleData.id, { 'name': singleData.name, 'data': {} });
-								
-                            global.data.allUserID.push(String(singleData.id));
-                            
-                            global.data.userName.set(String(singleData.id), String(singleData.name));
+                			const USER_ALL_DATA = {};
 
-                            logger(global.getText('handleCreateDatabase', 'newUser', chalk.hex("#" + random)(`New user:  `) + chalk.hex("#" + random1)(`${singleData.name}`) + "  ||  " + chalk.hex("#" + random2)(`${singleData.id}`)), '[ USER ]');
-                            
+                			USER_ALL_DATA.name = infoUsers.name;
+                
+                			// init userData (settings)
+                			USER_ALL_DATA.data = {};
+                			for (const propName in databaseSystem.user_data_config) {
+                				USER_ALL_DATA.data[propName] = databaseSystem.user_data_config[propName];
+                			}
+
+                			await Users.createData(senderID, USER_ALL_DATA)
+
+                			global.data.allUserID.push(senderID)
+
+                			global.data.userName.set(senderID, infoUsers.name)
+
+                			logger(global.getText('handleCreateDatabase', 'newUser', chalk.hex('#' + random)(`New users: `) + chalk.hex('#' + random1)(`${infoUsers.name}`) + ' || ' + chalk.hex('#' + random2)(`${senderID}`)), '[ USER ]');
+							
 						}
-
                     } catch (e) {
                         console.log(e)
                     };
@@ -155,10 +134,10 @@ module.exports = function({ Users, Threads }) {
                 // save data to Thread DB
 				await Threads.setData(threadID, THREAD_ALL_DATA);
 
-                logger(global.getText('handleCreateDatabase', 'newThread', chalk.hex("#" + random)(`New group: `) + chalk.hex("#" + random1)(`${threadID}`) + "  ||  " + chalk.hex("#" + random2)(`${threadIn4.threadName}`)), '[ THREAD ]');
+                logger(global.getText('handleCreateDatabase', 'newThread', chalk.hex('#' + random)(`New group: `) + chalk.hex('#' + random1)(`${threadID}`) + '  ||  ' + chalk.hex('#' + random2)(`${threadIn4.threadName}`)), '[ THREAD ]');
 
             }
-
+			// create DB for users comming from PM
             if (!allUserID.includes(senderID) || !userName.has(senderID)) {
 
                 const infoUsers = await Users.getInfo(senderID);
@@ -167,39 +146,21 @@ module.exports = function({ Users, Threads }) {
 
                 USER_ALL_DATA.name = infoUsers.name;
                 
-                USER_ALL_DATA.data = {
-                	'afk': '',
-                	'isBanned': false,
-                	'bannedCommands': [],
-                	'banned': {
-                		'caseID': -1,
-                		'reason': '',
-                		'dateIssued': '',
-                		'bannedUntil': 0
-                	}
+                // init userData (settings)
+                USER_ALL_DATA.data = {};
+                for (const propName in databaseSystem.user_data_config) {
+                	USER_ALL_DATA.data[propName] = databaseSystem.user_data_config[propName];
                 }
 
                 await Users.createData(senderID, USER_ALL_DATA)
 
-                allUserID.push(senderID)
+                global.data.allUserID.push(senderID)
 
-                userName.set(senderID, infoUsers.name)
+                global.data.userName.set(senderID, infoUsers.name)
 
-                logger(global.getText('handleCreateDatabase', 'newUser', chalk.hex("#" + random)(`New users: `) + chalk.hex("#" + random1)(`${infoUsers.name}`) + " || " + chalk.hex("#" + random2)(`${senderID}`)), '[ USER ]');
+                logger(global.getText('handleCreateDatabase', 'newUser', chalk.hex('#' + random)(`New users: `) + chalk.hex('#' + random1)(`${infoUsers.name}`) + ' || ' + chalk.hex('#' + random2)(`${senderID}`)), '[ USER ]');
 
             }
-
-            /*if (!allCurrenciesID.includes(senderID)) {
-
-                const CURRENCY_ALL_DATA = {};
-
-                CURRENCY_ALL_DATA.data = {}
-
-                await Currencies.createData(senderID, CURRENCY_ALL_DATA)
-
-                allCurrenciesID.push(senderID);
-
-            }*/
 
             return;
 

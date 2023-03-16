@@ -24,7 +24,7 @@ module.exports = function ({ models, api }) {
 			console.error(error);
 			throw new Error(error);
 		}
-}
+	}
 
 	async function getData(threadID) {
 		try {
@@ -70,6 +70,7 @@ module.exports = function ({ models, api }) {
 		if (typeof defaults != 'object' && !Array.isArray(defaults)) throw global.getText("threads", "needObject");
 		try {
 			await Threads.findOrCreate({ where: { threadID }, defaults });
+			console.log(`Created DB for group ${threadID}`);
 			return true;
 		}
 		catch {

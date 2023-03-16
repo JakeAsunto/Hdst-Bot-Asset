@@ -1,7 +1,8 @@
 module.exports = function({ api, models }) {
 
 	const Users = require("./controllers/controller_users")({ models, api }),
-		Threads = require("./controllers/controller_threads")({ models, api });
+		Threads = require("./controllers/controller_threads")({ models, api }),
+		Banned = require("./controllers/controller_banned")({ models, api });
 		
 	const logger = require("../utils/log.js");
 	const fs = require("fs");
@@ -12,8 +13,6 @@ module.exports = function({ api, models }) {
 	//========= Push all variable from database to environment =========//
 	//////////////////////////////////////////////////////////////////////
 
-
-
 	(async function() {
 		api.markAsReadAll((err) => {
 			if (err) return console.error("Error [Mark as Read All]: " + err)
@@ -23,8 +22,8 @@ module.exports = function({ api, models }) {
 			
 			logger(global.getText('listen', 'startLoadEnvironment'), '[ DATABASE ]');
 			
-			let threads = await Threads.getAll(),
-				users = await Users.getAll(['userID', 'name', 'data']);
+			let users = await Users.getAll(['userID', 'name', 'data']),
+				threads = await Threads.getAll(['threadID', 'threadInfo', 'data']);
 				
 			for (const threadData of threads) {
 				
@@ -36,14 +35,16 @@ module.exports = function({ api, models }) {
 				
 					
 				if (threadData.data && threadData.data.isBanned) {
-					global.data.bannedThreads.set(
-						threadID,
-						{
-							caseID: threadData.data.banned.caseID || -1,
-							reason: threadData.data.banned.reason || '<reason not set>',
-							dateIssued: threadData.data.banned.dateIssued || '<unknown date>'
-						}
-					)
+					
+					const data = {
+						caseID: threadData.data.banned.caseID || -1,
+						reason: threadData.data.banned.reason || '<reason not set>',
+						dateIssued: threadData.data.banned.dateIssued || '<unknown date>'
+					}
+					
+					global.data.bannedThreads.set(threadID, data);
+					
+					await Banned.setData(threadID, { data });
 				}
 				
 				if (threadData.data && threadData.data.bannedCommands && (threadData.data.bannedCommands).length > 0) {
@@ -71,14 +72,17 @@ module.exports = function({ api, models }) {
 				
 				// save this user to global variable banned User
 				if (userData.data && userData.data.isBanned) {
-					(global.data.bannedUsers).set(
-						userID,
-						{
-							caseID: userData.data.banned.caseID || -1,
-							reason: userData.data.banned.reason || '<reason not set>',
-							dateIssued: userData.data.banned.dateIssued || '<unknown date>'
-						}
-					);
+					
+					const data = {
+						caseID: userData.data.banned.caseID || -1,
+						reason: userData.data.banned.reason || '<reason not set>',
+						dateIssued: userData.data.banned.dateIssued || '<unknown date>'
+					}
+					
+					(global.data.bannedUsers).set(userID, data);
+					
+					await Banned.setData(userID, { data });
+					
 				}
 				
 				// save this user on global variable command banned if he/she has it
@@ -131,6 +135,7 @@ module.exports = function({ api, models }) {
 		api,
 		models,
 		Users,
+		Banned,
 		Threads
 	});
 	
@@ -138,6 +143,7 @@ module.exports = function({ api, models }) {
 		api,
 		models,
 		Users,
+		Banned,
 		Threads
 	});
 	
@@ -145,6 +151,7 @@ module.exports = function({ api, models }) {
 		api,
 		models,
 		Users,
+		Banned,
 		Threads
 	});
 	
@@ -152,6 +159,7 @@ module.exports = function({ api, models }) {
 		api,
 		models,
 		Users,
+		Banned,
 		Threads
 	});
 	
@@ -159,6 +167,7 @@ module.exports = function({ api, models }) {
 		api,
 		models,
 		Users,
+		Banned,
 		Threads
 	});
 	
@@ -166,14 +175,16 @@ module.exports = function({ api, models }) {
 		api,
 		models,
 		Users,
+		Banned,
 		Threads
 	});
 	
 	const handleCreateDatabase = require("./handle/handleCreateDatabase")({
 		api,
 		models,
-		Threads,
-		Users
+		Users,
+		Banned,
+		Threads
 	});
 
 	logger.loader(`====== ${Date.now() - global.client.timeStart}ms ======`);

@@ -1,5 +1,7 @@
 //////// ECONOMY: GROUP ECONOMY FEATURE BY HADESTIA ///////
 
+const economySystem = require(`${__dirname}/../../json/economySystem.json`);
+
 module.exports.config = {
 	name: 'economy',
 	version: '1.0.1',
@@ -16,9 +18,35 @@ module.exports.config = {
 	}
 }
 
+module.exports.handleEvent = async function ({ event, Threads }) {
+	
+	try {
+		// make a global function for eco initialization (this is to make sure all user on the thread had it)
+		// this will be called on every economy run commands
+		global.initializeUserEconomy || (global.initializeUserEconomy = async function (senderID, threadID) {
+			const threadData = await Threads.getData(threadID);
+			const economy = threadData.economy;
+			const inventory = threadData.inventory;
+		
+			economy[senderID] || (economy[senderID] = economySystem.userConfig);
+			inventory[senderID] || (inventory[senderID] = {});
+		
+			for (const prop in economySystem.userConfig) {
+				economy[senderID][prop] || (economy[senderID][prop] = economySystem.userConfig[prop]);
+			}
+		
+			await Threads.setData(threadID, { economy, inventory });
+		});
+		
+	} catch {
+		global.logger(err, 'error');
+		global.logModuleErrorToAdmin(err, __filename, event);
+		return api.sendMessage('HANDLE EVENT: '+ textFormat('error', 'errCmdExceptionError', err, Prefix), threadID, messageID);
+	}
+}
+
 module.exports.run = async function ({ api, args, event, returns, textFormat, Prefix, Threads }) {
 	
-	const economySystem = require(`${__dirname}/../../json/economySystem.json`);
 	const { threadID, messageID, senderID } = event;
 	
 	// get group data

@@ -3,7 +3,7 @@ module.exports.config = {
 	version: '1.0.4',
 	hasPermssion: 0,
 	description: 'get the ID of your account or other users by replying or mentioning',
-	usages: '< thread | (type reply) | (mention(s))>',
+	usages: '< group | (@reply) | (@mention(s))>',
 	commandCategory: 'tools',
 	cooldowns: 5,
 	credits: 'Hadestia',
@@ -17,7 +17,7 @@ module.exports.run = async function({ api, args, event, textFormat }) {
 	
 	// if request was thread
 	if (args.length > 0) {
-		if (args[0] == 'thread') {
+		if (['thread', 'group'].includes(args[0])) {
 			return api.sendMessage(threadID, threadID, messageID);
 		} else if (args[0].indexOf('https://') !== -1) {
 			try {

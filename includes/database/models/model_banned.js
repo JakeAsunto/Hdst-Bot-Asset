@@ -1,21 +1,18 @@
 module.exports = function({ sequelize, Sequelize }) {
-	let Users = sequelize.define('Users', {
+	let Banned = sequelize.define('Banned', {
 		num: {
 			type: Sequelize.INTEGER,
 			primaryKey: true,
 			autoIncrement: true
 		},
-		userID: {
+		ID: {
 			type: Sequelize.STRING,
 			unique: true
 		},
-        name: {
-            type: Sequelize.STRING
-        },
 		data: {
-			type: Sequelize.JSON
+			type: Sequelize.JSON 
 		}
 	});
 
-	return Users;
+	return Banned;
 }

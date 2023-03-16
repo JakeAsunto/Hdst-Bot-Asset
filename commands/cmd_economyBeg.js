@@ -58,24 +58,20 @@ module.exports.run = async function ({ api, args, event, returns, textFormat, Pr
 		if (economy[senderID].hand < 0) {
 			
 			economy[senderID].hand += randomSalary;
-			await Threads.setData(threadID, { economy });
-			
-			return api.sendMessage(randomSuccessResponse, threadID, messageID);
+			api.sendMessage(randomSuccessResponse, threadID, messageID);
 			
 		} else {
 			// do the probability
 			if (Math.random() <= economySystem.default.beg_success_rate) {
 				
 				economy[senderID].hand += randomSalary;
-				await Threads.setData(threadID, { economy });
-				return api.sendMessage(randomSuccessResponse, threadID, messageID);
+				api.sendMessage(randomSuccessResponse, threadID, messageID);
 				
 			} else {
-				return api.sendMessage(randomFailedResponse, threadID, messageID);
+				api.sendMessage(randomFailedResponse, threadID, messageID);
 			}
 		}
-		
-		return api.sendMessage(textFormat('economy', 'cmdBalance', ownerName, leaderboards.userPosition, currency, formatOnHand, formatOnBank, formatTotal), threadID, messageID);
+		await Threads.setData(threadID, { economy });
 		
 	} catch (err) {
 		returns.remove_usercooldown();

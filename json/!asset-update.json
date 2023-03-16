@@ -5,8 +5,8 @@
         "https://facebook.com/mensaherong.iantot",
         "This repository was linked to bot assets repository of Hadestia that include assets auto updater."
     ],
-    "VERSION": "6.5.2",
-    "CHANGELOGS": "- Bot can only reply for user's cooldown when the  remaining time was above 2 minutes.\n- Changes in cooldown calculations for beg and work command.",
+    "VERSION": "6.7.2",
+    "CHANGELOGS": "- Add Banned database",
     "MAIN": {
         "LICENSE-HADESTIA": {
             "path": "/"
@@ -44,10 +44,16 @@
         "controller_users.js": {
             "path": "includes/controllers/"
         },
+        "controller_banned.js": {
+            "path": "includes/controllers/"
+        },
         "controller_threads.js": {
             "path": "includes/controllers/"
         },
         "model_users.js": {
+            "path": "includes/database/models/"
+        },
+        "model_banned.js": {
             "path": "includes/database/models/"
         },
         "model_threads.js": {
