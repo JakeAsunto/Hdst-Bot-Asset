@@ -15,7 +15,7 @@ module.exports.run = async function ({ event, api, Threads, Users }) {
 		try {
 			const index = (global.data.allThreadID).indexOf(event.threadID);
 			(index !== -1) ? (global.data.allThreadID).splice(index, 1) : '';
-			global.logger('Bot leave group: ${event.threadID}, Deleting group database...`, 'warn');
+			global.logger(`Bot leave group: ${event.threadID}, Deleting group database...`, 'warn');
 			await Threads.delData(event.threadID);
 		} catch {}
 		return;
@@ -34,7 +34,7 @@ module.exports.run = async function ({ event, api, Threads, Users }) {
 					(error, info) => {
 						if (error) {
 							//removeUserEconomy(event.logMessageData.leftParticipantFbId);
-    					return api.sendMessage(global.textFormat('group', 'groupAntiOutFailed', name), event.threadID)
+    						return api.sendMessage(global.textFormat('group', 'groupAntiOutFailed', name), event.threadID)
 						}
 						api.sendMessage(global.textFormat('group', 'groupAntiOutSuccess', name), event.threadID);
 					}

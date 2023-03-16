@@ -653,8 +653,10 @@ async function onBot({ models: botModel }) {
 
         for (const command of listCommand) {
 			try {
+				
 				const cmd = require(global.client.mainPath + '/modules/commands/' + command);
 				if (cmd.lateInit) {
+					console.log('Late Init :' + command);
 					cmd.lateInit({ api: loginApiData, models: botModel });
 				}
 			} catch (error) {
@@ -664,8 +666,10 @@ async function onBot({ models: botModel }) {
 		
 		for (const event of listEvent) {
 			try {
+				
 				const ev = require(global.client.mainPath + '/modules/events/' + event);
 				if (ev.lateInit) {
+					console.log('Late Init :' + event)
 					ev.lateInit({ api: loginApiData, models: botModel });
 				}
 			} catch (error) {

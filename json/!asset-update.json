@@ -105,6 +105,7 @@
         "event_adminMessageReply",
         "event_autoRecycleMessage",
         "event_autoResponse",
+        "event_autoBanBot",
         "event_autoSeen",
         "cmd_dictionary",
         "cmd_group",
