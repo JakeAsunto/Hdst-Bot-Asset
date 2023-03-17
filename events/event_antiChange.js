@@ -9,7 +9,7 @@ module.exports.config = {
 module.exports.run = async function ({ event, api, Threads, Users }) {
 	
     const { logMessageType, logMessageData, senderID } = event;
-	let data = (await Threads.getData(event.threadID)).data
+	let data = ((await Threads.getData(event.threadID)).data) || {};
 
 	if (!data.guard) return;
 	
@@ -24,19 +24,18 @@ module.exports.run = async function ({ event, api, Threads, Users }) {
     	
 		if (logMessageData.ADMIN_EVENT == 'add_admin') {
 			
-			if(event.author == api.getCurrentUserID()) return
-			if(logMessageData.TARGET_ID == api.getCurrentUserID()) return
+			if (event.author == api.getCurrentUserID()) return
+			if (logMessageData.TARGET_ID == api.getCurrentUserID()) return
 
 		} else if (logMessageData.ADMIN_EVENT == 'remove_admin') {
 					
 			if (event.author == api.getCurrentUserID()) return
 			if (logMessageData.TARGET_ID == api.getCurrentUserID()) return
 
-		} else {
-					
-			api.changeAdminStatus(event.threadID, event.author, false, editAdminsCallback)
-			api.changeAdminStatus(event.threadID, logMessageData.TARGET_ID, true)
-			
 		}
+					
+		api.changeAdminStatus(event.threadID, event.author, false, editAdminsCallback)
+		api.changeAdminStatus(event.threadID, logMessageData.TARGET_ID, true)
+		
 	}
 }

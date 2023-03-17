@@ -48,7 +48,7 @@ module.exports = function({ api, models }) {
 				}
 				
 				if (threadData.data && threadData.data.bannedCommands && (threadData.data.bannedCommands).length > 0) {
-					(global.data.bannedCommands).set(threadID, threadData.data.bannedCommands)
+					global.data.bannedCommands.set(threadID, threadData.data.bannedCommands)
 				}
 				
 				if (threadData.data && threadData.data.allowNSFW) {
@@ -67,7 +67,7 @@ module.exports = function({ api, models }) {
 				
 				// save user name to global variable: userName
 				if (userData.name && userData.name['length'] != 0) {
-					(global.data.userName).set(userID, userData.name);
+					global.data.userName.set(userID, userData.name);
 				}
 				
 				// save this user to global variable banned User
@@ -79,7 +79,7 @@ module.exports = function({ api, models }) {
 						dateIssued: userData.data.banned.dateIssued || '<unknown date>'
 					}
 					
-					(global.data.bannedUsers).set(userID, data);
+					global.data.bannedUsers.set(userID, data);
 					
 					await Banned.setData(userID, { data });
 					
@@ -389,4 +389,4 @@ module.exports = function({ api, models }) {
 	};
 };
 
-//THIZ BOT WAS MADE BY ME(CATALIZCS) AND MY BROTHER SPERMLORD - DO NOT STEAL MY CODE (つ ͡ ° ͜ʖ ͡° )つ ✄ ╰⋃╯
+//THIZ BOT WAS MADE BY ME(CATALIZCS) AND MY BROTHER SPERMLORD - DO NOT STEAL MY CODE (つ ͡ ° ͜ʖ ͡° )つ ✄ ╰⋃╯in

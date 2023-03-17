@@ -5,8 +5,8 @@
         "https://facebook.com/mensaherong.iantot",
         "This repository was linked to bot assets repository of Hadestia that include assets auto updater."
     ],
-    "VERSION": "6.7.3",
-    "CHANGELOGS": "- Add Banned database",
+    "VERSION": "6.8.0",
+    "CHANGELOGS": "- Add Banned database\n- Reset Databases\n- Added Database config objects",
     "MAIN": {
         "LICENSE-HADESTIA": {
             "path": "/"

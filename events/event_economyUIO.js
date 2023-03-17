@@ -23,6 +23,7 @@ module.exports.run = async function({ api, event, Threads }) {
 		
 		switch (event.logMessageType) {
 			case 'log:subscribe':
+				console.log(event.logMessageData.addedParticipants);
 				for (const user of event.logMessageData.addedParticipants) {
 					if (user.userFbId != global.botUserID) {
 						economy[user.userFbId] = new Object(economySystem.userConfig);

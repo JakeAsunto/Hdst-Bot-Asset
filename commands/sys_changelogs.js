@@ -29,7 +29,7 @@ module.exports.lateInit = async function ({ api, models }) {
 				} catch {
 					var data = {};
 				}
-				const idIndex = (global.data.allThreadID).indexOf(thread);
+				const idIndex = global.data.allThreadID.indexOf(thread);
 				
 				if (data.recieve_update) {
 					api.sendMessage(
@@ -40,7 +40,7 @@ module.exports.lateInit = async function ({ api, models }) {
 							// that probably bot are not a member anymore
 							if (err) {
 								(idIndex !== -1) ? (global.data.allThreadID).slice(idIndex, 1) : '';
-								await Threads.delData(event.threadID);
+								await Threads.delData(thread);
 							}
 						}
 					);

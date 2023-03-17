@@ -6,7 +6,7 @@ module.exports = function({ sequelize, Sequelize }) {
 			autoIncrement: true
 		},
 		userID: {
-			type: Sequelize.STRING,
+			type: Sequelize.BIGINT,
 			unique: true
 		},
         name: {

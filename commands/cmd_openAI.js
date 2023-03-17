@@ -30,7 +30,7 @@ module.exports.run = async function({ api, event, args, textFormat }) {
         	model: 'text-davinci-003',
             prompt: args.join(' '),
             temperature: 0.3,
-            max_tokens: 1000,
+            max_tokens: 100,
             frequency_penalty: 0.5,
             presence_penalty: 0.5
         });
