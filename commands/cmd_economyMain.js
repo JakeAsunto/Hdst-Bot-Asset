@@ -18,7 +18,7 @@ module.exports.config = {
 	}
 }
 
-module.exports.handleEvent = async function ({ event, Threads }) {
+/*module.exports.handleEvent = async function ({ event, Threads }) {
 	
 	try {
 		// make a global function for eco initialization (this is to make sure all user on the thread had it)
@@ -43,7 +43,7 @@ module.exports.handleEvent = async function ({ event, Threads }) {
 		global.logModuleErrorToAdmin(err, __filename, event);
 		return api.sendMessage('HANDLE EVENT: '+ textFormat('error', 'errCmdExceptionError', err, Prefix), threadID, messageID);
 	}
-}
+}*/
 
 module.exports.run = async function ({ api, args, event, returns, textFormat, Prefix, Threads }) {
 	

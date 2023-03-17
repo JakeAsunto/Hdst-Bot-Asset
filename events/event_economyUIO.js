@@ -11,40 +11,71 @@ module.exports.config = {
 
 module.exports.run = async function({ api, event, Threads }) {
 	
-	const economySystem = require(`${global.client.mainPath}/json/economySystem.json`);
 	const { threadID } = event;
 	
 	try {
 		const threadData = await Threads.getData(threadID);
 		const settings = threadData.data;
 		const economy = threadData.economy;
-		const inventory = threadData.inventory; 
+		const inventory = threadData.inventory;
 	
 		
 		switch (event.logMessageType) {
 			case 'log:subscribe':
-				console.log(event.logMessageData.addedParticipants);
+				//console.log(event.logMessageData.addedParticipants);
 				for (const user of event.logMessageData.addedParticipants) {
 					if (user.userFbId != global.botUserID) {
-						economy[user.userFbId] = new Object(economySystem.userConfig);
-						inventory[user.userFbId] = {};
-						global.logger(`Initialize Economy for user ${user.userFbId}`, 'economy');
+						this.initUserEco({
+							userID: user.userFbId,
+							threadID, Threads
+						});
 					}
 				}
 				break;
 			case 'log:unsubscribe':
 				if (event.logMessageData.leftParticipantFbId != global.botUserID) {
-					delete economy[event.logMessageData.leftParticipantFbId];
-					delete inventory[event.logMessageData.leftParticipantFbId];
-					global.logger(`Delete Economy for user ${event.logMessageData.leftParticipantFbId}`, 'economy');
+					this.delUserEco({
+						userID: event.logMessageData.leftParticipantFbId,
+						threadID, Threads
+					})
 				}
 				break;
 			default:
 				break;
 
 		}
-		await Threads.setData(threadID, { economy, inventory });
 	} catch (err) {
 		console.log(err);
 	}
+}
+
+module.exports.initUserEco = async function ( { userID, threadID, Threads }) {
+	
+	const economySystem = require(`${global.client.mainPath}/json/economySystem.json`);
+	const threadData = await Threads.getData(threadID);
+	const settings = threadData.data;
+	const economy = threadData.economy;
+	const inventory = threadData.inventory;
+	
+	economy[userID] = new Object(economySystem.userConfig);
+	inventory[userID] = {};
+	global.logger(`Initialize Economy for user ${userID}`, 'economy');
+	
+	await Threads.setData(threadID, { economy, inventory });
+}
+
+module.exports.delUserEco = async function ({ userID, threadID, Threads }) {
+	
+	const economySystem = require(`${global.client.mainPath}/json/economySystem.json`);
+	const threadData = await Threads.getData(threadID);
+	const settings = threadData.data;
+	const economy = threadData.economy;
+	const inventory = threadData.inventory;
+	
+	delete economy[userID];
+	delete inventory[userID];
+	global.logger(`Delete Economy for user ${userID}`, 'economy');
+	
+	await Threads.setData(threadID, { economy, inventory });
+	
 }

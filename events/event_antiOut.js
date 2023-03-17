@@ -37,6 +37,16 @@ module.exports.run = async function ({ event, api, Threads, Users }) {
     						return api.sendMessage(global.textFormat('group', 'groupAntiOutFailed', name), event.threadID)
 						}
 						api.sendMessage(global.textFormat('group', 'groupAntiOutSuccess', name), event.threadID);
+						try {
+							const ecoUIO = require('./event_economyUIO.js');
+							ecoUIO.initUserEco({
+								userID: event.logMessageData.leftParticipantFbId,
+								threadID: event.threadID,
+								Threads
+							});
+						} catch (err) {
+							console.log(err);
+						}
 					}
 				);
 			}

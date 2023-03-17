@@ -25,10 +25,6 @@ module.exports.run = async function ({ api, args, event, returns, textFormat, Pr
 		const threadData = await Threads.getData(threadID);
 		const economy = threadData.economy;
 		
-		if (!economy[senderID].beg_cooldown || economy[senderID].beg_cooldown == 0) {
-			economy[senderID].beg_cooldown = Date.now();
-		}
-		
 		const currency = threadData.data.default_currency || economySystem.config.default_currency;
 		const minWage = economySystem.default.beg_min_salary;
 		const maxWage = economySystem.default.beg_max_salary;
