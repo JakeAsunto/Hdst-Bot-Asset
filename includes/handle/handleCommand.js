@@ -294,7 +294,7 @@ module.exports = function({ api, models, Users, Threads }) {
 		}
 		
 		// minus 1 sec to prevent 0 sec cooldown
-        if (timestamps.has(senderID) && dateNow < (userCooldown - 1000)) {
+        if (!is_admin_bot && timestamps.has(senderID) && dateNow < (userCooldown - 1000)) {
         	return userInCooldown(userCooldown, dateNow);
             //return END_TYPING && END_TYPING();
 		}
