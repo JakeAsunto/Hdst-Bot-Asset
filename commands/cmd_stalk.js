@@ -52,22 +52,36 @@ module.exports.run = async function ({ api, event, args, utils, textFormat, Pref
 		const res = await api.getUserInfoV2(id);
 		const n_a = '𝘯𝘰 𝘥𝘢𝘵𝘢';
 		
-		var gender = (res.gender !== 'no_data') ? res.gender : n_a;
-		var is_birthday = res.isBirthday == true ? 'Yes' : 'No';
-		var usern = (res.username) ? res.username : id;
-		//var love = res.relationship_status == 'Không Có Dữ Liệu' ? n_a : res.relationship_status;
-		//var location = res.location == 'Không Có Dữ Liệu' ? n_a : res.location.name;
-		//var hometown = res.hometown == 'Không Có Dữ Liệu' ? n_a : res.hometown.name;
-		//var follow = res.follow == 'Không Có Dữ Liệu' ? n_a : res.follow;
-		//var rs = res.love == 'Không Có Dữ Liệu' ? n_a : res.love.name;
+		var gender = (res.gender.startsWith('Không')) ? n_a : (res.gender == 'male') ? 'Male' : (res.gender == 'female') ? 'Female' : res.gender;
+		var birthday = (res.birthday.startsWith('Không')) ? n_a : res.birthday;
+		var usern = (res.username.startsWith('Không')) ? id : res.username;
+		
+		var love = (res.relationship_status.startsWith('Không')) ? n_a : res.relationship_status;
+		var location = (res.location.startsWith('Không')) ? n_a : res.location.name;
+		var hometown = (res.hometown.startsWith('Không')) ? n_a : res.hometown.name;
+		var followers = (res.follow.startsWith('Không')) ? n_a : res.follow;
+		//var rs = (res.love.startsWith('Không')) ? n_a : res.love.name;
+		var quotes = (res.qoutes.startsWith('Không'))? n_a : res.qoutes;
 
 		const path = `${__dirname}/../../cache/stalkImg.png`;
-		const profile_av = (await axios.get(encodeURI(res.avatar), { responseType: 'arraybuffer' })).data;
+		const profile_av = (await axios.get(encodeURI(res.imgavt), { responseType: 'arraybuffer' })).data;
 		fs.writeFileSync(path, Buffer.from(profile_av, 'utf-8'));
 		
 		return api.sendMessage(
 			{
-				body: textFormat('cmd', 'cmdStalkFormat', res.name, usern, gender, is_birthday),
+				body: textFormat(
+					'cmd', 'cmdStalkFormat',
+					res.name,
+					usern,
+					love,
+					
+					gender,
+					birthday,
+					followers,
+					location,
+					hometown,
+					quotes
+				),
 				attachment: fs.createReadStream(path)
 			},
 			event.threadID,

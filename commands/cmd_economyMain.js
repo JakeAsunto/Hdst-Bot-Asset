@@ -293,7 +293,7 @@ module.exports.run = async function ({ api, args, event, returns, textFormat, Pr
 				break;
 			}
 			const cooldown = parseInt(seconds[0]);
-			const cdInText = global.secondsToDHMS(cooldown);
+			const { toString: cdInText } = global.secondsToDHMS(cooldown);
 			
 			if (cooldown < 300 || cooldown > 604800) {
 				api.sendMessage(textFormat('error', 'errOccured', 'Cooldown must not be greater than 5 minutes or greater than 7 days.'), threadID, global.autoUnsend, messageID);

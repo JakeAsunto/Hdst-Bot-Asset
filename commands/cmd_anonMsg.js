@@ -18,14 +18,15 @@ module.exports.config = {
 }
 
 module.exports.handleMessageReply = async function ({ api, event }) {
+	
 	if (event.type === 'message_reply' && !event.body.startsWith(global.config.PREFIX)) {
-		
+		//console.log(event);
 		const { messageReply, threadID, messageID, senderID, body } = event;
 		//console.log(messageReply);
-		if (!messageReply.senderID || messageReply.senderID !== global.botUserID) return;
+		if (messageReply && !messageReply.senderID || messageReply.senderID !== global.botUserID) return;
 		
 		// IF this thread was the receiver of the sent anonymous message
-		if (messageReply.body.indexOf('𝗔𝗻𝗼𝗻𝘆𝗺𝗼𝘂𝘀 𝗠𝗲𝘀𝘀𝗮𝗴𝗲') !== -1 && messageReply.body.indexOf('replied to your anonymous message.') === -1) {
+		if (messageReply && messageReply.body.indexOf('𝗔𝗻𝗼𝗻𝘆𝗺𝗼𝘂𝘀 𝗠𝗲𝘀𝘀𝗮𝗴𝗲') !== -1 && messageReply.body.indexOf('replied to your anonymous message.') === -1) {
 			
 			// get the id of the one who sent this anonymous message
 			const trackIDs = messageReply.body.match(/(?<=𝚒𝚍: ).+?(?=\s|\s+)/g) || [];
@@ -71,7 +72,7 @@ module.exports.handleMessageReply = async function ({ api, event }) {
 
 		
 		// Handle reply of the one who sent anonymous message to the target recipient if he/she replied into it
-		} else if (messageReply.body.indexOf('𝗔𝗻𝗼𝗻𝘆𝗺𝗼𝘂𝘀 𝗠𝗲𝘀𝘀𝗮𝗴𝗲') !== -1 && messageReply.body.indexOf('replied to your anonymous message.') !== -1) {
+		} else if (messageReply && messageReply.body.indexOf('𝗔𝗻𝗼𝗻𝘆𝗺𝗼𝘂𝘀 𝗠𝗲𝘀𝘀𝗮𝗴𝗲') !== -1 && messageReply.body.indexOf('replied to your anonymous message.') !== -1) {
 			// same process; get the sender id
 			const trackIDs = messageReply.body.match(/(?<=𝚒𝚍: ).+?(?=\s|\s+)/g) || [];
 			// reusing sender codename

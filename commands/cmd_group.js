@@ -4,7 +4,7 @@ module.exports.config = {
 	hasPermssion: 3,
 	commandCategory: 'group',
 	description: 'Sets specific type for a group/thread',
-	usages: '\n[ name | admin | auto-response | anti-change | anti-join | anti-out ] [ ... ]',
+	usages: '\n[ preffix | name | admin | auto-response | anti-change | anti-join | anti-out ] [ ... ]',
 	credits: 'Hadestia',
 	cooldowns: 10,
 	aliases: [ 'group' ],
@@ -20,6 +20,7 @@ const validTypes = [
 	'anti-join',
 	'anti-out',
 	'setting',
+	'prefix',
 	'admin',
 	'name',
 	'add'
@@ -43,6 +44,16 @@ module.exports.run = async function ({ api, args, alias, event, returns, textFor
 	//console.log(GROUP_DATA)
 	// execute switch statement 
 	switch (commandType) {
+		// bot prefix
+		case 'prefix':
+			if (args.length > 0) {
+				GROUP_DATA.PREFIX = args[0];
+				api.changeNickname(global.textFormat('system', 'botNicknameSetup', GROUP_DATA.PREFIX, (!global.config.BOTNAME) ? ' ' : global.config.BOTNAME), threadID, api.getCurrentUserID());
+				api.sendMessage(textFormat('success', 'successfulFormat', `Bot prefix for this group was set to "${GROUP_DATA.PREFIX}".`), threadID, global.autoUnsend, messageID)
+			} else {
+				api.sendMessage(textFormat('error', 'errOccured', 'Prefix cannot be a blank or invalid character.'), threadID, global.autoUnsend, messageID);
+			}
+			break;
 		// group name
 		case 'name':
 			api.setTitle(
@@ -112,14 +123,15 @@ module.exports.run = async function ({ api, args, alias, event, returns, textFor
 			break;
 			
 	}
-	await Threads.setData(threadID, { data: GROUP_DATA });
+	const data = GROUP_DATA;
+	await Threads.setData(threadID, { data });
 	global.data.threadData.set(event.threadID, data);
 }
 
 // =============== CHECKER FUNCTIONS =============== // 
 
 function commandTypeValid(cmd) {
-	return validTypes.includes(cmd)
+	return validTypes.includes(cmd.toLowerCase())
 }
 
 

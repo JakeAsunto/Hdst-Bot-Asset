@@ -20,6 +20,8 @@ module.exports.run = async function({ api, event, Threads }) {
 	const date = moment.tz("Asia/Manila").format("MM/DD/YYYY");
 	const time = moment.tz("Asia/Manila").format("HH:mm:ss");
 	const res = await api.getUserInfo(event.author);
+	const { threadID, author } = event;
+	
 	let action;
 	
 	try { 
@@ -54,7 +56,7 @@ module.exports.run = async function({ api, event, Threads }) {
   	  }
     
  	   if (action) {
-  	  	const messageBody = global.textFormat('events', 'eventBotLogs', date, event.threadID, threadName, participantIDs.length, action, res.name || event.author, event.author);
+  	  	const messageBody = global.textFormat('events', 'eventBotLogs', date, threadID, threadName, participantIDs.length, action, res.name || author, author);
     		api.sendMessage(
 				messageBody,
 				global.config.ADMINBOT[0],

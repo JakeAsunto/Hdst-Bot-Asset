@@ -71,7 +71,7 @@ module.exports.run = async function({ api, event, args, client, __GLOBAL, Users 
 	let pathImg = __dirname + '/cache/porn.png';
 	var text = args.join(' ');
 	
-	let getAvatar = (await axios.get(res.avatar, { responseType: 'arraybuffer' })).data;
+	let getAvatar = (await axios.get(res.imgavt, { responseType: 'arraybuffer' })).data;
 	let getTweet = (await axios.get(`https://i.imgur.com/dMiKIXM.png`, { responseType: 'arraybuffer' })).data;
 	
 	fs.writeFileSync(avatar, Buffer.from(getAvatar, 'utf-8'));

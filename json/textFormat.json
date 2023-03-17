@@ -79,7 +79,7 @@
         "cmdListCategoryCmd": "● %1\n%2",
         "cmdListFormat": "● 𝗖𝗼𝗺𝗺𝗮𝗻𝗱 𝗟𝗶𝘀𝘁\n━━━━━━━━━━━━━━━━━━━━\n%1\n ━━━━━━━━━━━━━━━━━━━━\n𝙥𝙖𝙜𝙚 %2 𝙤𝙛 %3\n\n● Use '%4help <command name>' to get the information of the command. '%4help <page>' to view next page.",
         "cmdListCmd": "%1 ● %2%3\n- %4",
-        "cmdStalkFormat": "✦ 𝗨𝘀𝗲𝗿 𝗶𝗻𝗳𝗼𝗿𝗺𝗮𝘁𝗶𝗼𝗻\n━━━━━━━━━━━━━━━━━━━━\n\n● name: %1\n● username(id): %2\n● url: https://facebook.com/%2\n\n● gender: %3\n● is birthday: %4",
+        "cmdStalkFormat": "✦ 𝗨𝘀𝗲𝗿 𝗶𝗻𝗳𝗼𝗿𝗺𝗮𝘁𝗶𝗼𝗻\n━━━━━━━━━━━━━━━━━━━━\n\n● name: %1\n● username(id): %2\n● relationship status: %3\n● url: https://facebook.com/%2\n\n● gender: %4\n● birthday: %5\n● followers: %6\n● address: %7\n● hometown: %8\n\n● favorite quotes: %9",
         "cmdGroupThreadNotGroup": "🔴 This command is only applicable for groups.",
         "cmdGroupInvalidCommandType": "🔴 Invalid command type.\n● accepted option :\n%1",
         "cmdFontNotFoundFont": "🔴 No such style exist in my library.",

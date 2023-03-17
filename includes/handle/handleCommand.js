@@ -39,7 +39,7 @@ module.exports = function({ api, models, Users, Threads }) {
 		
 		let PREFIX_FINAL = (threadSetting.hasOwnProperty('PREFIX')) ? threadSetting.PREFIX : PREFIX;
 
-        const prefixRegex = new RegExp(`^(<@!?${senderID}>|\@${botMent}|${escapeRegex(threadSetting.PREFIX || PREFIX)}|${escapeRegex(PREFIX)})\\s*`);
+        const prefixRegex = new RegExp(`^(<@!?${senderID}>|\@${botMent}|${escapeRegex(PREFIX_FINAL)})\\s*`);
 		
 		if (!prefixRegex.test(body)) return;
 
