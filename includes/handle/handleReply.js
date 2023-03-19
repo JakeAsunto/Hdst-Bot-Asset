@@ -1,4 +1,4 @@
-module.exports = function({ api, models, Users, Threads, PoliceStation }) {
+module.exports = function({ api, models, Users, Threads, Banned }) {
 
     return async function({ event }) {
 
@@ -79,6 +79,8 @@ module.exports = function({ api, models, Users, Threads, PoliceStation }) {
                 Obj.models = models;
 
                 Obj.Users = Users;
+                
+                Obj.Banned = Banned;
 
                 Obj.Threads = Threads;
                 

@@ -1,4 +1,4 @@
-module.exports = function({ api, models, Users, Threads }) {
+module.exports = function({ api, models, Users, Threads, Banned }) {
     	
     const logger = require("../../utils/log.js");
 
@@ -36,15 +36,17 @@ module.exports = function({ api, models, Users, Threads }) {
 
                     const Obj = {};
 
-                    Obj.api = api
+                    Obj.api = api;
 
-                    Obj.event = event
+                    Obj.event = event;
 
-                    Obj.models = models
+                    Obj.models = models;
 
-                    Obj.Users = Users
+                    Obj.Users = Users;
 
-                    Obj.Threads = Threads
+					Obj.Banned = Banned;
+
+                    Obj.Threads = Threads;
 
                     eventRun.run(Obj);
 

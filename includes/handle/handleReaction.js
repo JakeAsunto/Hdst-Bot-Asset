@@ -1,4 +1,4 @@
-module.exports = function({ api, models, Users,Threads, PoliceStation }) {
+module.exports = function({ api, models, Users, Threads, Banned }) {
 
     return function({ event }) {
 
@@ -49,21 +49,23 @@ module.exports = function({ api, models, Users,Threads, PoliceStation }) {
 
                 const Obj = {};
 
-                Obj.api = api
+                Obj.api = api;
 
-                Obj.event = event
+                Obj.event = event;
 
-                Obj.models = models
+                Obj.models = models;
 
-                Obj.Users = Users
+                Obj.Users = Users;
 
-                Obj.Threads = Threads
+				Obj.Banned = Banned;
 
-                Obj.handleReaction = indexOfMessage
+                Obj.Threads = Threads;
 
-                Obj.models = models
+                Obj.handleReaction = indexOfMessage;
 
-                Obj.getText = getText2
+                Obj.models = models;
+
+                Obj.getText = getText2;
 
                 handleNeedExec.handleReaction(Obj);
 

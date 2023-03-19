@@ -2,7 +2,7 @@
 
 // ################ ANALYZED & DOCUMENTED By HADESTIA  ################ //
 
-module.exports = function({ Users, Threads }) {
+module.exports = function({ Users, Threads, Banned }) {
 
 	const databaseSystem = require(`${__dirname}/../../json/databaseConfig.json`); 
 	const economySystem = require(`${__dirname}/../../json/economySystem.json`); 
@@ -52,6 +52,7 @@ module.exports = function({ Users, Threads }) {
 
 				// get group chat information
                 const threadIn4 = await Threads.getInfo(threadID);
+                const bannedData = await Banned.getData(threadID);
 
                 const setting = {};
 				// set initial data for thread information on DB
@@ -75,6 +76,18 @@ module.exports = function({ Users, Threads }) {
                 THREAD_ALL_DATA.threadInfo = dataThread;
 
                 THREAD_ALL_DATA.data = new Object(databaseSystem.group_data_config);
+				
+				// IF THREAD WAS BANNED
+				if (bannedData) {
+					const bd = bannedData.data || {};
+					const banned = {
+						caseID: bd.caseID || -1,
+						reason: bd.reason || databaseSystem.group_data_config.banned.reason,
+						dateIssued: bd.dateIssued || databaseSystem.group_data_config.banned.dateIssued
+					}
+					THREAD_ALL_DATA.data.banned = banned;
+					global.data.bannedThreads.set(threadID, banned);
+				}
 				
 				// default configuration for economy system for this group
 				for (const item in economySystem.config) {
@@ -116,6 +129,20 @@ module.exports = function({ Users, Threads }) {
 							
 						} else {
 							const data = new Object(databaseSystem.user_data_config);
+							const bannedData = await Banned.getData(uid);
+							
+							// IF USER WAS BANNED
+							if (bannedData) {
+								const bd = bannedData.data || {};
+								const banned = {
+									caseID: bd.caseID || -1,
+									reason: bd.reason || databaseSystem.user_data_config.banned.reason,
+									dateIssued: bd.dateIssued || databaseSystem.user_data_config.banned.dateIssued
+								}
+								data.banned = banned;
+								global.data.bannedUsers.set(uid, banned);
+							}
+							
 							// else: create data of a member for User table
 							await Users.createData(uid, { 'name': singleData.name, 'data': data });
 								
@@ -142,12 +169,26 @@ module.exports = function({ Users, Threads }) {
             if (!allUserID.includes(senderID) || !userName.has(senderID)) {
 
                 const infoUsers = await Users.getInfo(senderID);
+                const bannedData = await Banned.getData(senderID);
 
                 const USER_ALL_DATA = {};
 
                 USER_ALL_DATA.name = infoUsers.name;
                 
                 USER_ALL_DATA.data = new Object(databaseSystem.user_data_config);
+                
+                // IF USER WAS BANNED
+				if (bannedData) {
+					const bd = bannedData.data || {};
+					const banned = {
+						caseID: bd.caseID || -1,
+						reason: bd.reason || databaseSystem.user_data_config.banned.reason,
+						dateIssued: bd.dateIssued || databaseSystem.user_data_config.banned.dateIssued
+					}
+					USER_ALL_DATA.data.banned = banned;
+					global.data.bannedUsers.set(senderID, banned);
+				}
+                
                 await Users.createData(senderID, USER_ALL_DATA);
 
                 allUserID.push(senderID)

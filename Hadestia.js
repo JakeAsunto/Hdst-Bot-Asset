@@ -606,10 +606,9 @@ async function onBot({ models: botModel }) {
 		
 		//////////// SAVE BOT USER ///////////
 		const botUserID = loginApiData.getCurrentUserID();
-		const thisBot = await loginApiData.getUserInfo(botUserID);
+		const thisBot = await loginApiData.getUserInfoV2(botUserID);
 		global.botUserID = botUserID;
-		global.botName  = thisBot[Object.keys(thisBot)[0]].name || botUserID;
-		
+		global.botName = thisBot.name || 'Alyanna Rousseao'; //thisBot[Object.keys(thisBot)[0]].name || botUserID;
 		
 		const gmt = require('moment-timezone');
 		const momentt = gmt.tz('Asia/Manila');

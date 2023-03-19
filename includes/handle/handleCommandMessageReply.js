@@ -1,4 +1,4 @@
-module.exports = function({ api, models, Users, Threads }) {
+module.exports = function({ api, models, Users, Threads, Banned }) {
 	
 	const cache = require('../../utils/cache.js');
     const logger = require("../../utils/log.js");
@@ -70,6 +70,8 @@ module.exports = function({ api, models, Users, Threads }) {
                 Obj.models = models;
 
                 Obj.Users = Users;
+                
+                Obj.Banned = Banned;
 
                 Obj.Threads = Threads;
 

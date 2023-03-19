@@ -76,15 +76,13 @@ module.exports.run = async function({ api, event, args, logger, textFormat }) {
 			(e, i) => {
 				if (e) return;
 				global.sendReaction.success(api, event);
+				for (const file of hashMap) {
+					logger(`CMD: PINTEREST: Deleting ${file} for search ${keySearchs}`, 'cache');
+					try { fs.unlinkSync(`${__dirname}/../../cache/${file}`); } catch (e) {}
+				}
 			},
 			messageID
 		);
-		
-		for (const file of hashMap) {
-			logger(`CMD: PINTEREST: Deleting ${file} for search ${keySearchs}`, 'cache');
-			try { fs.unlinkSync(`${__dirname}/../../cache/${file}`); } catch (e) {}
-		}
-		
 	} catch (e) {
 		
 		console.log(e);

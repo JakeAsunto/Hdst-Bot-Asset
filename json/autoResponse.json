@@ -8,7 +8,10 @@
             "thats my prefix",
             "that's my prefix",
             "you are unable to use bot!",
-            "just removed 1 attachments."
+            "just removed 1 attachments.",
+            "[ otherbot detected ]\n\nyou have been banned to the system to prevent spam",
+            "removed 1 message\ncontent:",
+            "reason:kicked by administrator"
         ]
     },
     "meridiemAM": {

@@ -18,7 +18,7 @@ module.exports.run = async function({ api, event }) {
 		
 		api.changeNickname(global.textFormat('system', 'botNicknameSetup', global.config.PREFIX, (!global.config.BOTNAME) ? ' ' : global.config.BOTNAME), threadID, api.getCurrentUserID());
 		
-		const messageBody = `${global.textFormat('events', 'eventBotJoinedConnected', global.config.BOTNAME, global.config.PREFIX)}\n\n${global.textFormat('cmd', 'cmdHelpUsageSyntax')}`;
+		const messageBody = `${global.textFormat('events', 'eventBotJoinedConnected', global.config.BOTNAME, global.config.PREFIX)}\n\n${global.textFormat('cmd', 'cmdHelpUsageSyntax', global.config.PREFIX, global.botName)}`;
 		// send a startup mesaage
 		return api.sendMessage(
 			messageBody,

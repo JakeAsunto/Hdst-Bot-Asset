@@ -1,4 +1,4 @@
-module.exports = function({ api, models, Users, Threads }) {
+module.exports = function({ api, models, Users, Threads, Banned }) {
 
     const stringSimilarity = require('string-similarity'),
 
@@ -387,6 +387,8 @@ module.exports = function({ api, models, Users, Threads }) {
             Obj.models = models;
 
             Obj.Users = Users;
+            
+            Obj.Banned = Banned;
 
             Obj.Threads = Threads;
 

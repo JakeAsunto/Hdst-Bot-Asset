@@ -86,7 +86,7 @@ module.exports.run = async function ({ api, args, event, textFormat }) {
 	if (!k) {
 		var id = Math.floor(Math.random() * 848) +1
 	} else {
-		var id = k;
+		var id = parseInt(k) || (Math.floor(Math.random() * 848) +1);
 	}
 	
     const lengthchar = (await axios.get('https://run.mocky.io/v3/0dcc2ccb-b5bd-45e7-ab57-5dbf9db17864')).data
@@ -95,22 +95,19 @@ module.exports.run = async function ({ api, args, event, textFormat }) {
 	const Canvas = require('canvas');
     let pathImg = `${path}avatar_1111231.png`;
     let pathAva = `${path}avatar_3dsc11.png`;
+    
     let background = (await axios.get(encodeURI(`https://imgur.com/x5JpRYu.png`), { responseType: "arraybuffer" })).data;
-    
-    fs.writeFileSync(pathImg, Buffer.from(background, "utf-8"));
-    console.info(lengthchar[id - 1]);
     let ava = (await axios.get(encodeURI(`${lengthchar[id - 1].imgAnime}`), { responseType: "arraybuffer" })).data;
-    
+    fs.writeFileSync(pathImg, Buffer.from(background, "utf-8"));
     fs.writeFileSync(pathAva, Buffer.from(ava, "utf-8"));
     
     /*const request = require('request');
     const rpath = require('path');*/
 
-	//const a = Math.floor(Math.random() * 820) + 1
-  
+	const a = Math.floor(Math.random() * 820) + 1
   
 	let l1 = await loadImage(pathAva);
-    let a = await loadImage(pathImg);
+    let a = await loadImage(ava);
     let canvas = createCanvas(a.width, a.height);
     var ctx = canvas.getContext("2d");
     
@@ -162,13 +159,15 @@ module.exports.run = async function ({ api, args, event, textFormat }) {
 		adminCopy.push(admin);
 	}
 	
-	const owner = await api.getUserInfoV2(adminCopy.shift());
+	const ownerID = adminCopy.shift();
+	const owner = await api.getUserInfoV2(ownerID);
 	
 	
-	for (const admin of adminCopy) {
+	for (const admin of global.config.ADMINBOT) {
 		const info = await api.getUserInfoV2(admin)
+		const usern = ((info.username).startsWith('Không')) ? admin : info.username;
 		adminMessageBody += `● ${info.name}\n`;
-		adminMessageBody += `${info.url}\n\n`;
+		adminMessageBody += `https://facebook.com/${usern}\n\n`;
 	}
 	
 	
@@ -178,7 +177,7 @@ module.exports.run = async function ({ api, args, event, textFormat }) {
 		event.messageID
 	);*/
 	
-	const b_info = textFormat('system', 'botInfo', owner.name || 'Ian', owner.url, adminMessageBody);
+	const b_info = textFormat('system', 'botInfo', owner.name || 'Ian', `https://facebook.com/${owner.username}`, adminMessageBody);
 	const b_upt = textFormat('system', 'botUptime', (Date.now() - timeStart), global.data.allUserID.length, global.data.allThreadID.length, pidusage.cpu.toFixed(1), byte2mb(pidusage.memory), id, hours, (minutes > 1) ? `${minutes} minutes` : `${minutes} minute`, (seconds > 0) ? `${seconds} seconds` : `${seconds} second`);
 	
 	const messageBody = {

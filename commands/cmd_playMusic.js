@@ -16,7 +16,7 @@ module.exports.config = {
 	envConfig: {
 		requiredArgument: 1
 	}
-	// disabled: true
+	//disabled: true
 }
 
 module.exports.handleReply = async function ({ api, event, returns, handleReply }) {
@@ -35,9 +35,11 @@ module.exports.handleReply = async function ({ api, event, returns, handleReply 
     	const directory = `${__dirname}/../../cache/`;
         const path = `${directory}musicRequest-of-${senderID}.mp3`;
         var data = await downloadMusicFromYoutube('https://www.youtube.com/watch?v=' + handleReply.results[selection - 1], path);
+        
         if (statSync(path).size > 6291456) {
+        	try { unlinkSync(path); } catch (_) {}
 			global.sendReaction.failed(api, event);
-			api.sendMessage(textFormat('cmd', 'cmdPlayMusicFileWasBig', 6), threadID, () => unlinkSync(path), messageID);
+			api.sendMessage(textFormat('cmd', 'cmdPlayMusicFileWasBig', 6), threadID, messageID);
 			return returns.delete_data();
 		}
         
@@ -158,29 +160,27 @@ async function downloadMusicFromYoutube(link, path) {
 	
 	if (!link) return 'No link given';
 	
-	let resolveFunc = function () { };
-	let rejectFunc = function () { };
-	
 	const returnPromise = new Promise(function (resolve, reject) {
-		resolveFunc = resolve;
-		rejectFunc = reject;
-	});
-	
-    ytdl( link, { filter: format => format.quality == 'tiny' && format.audioBitrate == 48 && format.hasAudio == true }).pipe(fs.createWriteStream(path))
-		.on("close", async () => {
+		try {
+			ytdl( link, { filter: format => format.quality == 'tiny' && format.audioBitrate == 48 && format.hasAudio == true }).pipe(fs.createWriteStream(path))
+				.on("close", async () => {
 			
-            const data = await ytdl.getInfo(link);
+           		 const data = await ytdl.getInfo(link);
             
-            let result = {
-                title: data.videoDetails.title,
-                dur: Number(data.videoDetails.lengthSeconds),
-                viewCount: data.videoDetails.viewCount,
-                likes: data.videoDetails.likes,
-                author: data.videoDetails.author.name
-            }
+					let result = {
+              		  title: data.videoDetails.title,
+               		 dur: Number(data.videoDetails.lengthSeconds),
+              		  viewCount: data.videoDetails.viewCount,
+              		  likes: data.videoDetails.likes,
+              		  author: data.videoDetails.author.name
+          		  }
             
-            resolveFunc(result);
-        });
+            		resolve(result);
+      	 	 });
+		} catch(err) {
+			reject(err);
+		}
+	});
         
-  return returnPromise
+  return returnPromise;
 }

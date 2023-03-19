@@ -50,21 +50,21 @@ module.exports.run = async function ({ api, event, args, utils, textFormat, Pref
 		}
 		
 		const res = await api.getUserInfoV2(id);
-		const n_a = '饾槸饾槹 饾槬饾槩饾樀饾槩';
+		const n_a = '𝘯𝘰 𝘥𝘢𝘵𝘢';
 		
-		var gender = (res.gender.startsWith('Kh么ng')) ? n_a : (res.gender == 'male') ? 'Male' : (res.gender == 'female') ? 'Female' : res.gender;
-		var birthday = (res.birthday.startsWith('Kh么ng')) ? n_a : res.birthday;
-		var usern = (res.username.startsWith('Kh么ng')) ? id : res.username;
+		var gender = ((res.gender).startsWith('Không')) ? n_a : (res.gender == 'male') ? 'Male' : (res.gender == 'female') ? 'Female' : res.gender;
+		var birthday = ((res.birthday).startsWith('Không')) ? n_a : res.birthday;
+		var usern = ((res.username).startsWith('Không')) ? id : res.username;
 		
-		var love = (res.relationship_status.startsWith('Kh么ng')) ? n_a : res.relationship_status;
-		var location = (res.location.startsWith('Kh么ng')) ? n_a : res.location.name;
-		var hometown = (res.hometown.startsWith('Kh么ng')) ? n_a : res.hometown.name;
-		var followers = (res.follow.startsWith('Kh么ng')) ? n_a : res.follow;
-		//var rs = (res.love.startsWith('Kh么ng')) ? n_a : res.love.name;
-		var quotes = (res.qoutes.startsWith('Kh么ng'))? n_a : res.qoutes;
+		var love = ((res.relationship_status).startsWith('Không')) ? n_a : res.relationship_status;
+		var location = (typeof(res.location) == 'object') ? res.location.name : n_a;
+		var hometown = (typeof(res.hometown) == 'object') ? res.hometown.name : n_a;
+		var followers = (typeof(res.follow) == 'number') ? res.follow : n_a;
+		//var rs = ((res.love).startsWith('Không')) ? n_a : res.love.name;
+		var quotes = ((res.quotes).startsWith('Không'))? n_a : res.quotes;
 
 		const path = `${__dirname}/../../cache/stalkImg.png`;
-		const profile_av = (await axios.get(encodeURI(res.imgavt), { responseType: 'arraybuffer' })).data;
+		const profile_av = (await axios.get(encodeURI(`https://graph.facebook.com/${id}/picture?width=1290&height=1290&access_token=${process.env.FB_ACCESS_TOKEN}`), { responseType: 'arraybuffer' })).data;
 		fs.writeFileSync(path, Buffer.from(profile_av, 'utf-8'));
 		
 		return api.sendMessage(
@@ -99,4 +99,4 @@ module.exports.run = async function ({ api, event, args, utils, textFormat, Pref
 		api.sendMessage(textFormat('error', 'errCmdExceptionError', err, Prefix), threadID, messageID);
 		return console.log(err);
 	}
-}
+};

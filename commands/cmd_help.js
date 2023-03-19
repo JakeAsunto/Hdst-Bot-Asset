@@ -37,7 +37,7 @@ module.exports.run = async function({ api, event, args, textFormat }) {
 	}
 	
 	if (args.join().indexOf('usage') == 0) {
-		return api.sendMessage(textFormat('cmd', 'cmdHelpUsageSyntax'), threadID, messageID);
+		return api.sendMessage(textFormat('cmd', 'cmdHelpUsageSyntax', global.config.PREFIX, global.botName), threadID, messageID);
 	}
 	
 	

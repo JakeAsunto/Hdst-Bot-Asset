@@ -5,8 +5,8 @@
         "https://facebook.com/mensaherong.iantot",
         "This repository was linked to bot assets repository of Hadestia that include assets auto updater."
     ],
-    "VERSION": "6.8.2",
-    "CHANGELOGS": "- Update available informations for stalk command.\n\n• 6.8.1\n- Add Banned database\n- Reset Databases\n- Added Database config objects",
+    "VERSION": "6.10.0",
+    "CHANGELOGS": "- Add notice message if accepting a banned thread or user from pending messages.\n- Add storing banned data to group database if has record from the banned database.\n- Add roll & toss command, just a simple game whatever how you would use these for.\n- Update info of command usages info when using \"help usage\".\n- Fix undefined admins link for botinfo command.",
     "MAIN": {
         "LICENSE-HADESTIA": {
             "path": "/"
@@ -122,7 +122,9 @@
         "cmd_economyMain",
         "cmd_config",
         "cmd_translate",
-        "gambling_slotMachine"
+        "gambling_slotMachine",
+        "cmd_roll",
+        "cmd_toss"
     ],
     "EVENTS": [
         "event_adminUpdate",

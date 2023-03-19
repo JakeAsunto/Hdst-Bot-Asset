@@ -15,7 +15,7 @@ module.exports.config = {
 	}
 }
 
-module.exports.handleReply = async function({ api, event, returns, handleReply }) {
+module.exports.handleReply = async function({ api, event, returns, handleReply, Banned }) {
 	
     if (event.senderID !== handleReply.author) {
 		return api.sendMessage(global.textFormat('error', 'errCommandReplyInteractionFailed'), event.threadID, (err, info) => { global.autoUnsend(err, info, 5) }, event.messageID);
@@ -140,11 +140,28 @@ module.exports.handleReply = async function({ api, event, returns, handleReply }
     	return pos >= 1 && pos <= handleReply.pending.length;
     }
     
+    function threadIsBanned(obj, reason, date) {
+    	api.sendMessage(global.textFormat('events', 'eventBotJoinedBannedThread', reason, date), obj.threadID);
+    }
+    
     function connectBot(obj) {
-    	api.sendMessage(`${global.textFormat('events', 'eventBotJoinedConnected', global.config.BOTNAME, global.config.PREFIX)}\n\n${global.textFormat('cmd', 'cmdHelpUsageSyntax')}`, obj.threadID );
+    	const bannedData = await Banned.getData(obj.threadID);
+    	if (!bannedData) {
+    		api.sendMessage(`${global.textFormat('events', 'eventBotJoinedConnected', global.config.BOTNAME, global.config.PREFIX)}\n\n${global.textFormat('cmd', 'cmdHelpUsageSyntax', global.config.PREFIX, global.botName)}`, obj.threadID );
+    	} else {
+    		const reason = bannedData.data.reason;
+    		const date = bannedData.data.dateIssued;
+    		threadIsBanned(obj, reason, date);
+    	}
     }
     
     async function disconnectBot(obj, isGroup) {
+    	const bannedData = await Banned.getData(obj.threadID);
+		if (bannedData) {
+			const reason = bannedData.data.reason;
+    		const date = bannedData.data.dateIssued;
+    		threadIsBanned(obj, reason, date);
+		}
     	if (isGroup) {
     		await api.sendMessage(global.textFormat('events', 'eventBotDeclinedGroup'), obj.threadID);
     		return api.removeUserFromGroup(api.getCurrentUserID(), obj.threadID);

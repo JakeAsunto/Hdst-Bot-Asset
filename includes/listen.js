@@ -103,7 +103,7 @@ module.exports = function({ api, models }) {
 	logger(`${api.getCurrentUserID()} - [ ${global.config.PREFIX} ] • ${(!global.config.BOTNAME) ? "This bot was forked & modified from original made by CatalizCS and SpermLord" : global.config.BOTNAME}`, "[ BOT INFO ]");
 	
 	// preset
-	api.getUserInfoV2 = async function (ids, callback) {
+	/*api.getUserInfoV2 = async function (ids, callback) {
 		const info = await api.getUserInfo(ids, callback);
 		if (!info) return;
 		const fix = {};
@@ -124,7 +124,7 @@ module.exports = function({ api, models }) {
 			return fix[Object.keys(fix)[0]];
 		}
 		return fix;
-	}
+	}*/
 	
 
 	///////////////////////////////////////////////

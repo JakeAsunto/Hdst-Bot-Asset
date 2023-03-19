@@ -43,7 +43,7 @@ module.exports.handleEvent = async function ({ api, event, returns }) {
 	if (event.body == undefined || event.body == '') return;
 	if (event.body.indexOf('● Facebook Cover Form\n━━━━━━━━━━━━━━━━━━━━') == -1) return;
 
-	console.log(event.body);
+	//console.log(event.body);
 	
 	const axios= require('axios');
 	const fs = require('fs-extra');
@@ -94,12 +94,12 @@ module.exports.handleEvent = async function ({ api, event, returns }) {
 					returns.handleTimestamps();
 				}
 				if (fs.existsSync(path)) { fs.unlinkSync(path); }
-				returns.delete_data();
+				//returns.delete_data();
 			},
 			messageID
 		);
 	} catch (e) {
-		returns.delete_data();
+		//returns.delete_data();
 		global.sendReaction.failed(api, event);
 		global.logModuleErrorToAdmin(e, __filename, event);
 		api.sendMessage(textFormat('error', 'errCmdExceptionError', e, Prefix), threadID, messageID);
