@@ -373,9 +373,14 @@ async function onBot({ models: botModel }) {
                                 try {
 
                                     if (!global.nodemodule.hasOwnProperty(reqDependencies)) {
-                                        if (listPackage.hasOwnProperty(reqDependencies) || listbuiltinModules.includes(reqDependencies)) global.nodemodule[reqDependencies] = require(reqDependencies);
-                                        else global.nodemodule[reqDependencies] = require(reqDependenciesPath);
-                                    } else '';
+                                        if (listPackage.hasOwnProperty(reqDependencies) || listbuiltinModules.includes(reqDependencies)) {
+											//global.nodemodule[reqDependencies] = require(reqDependencies);
+											const sample = require(reqDependencies);
+                                        } else {
+											//global.nodemodule[reqDependencies] = require(reqDependenciesPath);
+											const sample = require(reqDependenciesPath);
+										}
+                                    }
                                     
                                 } catch {
 
@@ -394,15 +399,15 @@ async function onBot({ models: botModel }) {
                                     for (let i = 1; i <= 3; i++) {
 
                                         try {
-                                            require['cache'] = {};
-                                            if (listPackage.hasOwnProperty(reqDependencies) || listbuiltinModules.includes(reqDependencies)) global['nodemodule'][reqDependencies] = require(reqDependencies);
-                                            else global['nodemodule'][reqDependencies] = require(reqDependenciesPath);
+                                            //require['cache'] = {};
+                                            //if (listPackage.hasOwnProperty(reqDependencies) || listbuiltinModules.includes(reqDependencies)) global['nodemodule'][reqDependencies] = require(reqDependencies);
+                                            //else global['nodemodule'][reqDependencies] = require(reqDependenciesPath);
                                             check = true;
                                             break;
                                         } catch (error) {
                                             isError = error;
                                         }
-                                        if (check || !isError) break;
+                                        //if (check || !isError) break;
                                     }
                                     if (!check || isError) throw global.getText('mirai', 'cantInstallPackage', reqDependencies, module.config.name, isError);
                                 }
@@ -477,6 +482,7 @@ async function onBot({ models: botModel }) {
                         var event = require(global.client.mainPath + '/modules/events/' + ev);
                         if (!event.config || !event.run) throw new Error(global.getText('mirai', 'errorFormat'));
                         if (global.client.events.has(event.config.name) || '') throw new Error(global.getText('mirai', 'nameExist'));
+                        
                         if (event.config.dependencies && typeof event.config.dependencies == 'object') {
 
                             for (const dependency in event.config.dependencies) {
@@ -485,9 +491,14 @@ async function onBot({ models: botModel }) {
 
                                 try {
                                     if (!global.nodemodule.hasOwnProperty(dependency)) {
-                                        if (listPackage.hasOwnProperty(dependency) || listbuiltinModules.includes(dependency)) global.nodemodule[dependency] = require(dependency);
-                                        else global.nodemodule[dependency] = require(_0x21abed);
-                                    } else '';
+                                        if (listPackage.hasOwnProperty(dependency) || listbuiltinModules.includes(dependency)) {
+                                        	// if these sample fails: will undergo package installing
+											//global.nodemodule[dependency] = require(dependency);
+											const sample = require(dependency);
+                                        } else {
+											//global.nodemodule[dependency] = require(_0x21abed);
+											const sample = require(_0x21abed);
+                                    }
                                 } catch {
 
                                     let check = false;
@@ -504,17 +515,17 @@ async function onBot({ models: botModel }) {
                                     
                                     for (let i = 1; i <= 3; i++) {
                                         try {
-                                            require['cache'] = {};
-                                            if (global.nodemodule.includes(dependency)) break;
-                                            if (listPackage.hasOwnProperty(dependency) || listbuiltinModules.includes(dependency)) global.nodemodule[dependency] = require(dependency);
-                                            else global.nodemodule[dependency] = require(_0x21abed);
+                                            //require['cache'] = {};
+                                            //if (global.nodemodule.includes(dependency)) break;
+                                            //if (listPackage.hasOwnProperty(dependency) || listbuiltinModules.includes(dependency)) global.nodemodule[dependency] = require(dependency);
+                                            //else global.nodemodule[dependency] = require(_0x21abed);
                                             check = true;
                                             break;
                                         } catch (error) {
                                             isError = error;
                                         }
 
-                                        if (check || !isError) break;
+                                        //if (check || !isError) break;
                                     }
 
                                     if (!check || isError) throw global.getText('mirai', 'cantInstallPackage', dependency, event.config.name);

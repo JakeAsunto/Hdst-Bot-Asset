@@ -15,7 +15,7 @@ module.exports.onLoad = function () {
 }
 
 
-module.exports.handleEvent = async function ({ api, event, Users }) {
+module.exports.handleEvent = async function ({ api, event, Users, Banned }) {
 	
 	const { body, threadID, senderID, messageID } = event;
 	
@@ -30,7 +30,8 @@ module.exports.handleEvent = async function ({ api, event, Users }) {
 				
 					const userName = (global.data.userName).get(senderID) || 'Other Bot';
 					const randomCaseID = Math.floor(Math.random() * (999999 - 100000 + 1) + 100000);
-					const userData = await Users.getData(senderID) || {};
+					const userData = await Users.getData(senderID);
+					if (!userData) { throw 'User not Initialize'; }
 					const data = userData.data;
 				
 					data.banned = data.banned || {};
@@ -43,6 +44,7 @@ module.exports.handleEvent = async function ({ api, event, Users }) {
 					global.data.bannedUsers.set(senderID, data.banned);
 				
 					await Users.setData(senderID, { data });
+					await Banned.setData(senderID, { data });
 				
 					return api.sendMessage(
 						{
