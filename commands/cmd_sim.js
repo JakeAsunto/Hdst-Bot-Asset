@@ -2,7 +2,7 @@ module.exports.config = {
     name: 'sim',
     version: '4.3.7',
     hasPermssion: 0,
-    credits: 'ProcodeMew', //change api sim Hoang Giap
+    credits: 'ProcodeMew', //change api sim: Hadestia
     description: 'Chat with simisimi or enable or disable auto sim.',
     commandCategory: 'Chatbot',
     usages: '<message | on | off >',
@@ -16,14 +16,13 @@ module.exports.config = {
 }
 
 
-async function simsimi(a, b, c) {
+async function simsimi(a) {
     const axios = require('axios');
-	const uri = (a) => encodeURIComponent(a);
+	//const uri = (a) => encodeURIComponent(a);
     
     try {
-    	
         //var { data: j } = await d({ url: `https://api.simsimi.net/v2/?text=${g(a)}&lc=en&cf=false&name=Mei&key=C.IQHPE1cSfZFev-EhpwRbndXxcD9YGdTlbGReM`, method: 'GET' });
-        var { data } = await axios.get(`https://api.reikomods.repl.co/others/sim?ask=${uri(a)}`);
+        var { data } = await axios.get(`https://api.reikomods.repl.co/others/sim?ask=${a}`);
         return { error: !1, data }
         
     } catch (p) {
@@ -48,7 +47,7 @@ module.exports.handleEvent = async function ({ api, event }) {
     	
         if (senderID == global.botUserID || body == '' || messageID == global.simsimi.get(threadID)) return;
         
-        var { data, error } = await simsimi(body, api, event);
+        var { data, error } = await simsimi(body);
         
         return !0 == error ? void 0 : !1 == data.success ? send(data.error) : send(data.success)
     }
@@ -88,7 +87,7 @@ module.exports.run = async function ({ api, event, args, returns, textFormat, Pr
 				}
           	  break;
       	  default:
-           	 var { data, error } = await simsimi(args.join(' '), threadID, messageID);
+           	 var { data, error } = await simsimi(args.join(' '));
           	  
            	 !0 == error ? void 0 : !1 == data.success ? f(data.error) : f(data.success);
           	  break; 
@@ -102,5 +101,3 @@ module.exports.run = async function ({ api, event, args, returns, textFormat, Pr
 		return api.sendMessage(textFormat('error', 'errCmdExceptionError', err, Prefix), threadID, messageID);
     }
 };
-
-//re-made by Mr.Aik3ro

@@ -382,7 +382,7 @@ async function onBot({ models: botModel }) {
 										}
                                     }
                                     
-                                } catch {
+                                } catch (e) {
 
                                     var check = false;
                                     var isError;
@@ -498,8 +498,9 @@ async function onBot({ models: botModel }) {
                                         } else {
 											//global.nodemodule[dependency] = require(_0x21abed);
 											const sample = require(_0x21abed);
+										}
                                     }
-                                } catch {
+                                } catch (e) {
 
                                     let check = false;
                                     let isError;
