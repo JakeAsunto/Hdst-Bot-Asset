@@ -144,7 +144,7 @@ module.exports.handleReply = async function({ api, event, returns, handleReply, 
     	api.sendMessage(global.textFormat('events', 'eventBotJoinedBannedThread', reason, date), obj.threadID);
     }
     
-    function connectBot(obj) {
+    async function connectBot(obj) {
     	const bannedData = await Banned.getData(obj.threadID);
     	if (!bannedData) {
     		api.sendMessage(`${global.textFormat('events', 'eventBotJoinedConnected', global.config.BOTNAME, global.config.PREFIX)}\n\n${global.textFormat('cmd', 'cmdHelpUsageSyntax', global.config.PREFIX, global.botName)}`, obj.threadID );

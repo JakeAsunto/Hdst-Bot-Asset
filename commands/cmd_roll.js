@@ -9,18 +9,9 @@ module.exports.config = {
 	usages: '[ range(number) ]'
 }
 
-module.exports.run = function ({ api, args, event, textFormat }) {
+module.exports.run = function ({ api, args, event }) {
 	
-	const { threadID, messageID } = event;
-	const pick = Math.floor(Math.random() * 6);
-		
-	if (args.length > 0) {
-		if (!parseInt(args[0])) {
-			return api.sendMessage(pick, threadID, messageID);
-		}
-		const newPick = Math.floor(Math.random() * parseInt(args[0]));
-		return api.sendMessage(newPick, threadID, messageID);
-	} else {
-		return api.sendMessage(pick, threadID, messageID);
-	}
+	const pick = (Math.floor(Math.random() * parseInt(args[0] || '5')) + 1);
+	
+	return api.sendMessage(`${pick}`, event.threadID, event.messageID);
 }

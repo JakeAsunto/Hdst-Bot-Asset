@@ -104,7 +104,7 @@ module.exports.run = async function ({ api, args, event, textFormat }) {
     /*const request = require('request');
     const rpath = require('path');*/
 
-	const a = Math.floor(Math.random() * 820) + 1
+	//const a = Math.floor(Math.random() * 820) + 1
   
 	let l1 = await loadImage(pathAva);
     let a = await loadImage(ava);

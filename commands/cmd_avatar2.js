@@ -20,7 +20,7 @@ module.exports.run = async function ({ api, args, event }) {
 	const division = (args.join(' ')).split(/\s\|\s|\| | \| |\|| \|/g);
 	const send = (msg) => api.sendMessage(msg, threadID, messageID);
 	
-	var avatarID = parseInt(division[0]));
+	var avatarID = parseInt(division[0]);
 	var color = division[1] || null;
 	var name = division[2] || null;
 	var subname = division[3] || null;

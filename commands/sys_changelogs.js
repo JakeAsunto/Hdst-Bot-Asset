@@ -24,14 +24,11 @@ module.exports.lateInit = async function ({ api, models }) {
 	if (isUpdated == 'true') {
     	try {
 			for (const thread of global.data.allThreadID) {
-				try {
-					var data = (await Threads.getData(thread)).data;
-				} catch {
-					var data = {};
-				}
+				var { data } = await Threads.getData(thread);
+				data = data || {};
 				const idIndex = global.data.allThreadID.indexOf(thread);
 				
-				if (data.recieve_update) {
+				if (data.receive_update) {
 					api.sendMessage(
 						`Bot has been updated to version: ${assets.VERSION}\nrun "${global.config.PREFIX}changelog" to see full details.\n\nYou can also use "${global.config.PREFIX}changelog set" to turn on/off this update notification.`,
 						thread,

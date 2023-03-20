@@ -36,7 +36,7 @@ module.exports.run = async function ({ event, api, Threads, Users }) {
 							//removeUserEconomy(event.logMessageData.leftParticipantFbId);
     						return api.sendMessage(global.textFormat('group', 'groupAntiOutFailed', name), event.threadID)
 						}
-						api.sendMessage(global.textFormat('group', 'groupAntiOutSuccess', name), event.threadID);
+						api.sendMessage(global.textFormat('group', 'groupAntiOutSuccess', name, data.PREFIX || global.config.PREFIX), event.threadID);
 						try {
 							const ecoUIO = require('./event_economyUIO.js');
 							ecoUIO.initUserEco({

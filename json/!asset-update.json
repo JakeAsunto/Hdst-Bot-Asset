@@ -5,8 +5,8 @@
         "https://facebook.com/mensaherong.iantot",
         "This repository was linked to bot assets repository of Hadestia that include assets auto updater."
     ],
-    "VERSION": "6.10.1",
-    "CHANGELOGS": "- Add notice message if accepting a banned thread or user from pending messages.\n- Add storing banned data to group database if has record from the banned database.\n- Add roll & toss command, just a simple game whatever how you would use these for.\n- Add avatar2, a version 2 of avatar command.\n- Update info of command usages info when using \"help usage\".\n- Fix undefined admins link for botinfo command.",
+    "VERSION": "6.10.2",
+    "CHANGELOGS": "Wala lang to don't mind me",
     "MAIN": {
         "LICENSE-HADESTIA": {
             "path": "/"

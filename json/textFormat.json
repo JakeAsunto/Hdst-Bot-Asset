@@ -159,8 +159,8 @@
         "eventUserJoined": "‎𝚆𝚎𝚕𝚌𝚘𝚖𝚎 %1, 𝚈𝚘𝚞'𝚛𝚎 𝚝𝚑𝚎 %2 𝚖𝚎𝚖𝚋𝚎𝚛 𝚘𝚏 𝚝𝚑𝚒𝚜 𝚐𝚛𝚘𝚞𝚙.\n\n𝙴𝚗𝚓𝚘𝚢 𝚢𝚘𝚞𝚛 𝚜𝚝𝚊𝚢 𝚊𝚗𝚍 𝚖𝚊𝚔𝚎 𝚕𝚘𝚝𝚜 𝚘𝚏 𝚏𝚛𝚒𝚎𝚗𝚍𝚜!"
     },
     "group": {
-        "groupAntiOutSuccess": "I bring %1 back!.",
-        "groupAntiOutFailed": "I can't bring back %1 to the group. I'm sorry.",
+        "groupAntiOutSuccess": "𝗔𝗻𝘁𝗶-𝗼𝘂𝘁 𝗠𝗼𝗱𝗲\n━━━━━━━━━━━━━━━━━━━━\n%1 was Re-added.\n\n𝚞𝚜𝚎 \"%2 𝚐𝚛𝚘𝚞𝚙 𝚊𝚗𝚝𝚒-𝚘𝚞𝚝\" 𝚝𝚘 𝚍𝚒𝚜𝚊𝚋𝚕𝚎 𝚝𝚑𝚒𝚜 𝚖𝚘𝚍𝚎.",
+        "groupAntiOutFailed": "𝗔𝗻𝘁𝗶-𝗼𝘂𝘁 𝗠𝗼𝗱𝗲\n━━━━━━━━━━━━━━━━━━━━\nUnable to bring back %1 to the group.",
         "groupAntiOutKicked": "%1 was kicked by the administrator.",
         "groupAntiChangeActiveResponse": "🔴 Cannot make changes while 'anti change' was active.",
         "groupAntiChangeError": "🔴 Anti change module: %1",
