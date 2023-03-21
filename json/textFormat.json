@@ -5,6 +5,7 @@
     },
     "error": {
         "errOccured": "🔴 %1",
+        "errNoData": "𝘯𝘰 𝘥𝘢𝘵𝘢",
         "errProcessUnable": "🔴 Unable to process your request.",
         "errInvalidUserID": "🔴 Invalid ID, user id consist of 15 characters.",
         "errCommandReplyInteractionFailed": "🔴 Interaction failed.",
