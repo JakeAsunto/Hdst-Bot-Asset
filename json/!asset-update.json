@@ -5,8 +5,8 @@
         "https://facebook.com/mensaherong.iantot",
         "This repository was linked to bot assets repository of Hadestia that include assets auto updater."
     ],
-    "VERSION": "6.10.2",
-    "CHANGELOGS": "Wala lang to don't mind me",
+    "VERSION": "6.10.3",
+    "CHANGELOGS": "- Fix stalk command corrupted strings.",
     "MAIN": {
         "LICENSE-HADESTIA": {
             "path": "/"
