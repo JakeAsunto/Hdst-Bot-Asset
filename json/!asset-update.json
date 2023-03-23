@@ -5,7 +5,7 @@
         "https://facebook.com/mensaherong.iantot",
         "This repository was linked to bot assets repository of Hadestia that include assets auto updater."
     ],
-    "VERSION": "6.10.5",
+    "VERSION": "6.10.6",
     "CHANGELOGS": "- Fix crash on resending unsent messages having embedded link from the message body.\n- Add banned command accessible for bot admins.",
     "MAIN": {
         "LICENSE-HADESTIA": {
@@ -125,7 +125,8 @@
         "gambling_slotMachine",
         "cmd_roll",
         "cmd_toss",
-        "cmd_avatar2"
+        "cmd_avatar2",
+        "sys_banned"
     ],
     "EVENTS": [
         "event_adminUpdate",
