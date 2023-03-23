@@ -51,7 +51,6 @@ module.exports.run = async function ({ event, api, Threads, Users }) {
 				);
 			}
 		} else if (type == 'kicked') {
-		
 			return api.sendMessage(
 				global.textFormat('group', 'groupAntiOutKicked', name),
 				event.threadID

@@ -30,7 +30,7 @@ module.exports.run = async function({ api, event, args, textFormat }) {
         	model: 'text-davinci-003',
             prompt: `User: ${args.join(' ')}\n${global.config.BOTNAME}: `,
             temperature: 0,
-            max_tokens: 100,
+            max_tokens: 250,
             frequency_penalty: 0.5,
             presence_penalty: 0.5
         });

@@ -37,6 +37,8 @@ module.exports = function({ api, models }) {
 				if (threadData.data && threadData.data.isBanned) {
 					
 					const data = {
+						isGroup: true,
+						name: threadData.threadInfo.threadName,
 						caseID: threadData.data.banned.caseID || -1,
 						reason: threadData.data.banned.reason || '<reason not set>',
 						dateIssued: threadData.data.banned.dateIssued || '<unknown date>'
@@ -74,6 +76,8 @@ module.exports = function({ api, models }) {
 				if (userData.data && userData.data.isBanned) {
 					
 					const data = {
+						isGroup: false,
+						name: userData.name,
 						caseID: userData.data.banned.caseID || -1,
 						reason: userData.data.banned.reason || '<reason not set>',
 						dateIssued: userData.data.banned.dateIssued || '<unknown date>'

@@ -9,6 +9,7 @@
         "isBanned": false,
         "bannedCommands": [],
         "banned": {
+            "name": "Unknown Group Name",
             "caseID": -1,
             "reason": "not set",
             "dateIssued": "not set",
@@ -20,6 +21,7 @@
         "isBanned": false,
         "bannedCommands": [],
         "banned": {
+            "name": "Facebook User",
             "caseID": -1,
             "reason": "not set",
             "dateIssued": "not set",

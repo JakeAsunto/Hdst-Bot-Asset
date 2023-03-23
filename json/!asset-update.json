@@ -5,8 +5,8 @@
         "https://facebook.com/mensaherong.iantot",
         "This repository was linked to bot assets repository of Hadestia that include assets auto updater."
     ],
-    "VERSION": "6.10.3",
-    "CHANGELOGS": "- Fix stalk command corrupted strings.",
+    "VERSION": "6.10.5",
+    "CHANGELOGS": "- Fix crash on resending unsent messages having embedded link from the message body.\n- Add banned command accessible for bot admins.",
     "MAIN": {
         "LICENSE-HADESTIA": {
             "path": "/"

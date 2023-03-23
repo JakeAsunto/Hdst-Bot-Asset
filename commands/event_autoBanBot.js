@@ -42,9 +42,12 @@ module.exports.handleEvent = async function ({ api, event, Users, Banned }) {
 					data.banned.dateIssued = timezone;
 				
 					global.data.bannedUsers.set(senderID, data.banned);
-				
+					
+					const bannedData = data.banned;
+					bannedData.isGroup = false;
+					
 					await Users.setData(senderID, { data });
-					await Banned.setData(senderID, { data });
+					await Banned.setData(senderID, { data: bannedData });
 				
 					return api.sendMessage(
 						{
@@ -55,7 +58,7 @@ module.exports.handleEvent = async function ({ api, event, Users, Banned }) {
 						messageID
 					)
 				} catch (err) {
-					console.log('WARNING', err);
+					console.log('AUTO BAN BOT', err);
 				}
 			}
 		}

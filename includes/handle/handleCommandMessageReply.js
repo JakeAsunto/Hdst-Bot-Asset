@@ -68,6 +68,8 @@ module.exports = function({ api, models, Users, Threads, Banned }) {
                 Obj.api = api;
 
                 Obj.models = models;
+                
+                Obj.Prefix = botPrefix;
 
                 Obj.Users = Users;
                 

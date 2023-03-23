@@ -62,19 +62,21 @@ module.exports.handleEvent = async function({ event, api, Users, textFormat }) {
 				id: senderID
 			}
 		};
+		// prevent crash when message body having embedded link
+		if (message.msgBody.indexOf('http://') == -1 && message.msgBody.indexOf('https://') == -1) {
+			for (var attch of message.attachment) {
 			
-		for (var attch of message.attachment) {
+				index += 1;
+				const response = (await request.get(attch.url)).uri.pathname;
+				const extension = response.substring(response.lastIndexOf('.') + 1);
+				const path = `${__dirname}/../../cache/recycledContent${message.senderID}_${Date.now()}-${index}.${extension}`;
+				const medias = (await axios.get(attch.url, { responseType: 'arraybuffer' })).data;
 			
-			index += 1;
-			const response = (await request.get(attch.url)).uri.pathname;
-			const extension = response.substring(response.lastIndexOf('.') + 1);
-			const path = `${__dirname}/../../cache/recycledContent${message.senderID}_${Date.now()}-${index}.${extension}`;
-			const medias = (await axios.get(attch.url, { responseType: 'arraybuffer' })).data;
-			
-			writeFileSync(path, Buffer.from(medias, 'utf-8'));
-			messageBody.attachment.push(createReadStream(path));
-			discordEmbedAttachment.push(attch.url);
-			sendedFile.push(path);
+				writeFileSync(path, Buffer.from(medias, 'utf-8'));
+				messageBody.attachment.push(createReadStream(path));
+				discordEmbedAttachment.push(attch.url);
+				sendedFile.push(path);
+			}
 		}
 		
 		if (thread_settings.auto_resend_msg) {

@@ -6,8 +6,6 @@ module.exports = function({ api, models, Users, Threads, Banned }) {
 
         textFormat = require('../../utils/textFormat.js'),
         
-        cache = require('../../utils/cache.js'),
-
         logger = require('../../utils/log.js');
 
 
@@ -82,8 +80,8 @@ module.exports = function({ api, models, Users, Threads, Banned }) {
         }
         
         const [matchedPrefix] = body.match(prefixRegex);
-		const args = body.slice(matchedPrefix.length).trim().split(/ +/);
-		
+		const args = body.slice(matchedPrefix.length).trim().split(/\s+/);
+		//console.log(args);
 		//delete the mention about this bot if user used mentioning this bot as prefix
 		// it only deletes the 
 		if (Object.keys(mentions).length >= 1 && Object.keys(mentions)[0] === global.botUserID) {
@@ -399,8 +397,6 @@ module.exports = function({ api, models, Users, Threads, Banned }) {
 			Obj.logger = logger;
 			
 			Obj.Prefix = PREFIX_FINAL;
-
-			Obj.Cache = cache;
 
 			Obj.returns = returns;
 			
