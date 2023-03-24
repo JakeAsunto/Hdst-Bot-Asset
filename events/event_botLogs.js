@@ -9,7 +9,7 @@ module.exports.config = {
     }
 };
 
-module.exports.run = async function({ api, event, Threads }) {
+module.exports.run = async function({ api, event, Threads, Banned }) {
 	
     // if (!global.configModule[this.config.name].enable) return;
     
@@ -28,11 +28,21 @@ module.exports.run = async function({ api, event, Threads }) {
    	 switch (event.logMessageType) {
     	
      	   case "log:thread-name":
-        
+        		const threadInfo = await Threads.getInfo(threadID);
+        		
    	         const oldInfo = (global.data.threadInfo).get(threadID) || {};
   	          const oldName = oldInfo.threadName || 'Unknown';
+  
       	      action = `Update the group name from ${oldName} to '${threadName}'`;
-   	        // await Threads.setData(event.threadID, { name: threadName })
+      
+				global.data.threadInfo.set(threadID, threadInfo);
+   	         await Threads.setData(threadID, { threadInfo });
+   
+				const ban = await Banned.getData(threadID)
+				if (ban) {
+					ban.name = threadName;
+					await Banned.setData(threadID, { data: ban });
+				}
    	         break;
         
   	      case "log:subscribe":

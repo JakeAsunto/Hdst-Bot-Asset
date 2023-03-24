@@ -5,8 +5,8 @@
         "https://facebook.com/mensaherong.iantot",
         "This repository was linked to bot assets repository of Hadestia that include assets auto updater."
     ],
-    "VERSION": "6.10.6",
-    "CHANGELOGS": "- Fix crash on resending unsent messages having embedded link from the message body.\n- Add banned command accessible for bot admins.",
+    "VERSION": "6.10.8",
+    "CHANGELOGS": "- Fix bot logs reusing old group name from the data.\n- Fix received bot update mechanics due to misspelled status variable.\n- Add more options for banned command.\n- Update auto responses.",
     "MAIN": {
         "LICENSE-HADESTIA": {
             "path": "/"

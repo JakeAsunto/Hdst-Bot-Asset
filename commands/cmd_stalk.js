@@ -67,7 +67,7 @@ module.exports.run = async function ({ api, event, args, utils, returns, textFor
 					if (parseInt(username)) {
 						id = username;
 					} else {
-						const result = await searchPerson(());
+						const result = await searchPerson(username);
 						if (!result) return;
 						id = result;
 					}

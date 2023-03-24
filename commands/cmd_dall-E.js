@@ -55,11 +55,25 @@ module.exports.run = async function({ api, event, args, returns, textFormat, Pre
 	} catch (err) {
 		returns.remove_usercooldown();
 		global.sendReaction.failed(api, event);
-		if ((err.toString()).indexOf('status code 400') !== -1) {
+		/*if ((err.toString()).indexOf('status code 400') !== -1) {
 			return api.sendMessage(textFormat('error', 'errOccured', `Inappropriate request, try another one that's valid.`), threadID, messageID);
+		}*/
+		
+		if (err.response) {
+			console.log('DALL-E STATUS', err.response.status);
+            console.log('DATA', err.response.data);
+			// ALL TOKENS ARE USED UP
+			if (err.response.data.error.code == 'billing_hard_limit_reached') {
+				api.sendMessage(textFormat('error', 'errOccured', 'Sorry, it seems like all api tokens are used up, I couldn\'t process your request. This error was already sent to the admins, kindly wait for them to recharge :)'), event.threadID, event.messageID);
+				return global.logModuleErrorToAdmin(err.response.data.error.message, __filename, event);
+			} else {
+				api.sendMessage(textFormat('error', 'errOccured', err.response.data.error.message), event.threadID, event.messageID);
+				return global.logModuleErrorToAdmin(err.response.data.error.message, __filename, event);
+			}
+		} else {
+			global.logger(err.message, 'error');
+			global.logModuleErrorToAdmin(err.message, __filename, event);
+			return api.sendMessage(textFormat('error', 'errCmdExceptionError', err.message, Prefix), threadID, messageID);
 		}
-		global.logger(err, 'error');
-		global.logModuleErrorToAdmin(err, __filename, event);
-		return api.sendMessage(textFormat('error', 'errCmdExceptionError', err, Prefix), threadID, messageID);
 	}
 }

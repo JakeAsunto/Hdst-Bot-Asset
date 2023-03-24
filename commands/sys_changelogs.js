@@ -75,7 +75,7 @@ module.exports.run = async function ({ api, args, event, textFormat, Threads }) 
 		
 		// set initial state when not set
 		// if (typeof(data['recieve-update']) == undefined || data['recieve-update'] == true) {
-		data.recieve_update = !data.recieve_update;
+		data.receive_update = !data.receive_update;
 		//} else 
 			//data['recieve-update'] = true;
 		//}

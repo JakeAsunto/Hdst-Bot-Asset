@@ -26,7 +26,10 @@
             "Good morning too ${mention}.",
             "Hi ${mention} good morning.",
             "Wish you the best today ${mention}.",
-            "Blessed day to you ${mention}."
+            "Blessed day to you ${mention}.",
+            "Good morning too ${mention}. Have you eaten?",
+            "Nag breakfast kana ba love?",
+            "Hi sweetie."
         ],
         "single_message_only": true
     },
@@ -39,7 +42,21 @@
         ],
         "response": [
             "Good afternoon too ${mention}.",
-            "Hi ${mention} good afternoon"
+            "Hi ${mention} good afternoon",
+            "Hi darling."
+        ],
+        "single_message_only": true
+    },
+    "meridiemEVE": {
+        "matches": [
+            "good evening",
+            "good eve",
+            "evening"
+        ],
+        "response": [
+            "Good evening ${mention}.",
+            "Hi ${mention} good evening.",
+            "Good evening ${mention}. Have you eaten?"
         ],
         "single_message_only": true
     },
@@ -54,7 +71,8 @@
             "yo",
             "henlo",
             "low",
-            "yow"
+            "yow",
+            "kamusta"
         ],
         "response": [
             "${meridiem} ${mention}!.",
@@ -156,15 +174,17 @@
         "matches": [
             "i love you",
             "love you",
-            "labyu"
+            "labyu",
+            "baby",
+            "mahal na mahal",
+            "kiss kita"
         ],
         "response": [
             "Hope all",
             "I love you too",
             "Kadiri",
             "Mag pm kayo umay naman par",
-            "hayst sana ol may jowa",
-            "Aawwww so lovely..(人 •͈ᴗ•͈)"
+            "hayst sana ol may jowa"
         ],
         "stand_alone": true
     },
@@ -215,7 +235,10 @@
             "sana all",
             "hope all",
             "tanga",
-            "baliw"
+            "baliw",
+            "😆",
+            "🤣",
+            "😂"
         ],
         "response": [
             "😆",
@@ -231,7 +254,8 @@
         ],
         "response": [
             "Racist amp.",
-            "Umay sayo par anong taon na racist ka paren ang itim naman ng singit mo."
+            "Umay sayo par anong taon na racist ka paren ang itim naman ng singit mo.",
+            "I love black people."
         ],
         "stand_alone": true
     },
@@ -240,7 +264,10 @@
             "sad",
             "sakit",
             "hurt",
-            "pain"
+            "pain",
+            "☹️",
+            "😥",
+            "😢"
         ],
         "response": [
             "😢"

@@ -7,7 +7,7 @@ module.exports.config = {
 	commandCategory: 'artificial intelligence',
 	usages: '< prompt (that is not a single word) >',
 	aliases: [ 'openai', 'aoi' ],
-	cooldowns: 10,
+	cooldowns: 300,
 	dependencies: {
         'openai': ''
     },
@@ -45,13 +45,19 @@ module.exports.run = async function({ api, event, args, textFormat }) {
 			event.messageID
 		);
 	} catch (error) {
-		console.log(error);
+		//console.log('ALL', error);
 		if (error.response) {
-        	console.log(error.response.status);
-            console.log(error.response.data);
+        	console.log('OPENAI STATUS', error.response.status);
+            console.log('DATA', error.response.data);
+			// ALL TOKENS ARE USED UP
+			if (error.response.status == 429) {
+				api.sendMessage(textFormat('error', 'errOccured', 'Sorry, it seems like all api tokens are used up, I couldn\'t process your request. This error was already sent to the admins, kindly wait for them to recharge :)'), event.threadID, event.messageID);
+				global.logModuleErrorToAdmin(error.response.data.error.message, __filename, event);
+			}
         } else {
-        	console.log(error.message);
+        	console.log('MESSAGE', error.message);
         	global.sendReaction.failed(api, event);
+        	global.logModuleErrorToAdmin(error, __filename, event);
             api.sendMessage(textFormat('error', 'errCmdExceptionError', err, global.config.PREFIX), event.threadID, event.messageID);
         }
         
