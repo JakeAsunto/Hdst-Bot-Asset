@@ -3,7 +3,7 @@ module.exports.config = {
 	version: '1.0.0',
 	hasPermssion: 0,
 	credits: 'Joshua Sy',
-	description: 'translate text to baybayin',
+	description: 'A Filipino ancient writing system, it translates text to Baybayin writings',
 	usages: '<text>',
 	commandCategory: 'education',
 	cooldowns: 5,

@@ -15,7 +15,7 @@ module.exports.config = {
 	}
 }
 
-module.exports.handleReply = async function({ api, event, returns, handleReply, Banned }) {
+module.exports.handleReply = async function({ api, event, returns, handleReply, Banned, Threads }) {
 	
     if (event.senderID !== handleReply.author) {
 		return api.sendMessage(global.textFormat('error', 'errCommandReplyInteractionFailed'), event.threadID, (err, info) => { global.autoUnsend(err, info, 5) }, event.messageID);
@@ -50,24 +50,14 @@ module.exports.handleReply = async function({ api, event, returns, handleReply, 
 				//console.log(position)
 				const data = handleReply.pending[position - 1];
 				disconnectBot(data, data.isGroup);
-				if (!data.isGroup) {
-					const user = await api.getUserInfoV2(data.threadID) || {};
-					items.push(user.name || 'Facebook User');
-				} else {
-					items.push(data.threadName);
-				}
+				items.push(data.threadName || data.name || '--Unknown');
 			}
 		} else {
 			if (task === 'all') {
 				for (const index in handleReply.pending) {
 					const data = handleReply.pending[index];
 					disconnectBot(data, data.isGroup)
-					if (!data.isGroup) {
-						const user = await api.getUserInfoV2(data.threadID) || {};
-						items.push(user.name || 'Facebook User');
-					} else {
-						items.push(data.threadName);
-					}
+					items.push(data.threadName || data.name || '--Unknown');
 				}
 			}
 		}
@@ -96,24 +86,14 @@ module.exports.handleReply = async function({ api, event, returns, handleReply, 
 				//console.log('positiob ' + position);
 				const data = handleReply.pending[position - 1];
 				connectBot(data, data.isGroup);
-				if (!data.isGroup) {
-					const user = await api.getUserInfoV2(data.threadID) || {};
-					items.push(user.name || 'Facebook User');
-				} else {
-					items.push(data.threadName);
-				}
+				items.push(data.threadName || data.name || '--Unknown');
 			}
 		} else {
 			if (task === 'all') {
 				for (const index in handleReply.pending) {
 					const data = handleReply.pending[index];
 					connectBot(data, data.isGroup);
-					if (!data.isGroup) {
-						const user = await api.getUserInfoV2(data.threadID) || {};
-						items.push(user.name || 'Facebook User');
-					} else {
-						items.push(data.threadName);
-					}
+					items.push(data.threadName || data.name || '--Unknown');
 				}
 			}
 		}
@@ -141,32 +121,57 @@ module.exports.handleReply = async function({ api, event, returns, handleReply, 
     }
     
     function threadIsBanned(obj, reason, date) {
-    	api.sendMessage(global.textFormat('events', 'eventBotJoinedBannedThread', reason, date), obj.threadID);
+    	return api.sendMessage(global.textFormat('events', 'eventBotJoinedBannedThread', reason, date), obj.threadID, (e)=>{});
     }
     
     async function connectBot(obj) {
     	const bannedData = await Banned.getData(obj.threadID);
     	if (!bannedData) {
-    		api.sendMessage(`${global.textFormat('events', 'eventBotJoinedConnected', global.config.BOTNAME, global.config.PREFIX)}\n\n${global.textFormat('cmd', 'cmdHelpUsageSyntax', global.config.PREFIX, global.botName)}`, obj.threadID );
+    		api.sendMessage(`${global.textFormat('events', 'eventBotJoinedConnected', global.config.BOTNAME, global.config.PREFIX)}\n\n${global.textFormat('cmd', 'cmdHelpUsageSyntax', global.config.PREFIX, global.botName)}`, obj.threadID, ()=>{} );
     	} else {
     		const reason = bannedData.data.reason;
     		const date = bannedData.data.dateIssued;
-    		threadIsBanned(obj, reason, date);
+    		await threadIsBanned(obj, reason, date);
+    		if (obj.isGroup) {
+				api.removeUserFromGroup(api.getCurrentUserID(), obj.threadID, (e)=>{});
+				const data = await Threads.getData(obj.threadID);
+				if (data) {
+					const index = global.data.allThreadID.indexOf(obj.threadID);
+					(index !== -1) ? global.data.allThreadID.slice(index, 1) : '';
+					await Threads.delData(obj.threadID);
+				}
+    		}
+    		return api.deleteThread(obj.threadID, (e)=>{});
     	}
     }
     
-    async function disconnectBot(obj, isGroup) {
+    async function disconnectBot(obj) {
     	const bannedData = await Banned.getData(obj.threadID);
 		if (bannedData) {
 			const reason = bannedData.data.reason;
     		const date = bannedData.data.dateIssued;
-    		threadIsBanned(obj, reason, date);
-		}
-    	if (isGroup) {
-    		await api.sendMessage(global.textFormat('events', 'eventBotDeclinedGroup'), obj.threadID);
-    		return api.removeUserFromGroup(api.getCurrentUserID(), obj.threadID);
+    		await threadIsBanned(obj, reason, date);
+    		if (obj.isGroup) {
+				api.removeUserFromGroup(api.getCurrentUserID(), obj.threadID, (e)=>{});
+				const data = await Threads.getData(obj.threadID);
+				if (data) {
+					const index = global.data.allThreadID.indexOf(obj.threadID);
+					(index !== -1) ? global.data.allThreadID.slice(index, 1) : '';
+					await Threads.delData(obj.threadID);
+				}
+			}
+		} else {
+    		if (obj.isGroup) {
+    			api.sendMessage(
+					global.textFormat('events', 'eventBotDeclinedGroup'),
+					obj.threadID,
+					(e)=>{
+						api.removeUserFromGroup(api.getCurrentUserID(), obj.threadID, (e)=>{});
+					}
+				);
+    		}
     	}
-    	return api.deleteThread(obj.threadID);
+    	return api.deleteThread(obj.threadID, (e)=>{});
     }
 }
 
@@ -181,6 +186,7 @@ module.exports.run = async function({ api, args, event, returns, textFormat }) {
 	
 	if (!['thread', 'group', 'user'].includes(mode)) return returns.invalid_usage();
 	
+	
     try {
 		var spam = await api.getThreadList(100, null, ['OTHER']) || [];
 		var pending = await api.getThreadList(100, null, ['PENDING']) || [];
@@ -192,69 +198,83 @@ module.exports.run = async function({ api, args, event, returns, textFormat }) {
 	}
 	
 	if (mode == 'thread' || mode == 'group') {
-		
-		const list = [...spam, ...pending].filter(group => group.isSubscribed && group.isGroup);
+		try {
+			const list = [...spam, ...pending].filter(group => group.isSubscribed && group.isGroup);
 
-    	for (const single of list) {
-    		index += 1;
-    		msg_item += `${textFormat('system', 'botMessagePendingItemFormat', index, single.threadID, single.name)}\n\n`;
-		}
+    		for (const single of list) {
+    			index += 1;
+    			msg_item += `${textFormat('system', 'botMessagePendingItemFormat', index, single.threadID, single.name)}\n\n`;
+			}
 	
-  	  if (list.length != 0) {
-			return api.sendMessage(
-				textFormat('system', 'botMessagePendingListFormat', msg_item, list.length),
-				threadID,
-				(err, info) => {
-					if (err) return console.log(err);
-					global.client.handleReply.push({
-            			name: commandName,
-            			messageID: info.messageID,
-            			author: event.senderID,
-            			pending: list,
-            			isGroup: true,
-            			timeout: replyTimeout
-					});
-					global.autoUnsend(err, info, 60);
-				},
-				messageID
-			);
-		} else {
-			return api.sendMessage(textFormat('system', 'botMessagePendingNoData'), threadID, messageID);
+  		  if (list.length != 0) {
+				return api.sendMessage(
+					textFormat('system', 'botMessagePendingListFormat', msg_item, list.length),
+					threadID,
+					(err, info) => {
+						if (err) return console.log(err);
+						global.client.handleReply.push({
+            				name: commandName,
+            				messageID: info.messageID,
+            				author: event.senderID,
+            				pending: list,
+            				isGroup: true,
+            				timeout: replyTimeout
+						});
+						global.autoUnsend(err, info, 60);
+					},
+					messageID
+				);
+			} else {
+				return api.sendMessage(textFormat('system', 'botMessagePendingNoData'), threadID, messageID);
+			}
+		} catch (e) {
+			global.sendReaction.failed(api, event);
+			console.log(e);
 		}
-		
 	} else if (mode === 'user') {
-		
-		const list = [...spam, ...pending].filter(group => !group.isGroup);
-		
-    	for (const single of list) {
-    		const user = await api.getUserInfoV2(single.threadID);
-    		//console.log(single);
-    		index += 1;
-    		// const user = await api.getUserInfoV2(single.threadID) || {};
-    		msg_item += `${textFormat('system', 'botMessagePendingItemFormat', index, single.threadID, user.name || 'Facebook User')}\n\n`;
+		try {
+			const list = [...spam, ...pending].filter(group => !group.isGroup);
+			//this is to filter available user (some of user from pending was delete or inavailable, which the main cuz of crash when using getUserInfoV2)
+			const available = []; 
+			
+    		for (const single of list) {
+    			await api.getUserInfoV2(single.threadID).then((user) => {
+    				index += 1;
+    				msg_item += `${textFormat('system', 'botMessagePendingItemFormat', index, single.threadID, user.name || 'Facebook User')}\n\n`;
+    
+					available[available.length] = {
+						isGroup: single.isGroup,
+						threadID: single.threadID,
+						name: single.name
+					}
+				}).catch((err) => {
+					api.deleteThread(single.threadID, (e)=>{});
+				});
+			}
+  		  if (available.length != 0) {
+				return api.sendMessage(
+					textFormat('system', 'botMessagePendingListFormat', msg_item, list.length),
+					threadID,
+					(err, info) => {
+						if (err) return console.log(err);
+						global.client.handleReply.push({
+            				name: commandName,
+            				messageID: info.messageID,
+            				author: event.senderID,
+            				pending: available,
+            				isGroup: false,
+            				timeout: replyTimeout
+						});
+						global.autoUnsend(err, info, 60);
+					},
+					messageID
+				);
+			} else {
+				return api.sendMessage(textFormat('system', 'botMessagePendingNoData'), threadID, messageID);
+			}
+		} catch (e) {
+			global.sendReaction.failed(api, event);
+			console.log(e);
 		}
-	
-  	  if (list.length != 0) {
-			return api.sendMessage(
-				textFormat('system', 'botMessagePendingListFormat', msg_item, list.length),
-				threadID,
-				(err, info) => {
-					if (err) return console.log(err);
-					global.client.handleReply.push({
-            			name: commandName,
-            			messageID: info.messageID,
-            			author: event.senderID,
-            			pending: list,
-            			isGroup: false,
-            			timeout: replyTimeout
-					});
-					global.autoUnsend(err, info, 60);
-				},
-				messageID
-			);
-		} else {
-			return api.sendMessage(textFormat('system', 'botMessagePendingNoData'), threadID, messageID);
-		}
-		
 	}
 }

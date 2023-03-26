@@ -113,6 +113,7 @@ module.exports.run = async function ({ api, event, args, utils, returns, textFor
 					res.name,
 					usern,
 					love,
+					id,
 					
 					gender,
 					birthday,

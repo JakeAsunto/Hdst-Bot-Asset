@@ -5,8 +5,8 @@ module.exports.config = {
 	hasPermssion: 2,
 	commandCategory: 'system',
 	cooldowns: 0,
-	description: 'announce a message to a thread',
-	usages: '<all | group id> | <author> | <message>',
+	description: 'announce a message to a all groups or on a specified one.',
+	usages: '[ all | group id ] | <author> | <message>',
 	aliases: [ 'announcement' ],
 	hidden: true,
 	envConfig: {
@@ -14,10 +14,17 @@ module.exports.config = {
 	}
 }
 
-module.exports.run = async function ({ api, args, event, textFormat, logMessageError }) {
+module.exports.run = async function ({ api, args, event, returns, textFormat }) {
 	
 	const { threadID, messageID } = event;
-	const arg = (args.join(' ')).split('|');
+	const body = args.join(' ');
+	
+	let dividerCount = body.match(/\|/g);
+	if (!dividerCount || dividerCount.length < 2) {
+		return returns.invalid_usage();
+	}
+	
+	const arg = (body).split('|');
 	const target_id = arg[0].trim();
 	const codename = arg[1].trim();
 	
@@ -29,7 +36,7 @@ module.exports.run = async function ({ api, args, event, textFormat, logMessageE
 				textFormat('cmd', 'cmdAnnounceFormat', codename, arg[2].trim()),
 				target_id,
 				(err) => {
-					if (err) return logMessageError(err);
+					if (err) return console.log(err);
 					// return api.sendMessage(textFormat('cmd', 'cmdAnnounceSentSuccess'), threadID, messageID);
 					return global.sendReaction.success(api, event);
 				}

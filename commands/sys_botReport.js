@@ -9,7 +9,7 @@ module.exports.config = {
 	aliases: [ 'report', 'callad' ],
 	cooldowns: 600,
 	envConfig: {
-		requiredArgument: 2
+		requiredArgument: 1
 	}
 }
 

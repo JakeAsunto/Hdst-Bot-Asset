@@ -5,7 +5,12 @@ module.exports.config = {
     description: 'turned on to automatically response into any matched messages installed in the system.',
     commandCategory: 'hidden',
     hasPermssion: 3,
-    usages: ''
+    usages: '',
+    envConfig: {
+		handleEvent_allowBannedUsers: true,
+		handleEvent_allowBannedThreads: true,
+		handleEvent_allowDirectMessages: true
+	}
 }
 
 module.exports.handleEvent = async ({ api, event, Users }) => {
@@ -32,10 +37,11 @@ module.exports.handleEvent = async ({ api, event, Users }) => {
 		if (Object.keys(mentions).length === 1 && Object.values(mentions)[0] === global.botUserID) {
 			return;
 		}
-	// avoid interaction on other conversation
-	} else if (event.type == 'message_reply' && event.messageReply.senderID !== global.botUserID) {
-		return;
 	}
+	/* avoid interaction on other conversation (deprecated)
+	} else if (event.type == 'message_reply') {
+		if (event.messageReply && event.messageReply.senderID !== global.botUserID) return;
+	}*/
 	
 	for (const type in dictionary) {
 		

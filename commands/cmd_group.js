@@ -4,7 +4,7 @@ module.exports.config = {
 	hasPermssion: 3,
 	commandCategory: 'group',
 	description: 'Sets specific type for a group/thread',
-	usages: '\n[ preffix | name | admin | auto-response | anti-change | anti-join | anti-out ] [ ... ]',
+	usages: '\n[ preffix | name | admin | auto-response | auto-resend | anti-change | anti-join | anti-out ] [ ... ]',
 	credits: 'Hadestia',
 	cooldowns: 10,
 	aliases: [ 'group' ],
@@ -16,6 +16,7 @@ module.exports.config = {
 
 const validTypes = [
 	'auto-response',
+	'auto-resend',
 	'anti-change',
 	'anti-join',
 	'anti-out',
@@ -119,6 +120,14 @@ module.exports.run = async function ({ api, args, alias, event, returns, textFor
 				api.sendMessage(textFormat('success', 'successfulFormat', 'Anti group change mode was turned on.'), threadID, global.autoUnsend, messageID) :
 				api.sendMessage(textFormat('error', 'errOccured', 'Anti group change mode was turned off.'), threadID, global.autoUnsend, messageID);
 			break
+		
+		case 'auto-resend': 
+			GROUP_DATA.auto_resend_msg = !GROUP_DATA.auto_resend_msg;
+			(GROUP_DATA.auto_resend_msg) ?
+				api.sendMessage(textFormat('success', 'successfulFormat', 'Auto resend unsent messages mode was turned on.'), threadID, global.autoUnsend, messageID) :
+				api.sendMessage(textFormat('error', 'errOccured', 'Auto resend unsent messages mode was turned off.'), threadID, global.autoUnsend, messageID);
+			break;
+			
 		default:
 			break;
 			
@@ -133,8 +142,6 @@ module.exports.run = async function ({ api, args, alias, event, returns, textFor
 function commandTypeValid(cmd) {
 	return validTypes.includes(cmd.toLowerCase())
 }
-
-
 
 // =============== COMMANDS FUNCTIONS =============== //
 

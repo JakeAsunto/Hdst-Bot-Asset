@@ -121,7 +121,7 @@ module.exports = function({ Users, Threads, Banned }) {
                     try {
 						// update member data on User table if exist
 						const uid = String(singleData.id);
-                    	if (global.data.allUserID.includes(uid)) {
+                    	if (allUserID.includes(uid)) {
                     	
 							await Users.setData(uid, { 'name': singleData.name });
 								
@@ -146,9 +146,9 @@ module.exports = function({ Users, Threads, Banned }) {
 							// else: create data of a member for User table
 							await Users.createData(uid, { 'name': singleData.name, 'data': data });
 								
-                            global.data.allUserID.push(uid);
+                            allUserID.push(uid);
                             
-                            global.data.userName.set(uid, String(singleData.name));
+                            userName.set(uid, String(singleData.name));
 
                             logger(global.getText('handleCreateDatabase', 'newUser', chalk.hex("#" + random)(`New user:  `) + chalk.hex("#" + random1)(`${singleData.name}`) + "  ||  " + chalk.hex("#" + random2)(`${uid}`)), '[ USER ]');
                             

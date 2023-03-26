@@ -25,7 +25,7 @@ module.exports.handleMessageReply = async function ({ api, event, Prefix }) {
 		if (event.type === 'message_reply' && !body.startsWith(Prefix)) {
 			//console.log('ANONYMOUSE MESSAGE HANDLE REPLY\n', event);
 		
-			if (messageReply && !messageReply.senderID || messageReply.senderID !== global.botUserID) return;
+			if (!messageReply || messageReply.senderID !== global.botUserID) return;
 		
 			// IF this thread was the receiver of the sent anonymous message
 			if (messageReply && messageReply.body.indexOf('𝗔𝗻𝗼𝗻𝘆𝗺𝗼𝘂𝘀 𝗠𝗲𝘀𝘀𝗮𝗴𝗲') !== -1 && messageReply.body.indexOf('replied to your anonymous message.') === -1) {

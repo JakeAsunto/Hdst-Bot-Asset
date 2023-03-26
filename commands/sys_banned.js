@@ -21,7 +21,7 @@ module.exports.run = async function ({ api, args, event, textFormat, Users, Bann
 	const command = args.shift(); // get command type
 
 	function send(msg) {
-		return api.sendMessage(msg, threadID, messageID);
+		return api.sendMessage(msg, threadID, ()=>{}, messageID);
 	}
 	
 	function sendBanNotice(msg, reason, id) {
@@ -95,7 +95,8 @@ module.exports.run = async function ({ api, args, event, textFormat, Users, Bann
 				}
 			}
 			
-			if (!isError) {
+			//
+			if (!isError && successProcess.length > 0) {
 				api.sendMessage(textFormat('success', 'successfulFormat', `Successfully Banned User(s):\n-${await successProcess.join('\n-')}`), threadID, messageID);
 			}
 			break;
@@ -130,7 +131,7 @@ module.exports.run = async function ({ api, args, event, textFormat, Users, Bann
 						sendBanNotice('An Admin just banned this group from using this bot.', reason, targetID);
 						successProcess.push(threadName);
 					} else {
-						send(composeError(Group: `${threadName} has already had a ban record.`));
+						send(composeError(`Group: ${threadName} has already had a ban record.`));
 					}
 				} catch (err) {
 					send(composeError(err));
@@ -139,7 +140,7 @@ module.exports.run = async function ({ api, args, event, textFormat, Users, Bann
 				}
 			}
 			
-			if (!isError) {
+			if (!isError && successProcess.length > 0) {
 				api.sendMessage(textFormat('success', 'successfulFormat', `Successfully Banned User(s):\n-${await successProcess.join('\n-')}`), threadID, messageID);
 			}
 		
@@ -189,7 +190,7 @@ module.exports.run = async function ({ api, args, event, textFormat, Users, Bann
 						
 						if (hasRecord) {
 							await deleteBan(targetID, false, Banned, Users, Threads);
-							sendBanNotice('An Admin just unbanned you from using this bot.', null, targetID);
+							sendBanNotice('An Admin just unbanned you from using this bot, You may now use this service.', null, targetID);
 							successProcess.push(userName);
 						} else {
 							send(composeError(`User: ${userName} has no ban record.`));
@@ -202,7 +203,7 @@ module.exports.run = async function ({ api, args, event, textFormat, Users, Bann
 				}
 			}
 			
-			if (!isError) {
+			if (!isError && successProcess.length > 0) {
 				api.sendMessage(textFormat('success', 'successfulFormat', `Successfully Unbanned User(s):\n-${await successProcess.join('\n-')}`), threadID, messageID);
 			}
 			
@@ -228,11 +229,11 @@ module.exports.run = async function ({ api, args, event, textFormat, Users, Bann
 					const hasRecord = await Banned.hasRecord(targetID);
 					
 					if (hasRecord) {
-						await setBan(targetID, threadName, reason, true, Banned, Users, Threads);
-						sendBanNotice('An Admin just banned this group from using this bot.', reason, targetID);
+						await deleteBan(targetID, true, Banned, Users, Threads);
+						sendBanNotice('An Admin just unban this group, You all may now use this service.', null, targetID);
 						successProcess.push(threadName);
 					} else {
-						send(composeError(Group: `${threadName} has no ban record.`));
+						send(composeError(`Group: ${threadName} has no ban record.`));
 					}
 				} catch (err) {
 					send(composeError(err));
@@ -241,7 +242,7 @@ module.exports.run = async function ({ api, args, event, textFormat, Users, Bann
 				}
 			}
 			
-			if (!isError) {
+			if (!isError && successProcess.length > 0) {
 				api.sendMessage(textFormat('success', 'successfulFormat', `Successfully Unbanned Group(s):\n-${await successProcess.join('\n-')}`), threadID, messageID);
 			}
 			break;
@@ -255,36 +256,25 @@ module.exports.run = async function ({ api, args, event, textFormat, Users, Bann
 				send(composeError('Invalid target, target cannot be emptied'));
 				break;
 			}
-			
-			for (const targetID of args) {
-				try {
-					if (!parseInt(targetID)) {
-						send(composeError(`Invalid, expected ID, got string: ${targetID}`));
+			// if mention type
+			if (Object.keys(mentions).length > 0) {
+				
+				for (const userID in mentions) {
+					handleBanChecking(userID, api, send, Banned);
+				}
+				
+			} else {
+				for (const targetID of args) {
+					try {
+						if (!parseInt(targetID)) {
+							send(composeError(`Invalid, expected ID, got string: ${targetID}`));
+							break;
+						}
+						handleBanChecking(targetID, api, send, Banned);
+					} catch (err) {
+						send(composeError(err));
 						break;
 					}
-					const hasRecord = Banned.hasRecord(targetID);
-					
-					if (hasRecord) {
-						const record = await Banned.getData(targetID);
-						
-						api.sendMessage(
-							textFormat(
-								'banned', 'bannedRecordInfo',
-								record.caseID,
-								targetID,
-								record.name,
-								(record.isGroup) ? 'Yes' : 'No',
-								record.reason,
-								record.dateIssued
-							),
-							threadID,
-							messageID
-						);
-					} else {
-						send(composeError(Target: `${targetID} has no ban record.`));
-					}
-				} catch (err) {
-					send(composeError(err));
 				}
 			}
 			break;
@@ -369,5 +359,28 @@ async function deleteBan (ID, isGroup, Banned, Users, Threads) {
 		return;
 	} catch (e) {
 		throw new Error(e);
+	}
+}
+
+async function handleBanChecking(ID, api, send, Banned) {
+	const hasRecord = await Banned.hasRecord(ID);
+	if (hasRecord) {
+		const { data: record } = await Banned.getData(ID);
+		api.sendMessage(
+			textFormat(
+				'banned', 'bannedRecordInfo',
+				record.caseID,
+				targetID,
+				record.name,
+				(record.isGroup) ? 'Yes' : 'No',
+				record.reason,
+				record.dateIssued
+			),
+			threadID,
+			()=>{},
+			messageID
+		);
+	} else {
+		send(composeError(`User/Group: ${ID} has no ban record.`));
 	}
 }

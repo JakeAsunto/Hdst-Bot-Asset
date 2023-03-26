@@ -10,7 +10,10 @@ module.exports.config = {
 		'axios': '',
 		'fs-extra': ''
 	},
-	credits: 'Joshua Sy for API'
+	credits: 'Joshua Sy for API',
+	envConfig: {
+		handleEvent_allowDirectMessages: true
+	}
 }
 
 module.exports.fetchData = function (body) {

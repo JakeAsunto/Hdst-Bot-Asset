@@ -5,8 +5,8 @@
         "https://facebook.com/mensaherong.iantot",
         "This repository was linked to bot assets repository of Hadestia that include assets auto updater."
     ],
-    "VERSION": "6.10.8",
-    "CHANGELOGS": "- Fix bot logs reusing old group name from the data.\n- Fix received bot update mechanics due to misspelled status variable.\n- Add more options for banned command.\n- Update auto responses.",
+    "VERSION": "6.10.9",
+    "CHANGELOGS": "- Fix handleEvent for commands not interacting on private messages.\n\n- Fix crash on auto response event listener.\n\n- Add more environment configuration for commands for handleEvents.\n\n- Support mentioning for ban checking.\n\n- Remove global map for unsent messages.\n\n- Add \"auto-resend\" option for group command to enable and disable auto resending unsent messages.\n\n- Add user ID (UID) information for stalk command.",
     "MAIN": {
         "LICENSE-HADESTIA": {
             "path": "/"
