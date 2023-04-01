@@ -75,6 +75,10 @@
             "path": "json/",
             "folder": "json"
         },
+        "commandCategories.json": {
+            "path": "json/",
+            "folder": "json"
+        },
         "economySystem.json": {
             "path": "json/",
             "folder": "json"
