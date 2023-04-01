@@ -5,7 +5,7 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
 
     const moment = require('moment-timezone');
 
-    return async function({ event, bannedUserData, bannedGroupData }) {
+    return async ({ event, bannedUserData, bannedGroupData }) => {
     	
     	const time = moment.tz('Asia/Manila').format('HH:MM:ss DD/MM/YYYY');
 		const { allowInbox, adminOnly, isMaintenance, allowCommandSimilarity, PREFIX, ADMINBOT, DeveloperMode } = global.HADESTIA_BOT_CONFIG;
@@ -57,11 +57,16 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
 					// Group is banned?
                     if (bannedGroupData) {
                         const { caseID, reason, dateIssued } = bannedGroupData.data || {};
-                        return api.sendMessage(Utils.textFormat('events', 'eventThreadBannedForBot', caseID, reason, dateIssued), threadID, async (err, info) => {
-							if (err) return;
-                            await new Promise(resolve => setTimeout(resolve, 20 * 1000));
-                            return api.unsendMessage(info.messageID);
-                        }, messageID);
+                        return api.sendMessage(
+							Utils.textFormat('events', 'eventThreadBannedForBot', caseID, reason, dateIssued),
+							threadID,
+							async (err, info) => {
+								if (err) return;
+                            	await new Promise(resolve => setTimeout(resolve, 20 * 1000));
+                            	return api.unsendMessage(info.messageID);
+                        	},
+							messageID
+						}
                     }
                 }
             }
@@ -79,10 +84,10 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
     	if (isMaintenance && !ADMINBOT.includes(senderID)) {
     		return api.sendMessage(Utils.textFormat('system', 'botUnderMaintenance'), threadID, messageID);
 		}
-		//console.log(args.length);
-		if (args[0] === '' && !args[1]) {
+		
+		if (args[0] == '' && !args[1]) {
 			// response that's my prefix
-			return api.sendMessage(Utils.textFormat('system', 'botPoked', global.HADESTIA_BOT_CONFIG.PREFIX, global.HADESTIA_BOT_CONFIG.PREFIX), threadID, messageID);
+			return api.sendMessage(Utils.textFormat('system', 'botPoked', PREFIX_FINAL, PREFIX_FINAL), threadID, messageID);
 		}
         // accept command with spacing
         commandName = (args.length > 1 && args[0] === '') ? args[1] : args.shift().toLowerCase();
@@ -92,7 +97,9 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
         if (!command && allowCommandSimilarity) {
 			var allCommandName = [];
 			const commandValues = commands['keys']();
-    	    for (const cmd of commandValues) allCommandName.push(cmd)
+    	    for (const cmd of commandValues) {
+				allCommandName.push(cmd);
+			}
     	    const checker = stringSimilarity.findBestMatch(commandName, allCommandName);
     	    if (checker.bestMatch.rating >= 0.9) {
 				command = commands.get(checker.bestMatch.target);
@@ -112,12 +119,11 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
         
         // Handle commands available only for Groups
 		if (!event.isGroup && cmdEnvConfig.groupCommandOnly) {
-				Utils.sendReaction.failed(api, event);
-				return api.sendMessage(
-					Utils.textFormat('system', 'commandAvailableOnGCOnly'),
-					threadID, Utils.autoUnsend, messageID
-				);
-			}
+			Utils.sendReaction.failed(api, event);
+			return api.sendMessage(
+				Utils.textFormat('system', 'commandAvailableOnGCOnly'),
+				threadID, Utils.autoUnsend, messageID
+			);
 		}
         
         // check user has banned commands
@@ -133,14 +139,13 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
         }
 
 		// Handle NSFW commands
-        if (command.config.commandCategory.toLowerCase() == 'nsfw' && !threadSetting.allowNSFW; && !ADMINBOT.includes(senderID)) {
+        if (command.config.commandCategory.toLowerCase() == 'nsfw' && !threadSetting.allowNSFW && !ADMINBOT.includes(senderID)) {
             return api.sendMessage(Utils.getText('handleCommand', 'threadNotAllowNSFW'), threadID, Utils.autoUnsend, messageID);
 		}
 
 		try {
-        	var threadInfoo = (await Threads.getInfo(threadID) || threadInfo.get(threadID));
 			var is_admin_bot = ADMINBOT.includes(senderID.toString());
-			var is_admin_group = threadInfoo.adminIDs.find(el => el.id == senderID);
+			var is_admin_group = (event.isGroup) ? threadInfo.adminIDs.find(el => el.id == senderID) : false;
 		} catch (err) {
 			console.log(err);
 			Utils.sendReaction.failed(api, event);
@@ -171,16 +176,16 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
 			// setTimeout(() => { api.unsendMessage(info.messageID) }, 10 * 1000);
 		}
 		
-		if (cmdEnvConfig.inProcessReaction) {
-			await Utils.sendReaction.inprocess(api, event);
-		}
-		
         if (!eligible) {
         	const permTxt = Utils.textFormat('system', 'perm' + cmdPerm)
 			return api.sendMessage(
 				Utils.textFormat('cmd', 'cmdPermissionNotEnough', permTxt),
 				threadID, Utils.autoUnsend, messageID
 			);
+		}
+		
+		if (cmdEnvConfig.inProcessReaction) {
+			await Utils.sendReaction.inprocess(api, event);
 		}
 
         if (!HADESTIA_BOT_CLIENT.cooldowns.has(command.config.name)) {
@@ -219,8 +224,6 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
         	
         	if (DeveloperMode) {
 				const now = Date.now();
-				const userInfo = await api.getUserInfoV2(senderID);
-				const threadInfo = await api.getThreadInfo(threadID);
 				const time2 = moment.tz('Asia/Manila').format('HH:MM:ss MM/DD/YYYY');
                 Utils.logger(Utils.getText('handleCommand', 'executeCommand', time2, commandName, senderID, threadID, args.join(' '), (now - dateNow)), '[ DEV MODE ]');
 			}
@@ -290,11 +293,8 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
             return command.run(Obj);
             
         } catch (e) {
-			
-			global.sendReaction.failed(api, event);
+			Utils.sendReaction.failed(api, event);
             return api.sendMessage(Utils.getText('handleCommand', 'commandError', commandName, e), threadID);
         }
-
-    };
-
-};
+    }
+}
