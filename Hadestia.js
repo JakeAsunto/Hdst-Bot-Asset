@@ -412,7 +412,7 @@ async function onBot({ models: botModel }) {
 
         try {
         	const ban = require('./scripts/checkBan.js');
-            await ban.checkBan(loginApiData);
+            await ban.checkBan(loginApiData, getText, logger);
         } catch (error) {
             return logger(error, 'error');
         };
@@ -423,24 +423,23 @@ async function onBot({ models: botModel }) {
 		
         global.HADESTIA_BOT_CLIENT.api = loginApiData
 
-		var botAdmins = global.HADESTIA_BOT_CONFIG.ADMINBOT;
-
-		// execute changelogs sender on threads & admins
-		/* const changelog = global.HADESTIA_BOT_CLIENT.commands.get('changelog');
-		changelog.sendChangeLog(listenerData); */
-		
 		//////////// SAVE BOT USER ///////////
 		const botUserID = loginApiData.getCurrentUserID();
 		const thisBot = await loginApiData.getUserInfoV2(botUserID);
 		global.botUserID = botUserID;
-		global.botName = thisBot.name || 'Alyanna Rousseao'; //thisBot[Object.keys(thisBot)[0]].name || botUserID;
+		global.botName = thisBot.name || 'Alyanna Rousseao';
 		
 		const gmt = require('moment-timezone');
 		const momentt = gmt.tz('Asia/Manila');
     	const day = momentt.day();
 		const time = momentt.format('HH:mm:ss');
-	
+		
 		// notify every admin
+		const botAdmins = global.HADESTIA_BOT_CONFIG.ADMINBOT;
+		for (const admin of botAdmins) {
+    		loginApiData.sendMessage(textFormat('system', 'botLogActivate', time), admin);
+		}
+	
 		// AUTO RESTART 
 		if (global.HADESTIA_BOT_CONFIG.autoRestart && global.HADESTIA_BOT_CONFIG.autoRestart.status) {
 			cron.schedule (`0 0 */${global.HADESTIA_BOT_CONFIG.autoRestart.every} * * *`, async () => {
@@ -466,10 +465,6 @@ async function onBot({ models: botModel }) {
 			timezone: "Asia/Manila"
 		});
 		*/
-		
-    	for (const admin of botAdmins) {
-    		loginApiData.sendMessage(textFormat('system', 'botLogActivate', time), admin);
-		}
 		
 		// auto accept pending message requests
 		/*setInterval(function() {

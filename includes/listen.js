@@ -136,105 +136,86 @@ module.exports = function({ api, models }) {
 				
 			for (const threadData of threads) {
 				
+				
 				const threadID = String(threadData.threadID);
 				const Info = threadData.threadInfo;
 				const Data = threadData.data;
 				
-				if (Data.isBanned) {
-					const banned = Data.banned;
-					const data = {
-						isGroup: true,
-						name: Info.threadName,
-						caseID: banned.caseID || -1,
-						reason: banned.reason || '<reason not set>',
-						dateIssued: banned.dateIssued || '<unknown date>'
+				if (!Data || !Info) {
+					try { await Threads.delData(threadID); } catch (e) {};
+				} else {
+				
+					if (Data.isBanned) {
+						const banned = Data.banned;
+						const data = {
+							isGroup: true,
+							name: Info.threadName,
+							caseID: banned.caseID || -1,
+							reason: banned.reason || '<reason not set>',
+							dateIssued: banned.dateIssued || '<unknown date>'
+						}
+						await Banned.setData(threadID, { data });
 					}
-					await Banned.setData(threadID, { data });
-				}
+					
+					let changesCount = 0;
+					// Check for new Database Config (set to default if has)
+					for (const configName in GroupDataConfig) {
+						if (!Data[configName]) {
+							Data[configName] = GroupDataConfig[configName];
+							changesCount++;
+						}
+					}
 				
-				let changesCount = 0;
-				// Check for new Database Config (set to default if has)
-				for (const configName in GroupDataConfig) {
-					if (!Data[configName]) {
-						Data[configName] = GroupDataConfig[configName];
-						changesCount++;
+					// Re-save (if only has changes to optimize)
+					if (changesCount > 0) {
+						await Threads.setData(threadID, { data: Data });
 					}
 				}
-				
-				// Re-save (if only has changes to optimize)
-				if (changesCount > 0) {
-					await Threads.setData(threadID, { data: Data });
-				}
-				// insert to All group ID
-				insertNewGroupID(threadID);
-				
-				/* Deprecated
-				//global.HADESTIA_BOT_DATA.allThreadID.push(threadID)
-				//global.HADESTIA_BOT_DATA.threadData.set(threadID, threadData.data || {})
-				//global.HADESTIA_BOT_DATA.threadInfo.set(threadID, threadData.threadInfo || {});
-				
-				if (threadData.data && threadData.data.bannedCommands && (threadData.data.bannedCommands).length > 0) {
-					global.HADESTIA_BOT_DATA.bannedCommands.set(threadID, threadData.data.bannedCommands)
-				}
-				
-				if (threadData.data && threadData.data.allowNSFW) {
-					(global.HADESTIA_BOT_DATA.threadAllowNSFW)[(global.HADESTIA_BOT_DATA.threadAllowNSFW).length] = threadID;
-				}
-				//*/
 			}
 			
 			logger.loader(Utils.getText('listen', 'loadedEnvironmentThread'));
 			
 			for (const userData of users) {
+				
 				const userID = String(userData.userID);
 				const UserData = userData.data;
 				
-				if (UserData.isBanned) {
-					const banned = UserData.banned;
-					const data = {
-						isGroup: false,
-						name: userData.name,
-						caseID: userData.data.banned.caseID || -1,
-						reason: userData.data.banned.reason || '<reason not set>',
-						dateIssued: userData.data.banned.dateIssued || '<unknown date>'
+				if (!UserData) {
+					try { await Users.delData(userID); } catch (e) {}
+				} else {
+					if (UserData.isBanned) {
+						const banned = UserData.banned;
+						const data = {
+							isGroup: false,
+							name: userData.name,
+							caseID: userData.data.banned.caseID || -1,
+							reason: userData.data.banned.reason || '<reason not set>',
+							dateIssued: userData.data.banned.dateIssued || '<unknown date>'
+						}
+						await Banned.setData(userID, { data });
 					}
-					await Banned.setData(userID, { data });
-				}
 				
-				let changesCount = 0;
-				// Check for new Database Config (set to default if has)
-				for (const configName in UserDataConfig) {
-					if (!UserData[configName]) {
-						UserData[configName] = UserDataConfig[configName];
-						changesCount++;
+					let changesCount = 0;
+					// Check for new Database Config (set to default if has)
+					for (const configName in UserDataConfig) {
+						if (!UserData[configName]) {
+							UserData[configName] = UserDataConfig[configName];
+							changesCount++;
+						}
+					}
+				
+					// Re-save (if only has changes to optimize)
+					if (changesCount > 0) {
+						await Users.setData(userID, { data: UserData });
 					}
 				}
-				
-				// Re-save (if only has changes to optimize)
-				if (changesCount > 0) {
-					await Users.setData(threadID, { data: UserData });
-				}
-				
-				/* Deprecated
-				// save data to global variable: allUserID
-				(global.HADESTIA_BOT_DATA.allUserID)[(global.HADESTIA_BOT_DATA.allUserID).length] = userID;
-				
-				// save user name to global variable: userName
-				if (userData.name && userData.name['length'] != 0) {
-					global.HADESTIA_BOT_DATA.userName.set(userID, userData.name);
-				}
-				
-				// save this user on global variable command banned if he/she has it
-				if (userData.data && userData.data.bannedCommands && (userData.data.bannedCommands).length > 0) {
-					(global.HADESTIA_BOT_DATA.bannedCommands).set(userID, userData.data.bannedCommands);
-				}
-				//*/
 			}
 			
 			logger.loader(Utils.getText('listen', 'loadedEnvironmentUser'))
 			logger(Utils.getText('listen', 'successLoadEnvironment'), '[ DATABASE ]');
 			
 		} catch (error) {
+			console.log(error);
 			return logger.loader(Utils.getText('listen', 'failLoadEnvironment', error), 'error');
 		}
 		

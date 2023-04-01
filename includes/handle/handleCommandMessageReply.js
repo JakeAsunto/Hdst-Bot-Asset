@@ -2,13 +2,13 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
 	
     return async function({ event }) {
     	
+    	const { body, messageID, senderID, threadID, messageReply } = event;
+    
+    	const { commands, handleReply, messageReplyRegistered } = global.HADESTIA_BOT_CLIENT;
+    
+    	const { allowInbox } = global.HADESTIA_BOT_CONFIG;
+    	
     	const threadData = await Threads.getData(threadID);
-
-        const { allowInbox } = global.HADESTIA_BOT_CONFIG;
-
-        const { commands, handleReply, messageReplyRegistered } = global.HADESTIA_BOT_CLIENT;
-
-        const { body, messageID, senderID, threadID, messageReply } = event;
         
         const threadSetting = (threadData) ? threadData.data : {};
         

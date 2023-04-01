@@ -11,7 +11,7 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
         const threadData = await Threads.getData(threadID);
         const threadSetting = (threadData) ? threadData.data : {};
         
-        const botPrefix = (threadSetting.hasOwnProperty('PREFIX')) ? threadSetting.PREFIX : global.config.PREFIX;
+        const botPrefix = (threadSetting.hasOwnProperty('PREFIX')) ? threadSetting.PREFIX : global.HADESTIA_BOT_CONFIG.PREFIX;
 
         if (handleReply.length !== 0) {
 

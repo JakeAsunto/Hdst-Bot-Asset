@@ -5,10 +5,12 @@ const readLine = require('readline');
 const utils = require('../utils');
 const axios = require('axios');
 
-module.exports.checkBan = function (api) {
+module.exports.checkBan = function (api, getText, logger) {
 	
     const [directory, systemType] = utils.homeDir();
+    
     logger(getText('mirai', 'checkListGban'), '[ GLOBAL BAN ]');
+    
 	global.checkBan = !![];
     
     if (existsSync('./home/runner/.hdstgban')) {

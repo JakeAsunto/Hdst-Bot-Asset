@@ -66,7 +66,7 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
                             	return api.unsendMessage(info.messageID);
                         	},
 							messageID
-						}
+						);
                     }
                 }
             }
@@ -110,7 +110,7 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
 		if (!command) return api.sendMessage(Utils.textFormat('cmd', 'cmdNotFound', PREFIX_FINAL), threadID, Utils.autoUnsend, messageID);
         
         // Commands Env Config;
-        const cmdEnvConfig = commandEnvConfig.get(command.config.name) || command.config.envConfig || {};
+        const cmdEnvConfig = commandEnvConfig[command.config.name] || command.config.envConfig || {};
         
         // if command needs Data fetching and it's not yet initialize
         if (cmdEnvConfig.needsDataFetching && (!group_data || !user_data)) {
