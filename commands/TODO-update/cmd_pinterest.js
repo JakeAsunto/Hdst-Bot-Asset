@@ -39,8 +39,8 @@ module.exports.run = async function({ api, event, args, logger, textFormat }) {
 	
 	try {
 		//global.sendReaction.inprocess(api, event);
-    	const data = (await axios.get(`${process.env.PINTEREST_SEARCHER}${encodeURIComponent(keySearchs)}`)).data.data;
-
+    	const { data: response } = await axios.get(`${process.env.PINTEREST_SEARCHER}${encodeURI(keySearchs)}`);
+    	const data = response.data;
 		// add searching timeout
 		const endTime = Date.now() + (6 * 1000);
 	

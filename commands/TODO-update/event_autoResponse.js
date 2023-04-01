@@ -7,6 +7,7 @@ module.exports.config = {
     hasPermssion: 3,
     usages: '',
     envConfig: {
+    	groupCommandOnly: true,
 		handleEvent_allowBannedUsers: true,
 		handleEvent_allowBannedThreads: true,
 		handleEvent_allowDirectMessages: true
@@ -26,6 +27,9 @@ module.exports.handleEvent = async ({ api, event, Users }) => {
 	if (senderBody === 'prefix') {
 		return api.sendMessage((await constructMessage(api, event, 'Hey!, looking for me? This is my prefix\n❱ ${prefix} ❰', Users)), threadID, messageID);
 	}
+	
+	//if private messages
+	threadSettings.auto_response_listener = (senderID == threadID) ? true : threadSettings.auto_response_listener;
 	
 	if (!threadSettings.auto_response_listener) return;
 	

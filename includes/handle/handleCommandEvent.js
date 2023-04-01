@@ -1,18 +1,12 @@
-module.exports = function({ api, models, Users, Threads, Banned }) {
+module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
 	
-	const cache = require('../../utils/cache.js');
-    const logger = require("../../utils/log.js");
-    const textFormat = require("../../utils/textFormat.js");
-
-    return function({ event }) {
+    return function({ event, bannedUserData, bannedGroupData }) {
     	
     	const dateNow = Date.now();
 
-        const { allowInbox } = global.config;
+        const { allowInbox } = global.HADESTIA_BOT_CONFIG;
 
-        const { bannedUsers, bannedThreads } = global.data;
-
-        const { cooldowns, commands, eventRegistered } = global.client;
+        const { cooldowns, commands, eventRegistered } = global.HADESTIA_BOT_CLIENT;
 
         var { senderID, threadID } = event;
 
@@ -23,110 +17,53 @@ module.exports = function({ api, models, Users, Threads, Banned }) {
         // LEGACY CODE: if (bannedUsers.has(senderID) || bannedThreads.has(threadID) || allowInbox == !![] && senderID == threadID) return;
 
         for (const eventReg of eventRegistered) {
-
-            const cmd = commands.get(eventReg);
+        	
+			let pass1 = true; // user pass
+			let pass2 = true; // group pass
+			let pass3 = true; // PM pass
 			
-			const config = cmd.envConfig || {};
+            const command = commands.get(eventReg);
+			const config = command.config.envConfig || {};
+			const allowBannedUser = config.handleEvent_allowBannedUsers || false;
+			const allowBannedGroup = config.handleEvent_allowBannedThreads || false;
+			const allowDirectMessage = config.handleEvent_allowDirectMessages || false;
 			
+			if (bannedUserData && !allowBannedUser) { pass1 = false; }
+			if (bannedGroupData && !allowBannedGroup) { pass2 = false; }
+			if (senderID == threadID && !allowDirectMessage) { pass3 = false; }
 			// PATCH: 6.10.3 @Hadestia
 			// checks whether command's handleEvent can interact with banned users/groups or even direct messages
-			if (config.handleEvent_allowBannedUsers || config.handleEvent_allowBannedThreads || allowDirectMessage(config.handleEvent_allowDirectMessages, senderID, threadID)) {
+			if (pass1 && pass2 && pass3) {
 				
-            	var getText2;
-            
-            	if (!client.cooldowns.has(cmd.config.name)) {
-					client.cooldowns.set(cmd.config.name, new Map());
+            	if (!HADESTIA_BOT_CLIENT.cooldowns.has(command.config.name)) {
+					HADESTIA_BOT_CLIENT.cooldowns.set(command.config.name, new Map());
 				}
-
-            	if (cmd.languages && typeof cmd.languages == 'object')
-
-                	getText2 = (...values) => {
-
-                   	 const commandModule = cmd.languages || {};
-
-                    	if (!commandModule.hasOwnProperty(global.config.language))
-
-                        	return api.sendMessage(global.getText('handleCommand', 'notFoundLanguage', cmd.config.name), threadID, messengeID);
-
-                    	var lang = cmd.languages[global.config.language][values[0]] || '';
-
-                    	for (var i = values.length; i > 0x16c0 + -0x303 + -0x1f * 0xa3; i--) {
-
-                        	const expReg = RegExp('%' + i, 'g');
-
-                        	lang = lang.replace(expReg, values[i]);
-
-                   	 }
-
-                   	 return lang;
-
-               	 };
-
-           	 else getText2 = () => {};
-            
-           	 const returns = {};
-            
-           	 returns.handleTimestamps = function () {
-            		const timestamps = client.cooldowns.get(cmd.config.name);
-            		const expirationTime = (cmd.config.cooldowns || 1) * 1000;
-        			const userCooldown = timestamps.get(senderID) + expirationTime;
-        
-        			if (timestamps.has(senderID) && dateNow < userCooldown) {
-        	
-						const duration = moment.duration(moment(userCooldown).diff(moment(dateNow)));
-						let CD = '';
-			
-						if (duration.minutes() > 0) {
-							CD = `${duration.minutes()} minute(s) and ${duration.seconds()} second(s)`;
-						} else {
-							CD = `${duration.seconds()} second(s)`;
-						}
-			
-						api.sendMessage(
-							textFormat('cmd', 'cmdUserCooldown', CD),
-							event.threadID,
-							(err, info) => {
-								if (err) return;
-								// remove after 5 seconds
-								setTimeout(function () { api.unsendMessage(info.messageID); }, 5000);
-							},
-							event.messageID
-						);
-            			return api.setMessageReaction(textFormat('reaction', 'userCmdCooldown'), event.messageID, err => (err) ? logger('unable to setMessageReaction for Cooling down command use user', '[ Reactions ]') : '', !![]);
-					} else {
-						return timestamps.set(senderID, dateNow);
-					}
-          	  }
-
+				
           	  try {
 
                	 const Obj = {};
+               
+					Obj.api = api;
 
               	  Obj.event = event;
 
-               	 Obj.api = api;
-
                	 Obj.models = models;
+               
+					Obj.Utils = Utils;
 
                 	Obj.Users = Users;
                 
                 	Obj.Banned = Banned;
 	
                 	Obj.Threads = Threads;
-
-               	 Obj.getText = getText2;
-
-					Obj.Cache = cache;
                 
-               	 Obj.textFormat = textFormat;
-
-					Obj.returns = returns;
-
-               	 if (cmd) cmd.handleEvent(Obj);
+               	 Obj.getText = Utils.getModuleText(command, event);
+               
+               	 if (cmd) command.handleEvent(Obj);
 
             	} catch (error) {
 
-               	 logger(global.getText('handleCommandEvent', 'moduleError', cmd.config.name), 'error');
+               	 Utils.logger(global.getText('handleCommandEvent', 'moduleError', command.config.name), 'error');
 
            	 }
        	 }

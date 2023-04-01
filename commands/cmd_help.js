@@ -3,32 +3,30 @@
 	version: '1.1.4',
 	hasPermssion: 0,
 	credits: 'Hadestia',
-	description: 'A guide for commands',
+	description: 'Listing of all categories and commands.',
 	commandCategory: 'system',
 	usages: '[ all | usage | <module name> | <page number> ]',
 	cooldowns: 5,
-	aliases: [ 'menu', 'start' ],
+	aliases: [ 'menu' ],
 	envConfig: {
 		autoUnsend: true,
-		delayUnsend: 180,
-		requiredArgument: 0
+		delayUnsend: 180
 	}
 };
 
-module.exports.run = async function({ api, event, args, textFormat }) {
+module.exports.run = async function({ api, event, args, Utils, Prefix }) {
 	
-	const { commands, commandAliases } = global.client;
+	const { commands, commandAliases, mainPath } = global.HADESTIA_BOT_CLIENT;
+	const categoryReference = require(`${mainPath}/json/commandCategories.json`);
+
 	const { threadID, messageID } = event;
-	const command = commands.get((commandAliases.get(args[0]) || args[0] || '').toLowerCase());
-	const threadSetting = global.data.threadData.get(parseInt(threadID)) || {};
 	
-	const prefix = (threadSetting.hasOwnProperty('PREFIX')) ? threadSetting.PREFIX : global.config.PREFIX;
+	// fetch specific command if requested
+	const command = commands.get((commandAliases.get(args[0]) || args[0] || '').toLowerCase());
 	
 	async function autoUnsent(err, info) {
-		if (err) throw err;
-		
-		const { autoUnsend, delayUnsend } = module.exports.config.envConfig;
-		
+		if (err) console.log(err);
+		const { autoUnsend, delayUnsend } = this.config.envConfig;
 		if (autoUnsend) {
 			await new Promise(resolve => setTimeout(resolve, delayUnsend * 1000));
 			return api.unsendMessage(info.messageID);
@@ -36,13 +34,137 @@ module.exports.run = async function({ api, event, args, textFormat }) {
 		return;
 	}
 	
-	if (args.join().indexOf('usage') == 0) {
-		return api.sendMessage(textFormat('cmd', 'cmdHelpUsageSyntax', global.config.PREFIX, global.botName), threadID, messageID);
+	try {
+		// request a command usage?
+		if (args.join().indexOf('usage') !== -1) {
+			return api.sendMessage(Utils.textFormat('cmd', 'cmdHelpUsageSyntax', Prefix, global.botName), threadID, messageID);
+		}
+		
+		// User typed "help all"? (Display all commands)
+		const requestPage = (/\d+/g).test(args.join());
+		if (requestPage || args.join().indexOf('all') !== -1) {
+			
+			const arrayInfo = [];
+        	const itemPerPage = 15;
+       	 const requestPage = parseInt(args[0]) || 1;
+        
+        	let index = 0;
+        
+        	for (const [ name, value ] of (commands)) {
+        		const cmd = commands.get(name);
+        		const cat = (cmd.config.commandCategory).toLowerCase();
+        		if (cat !== 'hidden' && !cmd.config.hidden) {
+        			arrayInfo.push(name);
+				}
+        	}
+      	  arrayInfo.sort((a, b) => return (a > b) ? 1 : -1);
+        
+      	  const totalPages = Math.ceil(arrayInfo.length/itemPerPage);
+       	 const page = (requestPage > totalPages) ? 1 : requestPage;
+       	 const pageSlice = itemPerPage * page - itemPerPage;
+        	const returnArray = arrayInfo.slice(pageSlice, pageSlice + itemPerPage);
+
+        	let messageListBody = '';
+      	  index = pageSlice;
+        
+       	 for (let item of returnArray) {
+       	 	index += 1;
+				const cmdName = commands.get(item).config.name;
+				const cmdDesc = commands.get(item).config.description;
+				const fontedName = await Utils.fancyFont.get(cmdName, 6);
+        		messageListBody += '' + Utils.textFormat('cmd', 'cmdListCmd', Prefix, fontedName) + '\n\n';
+    	    }
+        	const messageBody = Utils.textFormat('cmd', 'cmdAllListFormat', page, totalPages, messageListBody, Prefix);
+			return api.sendMessage(messageBody, threadID, autoUnsent, messageID);
+		}
+		
+		// Request via Command Category
+		const requestCategory = (args.join(' ') || '').toLowerCase();
+		if (categoryReference[requestCategory]) {
+			
+			const categoryCommands = [];
+			let msgBodyList = '';
+
+			for (const cmd of commands.values()) {
+				if (cmd.config.commandCategory.toLowerCase() == requestCategory) {
+					const name = await Utils.fancyFont.get(`${Prefix}${cmd.config.name}`, 6);
+					categoryCommands[categoryCommands.length] = {
+						name: name,
+						desc: cmd.config.description || '<no description>',
+						aliases: cmd.config.aliases || []
+					}
+				}
+			}
+			
+			categoryCommands.sort((a, b) => {
+				return (a.name > b.name) ? 1 : -1;
+			});
+			
+			categoryCommands.forEach((item) => {
+				msgBodyList += '' + Utils.textFormat('cmd', 'cmdListCatCmd', item.name, item.desc, await item.aliases.join(', ')) + '\n\n';
+			});
+			
+			if (categoryCommands.length == 0) {
+				msgBodyList = '`No Available Commands`';
+			}
+			
+			const categoryItem = categoryReference[requestCategory];
+			const catName = await Utils.fancyFont.get(`${categoryItem.icon}${requestCategory.atChar(0).toUpperCase() + requestCategory.slice(1)}`, 1);
+			return api.sendMessage(
+				Utils.textFormat('cmd', 'cmdCatCommandsFormat', catName, msgBodyList, Prefix),
+				threadID, autoUnsent, messageID
+			);
+		}
+	
+		// User just typed "help" only?
+		if (!command) {
+			// Display all CATEGORIES and category description
+			let msgBody = '';
+		
+			for (const catName in categoryReference) {
+				const data = categoryReference[catName];
+				msgBody += '' + Utils.textFormat('cmd', 'cmdListCategory', `${data.icon}${catName.atChar(0).toUpperCase() + catName.slice(1)}`, data.description ) + '\n\n';
+			}
+			
+			return api.sendMessage(
+				Utils.textFormat('cmd', 'cmdListCategoryFormat', Prefix, msgBody),
+				threadID,
+				autoUnsent,
+				messageID
+			);
+		}
+		
+		const permssion = Utils.textFormat('system', `perm${command.config.hasPermssion || 0}`);
+		const commandUsage = `${Prefix}${command.config.name} ${command.config.usages || ''}`;
+		const cooldown = (command.config.cooldowns && command.config.cooldowns > 1) ? `${command.config.cooldowns} seconds` : 'no cooldown';
+		const commandReplyUsage = (command.config.replyUsages) ? `\n● usage reply:\n${command.config.replyUsages}` : '';
+		const commandName = await Utils.fancyFont.get(command.config.name, 1);
+	
+		const messageBody = Utils.textFormat(
+			'cmd', 'cmdShowInfo',
+			`${Prefix}${commandName}`,
+			command.config.description,
+			commandUsage,
+			commandReplyUsage,
+			command.config.commandCategory,
+			cooldown,
+			permssion,
+			(command.config.aliases) ? `\n[ ${command.config.aliases.join(', ')} ]` : 'none',
+			command.config.credits || 'ctto'
+		);
+		
+		return api.sendMessage( messageBody, threadID, autoUnsent, messageID);
+	
+	} catch (err) {
+		Utils.sendRequestError(err, event, Prefix);
+		Utils.logModuleErrorToAdmin(err, __filename, event);
 	}
 	
 	
+	
+	
+	/*
 	if (args.join().indexOf('all') == 0) {
-			
 		const group = [];
 		let messageListBody = '';
 		let totalCat = 0, totalCmd = 0;
@@ -73,11 +195,11 @@ module.exports.run = async function({ api, event, args, textFormat }) {
 			const name = cmdGroupItem.group.charAt(0).toUpperCase() + cmdGroupItem.group.slice(1);
 			const cmds = cmdGroupItem.cmds.join(' • ');
 				
-			const body = textFormat('cmd', 'cmdListCategoryCmd', name, cmds);
+			const body = Utils.textFormat('cmd', 'cmdListCategoryCmd', name, cmds);
 			messageListBody = messageListBody + body + '\n\n';
 		});
 			
-		const messageBody = textFormat('cmd', 'cmdListCategoryFormat', messageListBody, totalCat, totalCmd);
+		const messageBody = Utils.textFormat('cmd', 'cmdListCategoryFormat', messageListBody, totalCat, totalCmd);
 			
 		return api.sendMessage(messageBody, threadID, autoUnsent, messageID);
 	}
@@ -115,12 +237,12 @@ module.exports.run = async function({ api, event, args, textFormat }) {
 			const cmdName = commands.get(item).config.name;
 			const cmdDesc = commands.get(item).config.description;
 			
-        	const body = textFormat('cmd', 'cmdListCmd', index, prefix, cmdName, cmdDesc);
+        	const body = Utils.textFormat('cmd', 'cmdListCmd', index, prefix, cmdName, cmdDesc);
         	messageListBody = messageListBody + body + '\n\n';
         
         }
         
-        const messageBody = textFormat('cmd', 'cmdListFormat', messageListBody, page, totalPages, prefix);
+        const messageBody = Utils.textFormat('cmd', 'cmdListFormat', messageListBody, page, totalPages, prefix);
         
         return api.sendMessage(messageBody, threadID, autoUnsent, messageID);
         
@@ -128,13 +250,13 @@ module.exports.run = async function({ api, event, args, textFormat }) {
 	
 	// command = module + help: show command info
 		
-	const permssion = textFormat('system', `perm${command.config.hasPermssion || 0}`);
+	const permssion = Utils.textFormat('system', `perm${command.config.hasPermssion || 0}`);
 	const commandUsage = `${prefix}${command.config.name} ${command.config.usages || ''}`;
 	const cooldown = (command.config.cooldowns && command.config.cooldowns > 1) ? `${command.config.cooldowns} seconds` : 'no cooldown';
 	const commandReplyUsage = (command.config.replyUsages) ? `\n● usage reply:\n${command.config.replyUsages}` : '';
-	const commandName = await global.fancyFont.get(command.config.name, 1);
+	const commandName = await Utils.fancyFont.get(command.config.name, 1);
 	
-	const messageBody = textFormat(
+	const messageBody = Utils.textFormat(
 		'cmd', 'cmdShowInfo',
 		`${prefix}${commandName}`,
 		command.config.description,
@@ -148,4 +270,5 @@ module.exports.run = async function({ api, event, args, textFormat }) {
 	);
 		
 	return api.sendMessage( messageBody, threadID, autoUnsent, messageID);
+	*/
 }

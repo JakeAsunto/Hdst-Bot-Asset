@@ -260,7 +260,7 @@ module.exports.run = async function ({ api, args, event, textFormat, Users, Bann
 			if (Object.keys(mentions).length > 0) {
 				
 				for (const userID in mentions) {
-					handleBanChecking(userID, api, send, Banned);
+					handleBanChecking(userID, api, send, threadID, messageID, Banned);
 				}
 				
 			} else {
@@ -270,7 +270,7 @@ module.exports.run = async function ({ api, args, event, textFormat, Users, Bann
 							send(composeError(`Invalid, expected ID, got string: ${targetID}`));
 							break;
 						}
-						handleBanChecking(targetID, api, send, Banned);
+						handleBanChecking(targetID, api, send, threadID, messageID, Banned);
 					} catch (err) {
 						send(composeError(err));
 						break;
@@ -362,7 +362,7 @@ async function deleteBan (ID, isGroup, Banned, Users, Threads) {
 	}
 }
 
-async function handleBanChecking(ID, api, send, Banned) {
+async function handleBanChecking(ID, api, send, threadID, messageID, Banned) {
 	const hasRecord = await Banned.hasRecord(ID);
 	if (hasRecord) {
 		const { data: record } = await Banned.getData(ID);
@@ -370,7 +370,7 @@ async function handleBanChecking(ID, api, send, Banned) {
 			textFormat(
 				'banned', 'bannedRecordInfo',
 				record.caseID,
-				targetID,
+				ID,
 				record.name,
 				(record.isGroup) ? 'Yes' : 'No',
 				record.reason,

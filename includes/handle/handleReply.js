@@ -1,15 +1,15 @@
-module.exports = function({ api, models, Users, Threads, Banned }) {
+module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
 
     return async function({ event }) {
 
         if (!event.messageReply) { return; }
 		
 		const timeNow = Date.now();
-		const { threadData } = global.data;
-        const { handleReply, commands } = global.client
+        const { handleReply, commands } = global.HADESTIA_BOT_CLIENT
         const { messageID, threadID, messageReply } = event;
         
-        const threadSetting = threadData.get(threadID) || {};
+        const threadData = await Threads.getData(threadID);
+        const threadSetting = (threadData) ? threadData.data : {};
         
         const botPrefix = (threadSetting.hasOwnProperty('PREFIX')) ? threadSetting.PREFIX : global.config.PREFIX;
 
@@ -24,48 +24,30 @@ module.exports = function({ api, models, Users, Threads, Banned }) {
             
 			const deleteData = async () => {
 				try { api.unsendMessage(indexOfMessage.messageID); } catch (e) {};
-				return await global.client.handleReply.splice(indexOfHandle, 1);
+				return await global.HADESTIA_BOT_CLIENT.handleReply.splice(indexOfHandle, 1);
 			}
             
-            if (event.senderID !== indexOfMessage.author) return api.sendMessage(global.textFormat('error', 'errCommandReplyInteractionFailed'), threadID, (err, info) => { global.autoUnsend(err, info, 5) }, messageID);
+            if (event.senderID !== indexOfMessage.author) return api.sendMessage(Utils.textFormat('error', 'errCommandReplyInteractionFailed'), threadID, (err, info) => { Utils.autoUnsend(err, info, 5) }, messageID);
 
             if (!handleNeedExec) return api.sendMessage(global.getText('handleReply', 'missingValue'), threadID, messageID);
 			
 			if (indexOfMessage.timeout && indexOfMessage.timeout < timeNow) {
 				deleteData();
-				api.sendMessage(global.textFormat('error', 'errCommandReplyInteractionTimeout'), threadID, (err, info) => { global.autoUnsend(err, info, 5) }, messageID);
+				api.sendMessage(Utils.textFormat('error', 'errCommandReplyInteractionTimeout'), threadID, (err, info) => { Utils.autoUnsend(err, info, 5) }, messageID);
 				return;
 			}
 			
             try {
-
-                var getText2;
-                
-                if (handleNeedExec.languages && typeof handleNeedExec.languages == 'object')
-                    getText2 = (...value) => {
-                        const reply = handleNeedExec.languages || {};
-                        if (!reply.hasOwnProperty(global.config.language)) {
-                            return api.sendMessage(global.getText('handleCommand', 'notFoundLanguage', handleNeedExec.config.name), threadID, messengeID);
-						}
-						
-                        var lang = handleNeedExec.languages[global.config.language][value[0]] || '';
-                        for (var i = value.length; i > -0x4 * 0x4db + 0x6d * 0x55 + -0x597 * 0x3; i--) {
-                            const expReg = RegExp('%' + i, 'g');
-                            lang = lang.replace(expReg, value[i]);
-                        }
-                        return lang;
-                    };
-
-                else getText2 = () => {};
+            	
                 //// command returns
                 const returns = {};
                 
                 returns.invalid_reply_syntax = function () {
-                	api.sendMessage(global.textFormat('error', 'errCmdReplyInvalidSyntax', botPrefix, indexOfMessage.name), threadID);
+                	api.sendMessage(Utils.textFormat('error', 'errCmdReplyInvalidSyntax', botPrefix, indexOfMessage.name), threadID);
                 }
                 // other user interaction failed
                 returns.interaction_failed_other = function () {
-                	api.sendMessage(global.textFormat('error', 'errCommandReplyInteractionFailed'), threadID, (err, info) => { global.autoUnsend(err, info, 5) }, messageID);
+                	api.sendMessage(Utils.textFormat('error', 'errCommandReplyInteractionFailed'), threadID, (err, info) => { Utils.autoUnsend(err, info, 5) }, messageID);
                 }
                 
                 returns.delete_data = deleteData;
@@ -77,6 +59,8 @@ module.exports = function({ api, models, Users, Threads, Banned }) {
                 Obj.event = event;
 
                 Obj.models = models;
+                
+                Obj.Utils = Utils;
 
                 Obj.Users = Users;
                 
@@ -88,12 +72,10 @@ module.exports = function({ api, models, Users, Threads, Banned }) {
 
                 Obj.handleReply = indexOfMessage;
 
-                Obj.models = models;
-
-                Obj.getText = getText2;
-
 				Obj.returns = returns;
 				
+				Obj.getText = Utils.getModuleText(handleNeedExec, event);
+
                 handleNeedExec.handleReply(Obj);
                 
                 return;

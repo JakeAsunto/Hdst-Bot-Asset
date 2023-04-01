@@ -25,6 +25,15 @@ module.exports = function ({ models, api }) {
 			throw new Error(error);
 		}
 	}
+	
+	async function hasRecord(threadID) {
+		try {
+			const data = await Threads.findOne({ where: { threadID }});
+			return (data) ? true : false;
+		} catch (error) {
+			console.log(error)
+		}
+	}
 
 	async function getData(threadID) {
 		try {
@@ -46,7 +55,6 @@ module.exports = function ({ models, api }) {
 		} catch (error) { 
 			try{
 				await createData(threadID, options);
-
 			} catch (error) {
 				console.error(error);
 				throw new Error(error);
@@ -82,6 +90,7 @@ module.exports = function ({ models, api }) {
 	return {
 		getInfo,
 		getAll,
+		hasRecord,
 		getData,
 		setData,
 		delData,

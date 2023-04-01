@@ -1,214 +1,159 @@
-module.exports = function({ api, models, Users, Threads, Banned }) {
+module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
 
-    const stringSimilarity = require('string-similarity'),
-
-        escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'),
-
-        textFormat = require('../../utils/textFormat.js'),
-        
-        logger = require('../../utils/log.js');
-
-
+    const stringSimilarity = require('string-similarity');
+	const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
     const moment = require('moment-timezone');
 
-    return async function({ event }) {
+    return async function({ event, bannedUserData, bannedGroupData }) {
     	
+    	const time = moment.tz('Asia/Manila').format('HH:MM:ss DD/MM/YYYY');
+		const { allowInbox, adminOnly, isMaintenance, allowCommandSimilarity, PREFIX, ADMINBOT, DeveloperMode } = global.HADESTIA_BOT_CONFIG;
+		const { commands, cooldowns, commandAliases, commandEnvConfig } = global.HADESTIA_BOT_CLIENT;
+		const { allThreadID } = global.HADESTIA_BOT_DATA;
         const dateNow = Date.now()
-
-		//console.log(event.body)
-
-        const time = moment.tz('Asia/Manila').format('HH:MM:ss DD/MM/YYYY');
-
-        const { allowInbox, PREFIX, ADMINBOT, DeveloperMode, adminOnly } = global.config;
-
-        const { bannedUsers, bannedThreads, allThreadID, threadInfo, threadData, bannedCommands } = global.data;
-
-        const { commands, commandAliases, cooldowns } = global.client;
-
+        
         var { body, mentions, senderID, threadID, messageID } = event;
-
         var senderID = String(senderID), threadID = String(threadID);
+        
+        // Intial values For Group & User Data (to avoid undefined type)
+		let threadSetting = {},
+			threadInfo = {};
+			
+		let groupBannedCommands = [],
+			userBannedCommands = [];
+		
+		// Get Data / Settings
+		const group_data = await Threads.getData(threadID);
+		const user_data = await Users.getData(senderID);
 
-        const threadSetting = threadData.get(threadID) || {};
-
-		//console.log('current-threadID: ' + threadID)
+		if (group_data) {
+			groupBannedCommands = group_data.data.bannedCommands;
+			threadSetting = group_data.data;
+			threadInfo = group_data.threadInfo;
+		}
+		if (user_data) {
+			userBannedCommands = user_data.data.bannedCommands;
+		}
+		
+		// ## HANDLE BOT PREFIX ## //
 		const botMent = (mentions && Object.keys(mentions).length > 0 && Object.keys(mentions)[0] == global.botUserID) ? (Object.values(mentions)[0]).replace('@', '') : global.botUserID;
-		
 		let PREFIX_FINAL = (threadSetting.hasOwnProperty('PREFIX')) ? threadSetting.PREFIX : PREFIX;
-
         const prefixRegex = new RegExp(`^(<@!?${senderID}>|\@${botMent}|${escapeRegex(PREFIX_FINAL)})\\s*`);
-		
+        
 		if (!prefixRegex.test(body)) return;
-
-        if (bannedUsers.has(senderID) || bannedThreads.has(threadID) || allowInbox == ![] && senderID == threadID) {
-
+		
+        if (bannedUserData || bannedGroupData || !allowInbox && senderID == threadID) {
             if (!ADMINBOT.includes(senderID.toString())) {
-
-                if (bannedUsers.has(senderID)) {
-                	
-                    const { caseID, reason, dateIssued } = bannedUsers.get(senderID) || {};
-
-                    return api.sendMessage(textFormat('events', 'eventUserBannedForBot', caseID, reason, dateIssued), threadID, async (err, info) => {
+				// User is banned?
+                if (bannedUserData) {             	
+                    const { caseID, reason, dateIssued } = bannedUserData.data || {};
+                    return api.sendMessage(Utils.textFormat('events', 'eventUserBannedForBot', caseID, reason, dateIssued), threadID, async (err, info) => {
 						if (err) return;
                         await new Promise(resolve => setTimeout(resolve, 20 * 1000));
-
                         return api.unsendMessage(info.messageID);
-
                     }, messageID);
-
                 } else {
-
-                    if (bannedThreads.has(threadID)) {
-
-                        const { caseID, reason, dateIssued } = bannedThreads.get(threadID) || {};
-
-                        return api.sendMessage(textFormat('events', 'eventThreadBannedForBot', caseID, reason, dateIssued), threadID, async (err, info) => {
+					// Group is banned?
+                    if (bannedGroupData) {
+                        const { caseID, reason, dateIssued } = bannedGroupData.data || {};
+                        return api.sendMessage(Utils.textFormat('events', 'eventThreadBannedForBot', caseID, reason, dateIssued), threadID, async (err, info) => {
 							if (err) return;
                             await new Promise(resolve => setTimeout(resolve, 20 * 1000));
-
                             return api.unsendMessage(info.messageID);
-
                         }, messageID);
-
                     }
-
                 }
-
             }
-
         }
         
         const [matchedPrefix] = body.match(prefixRegex);
 		const args = body.slice(matchedPrefix.length).trim().split(/\s+/);
-		//console.log(args);
+		
 		//delete the mention about this bot if user used mentioning this bot as prefix
-		// it only deletes the 
 		if (Object.keys(mentions).length >= 1 && Object.keys(mentions)[0] === global.botUserID) {
 			delete event.mentions[global.botUserID];
 		}
 		
-		
-		//console.log(event.mentions);
 		// send under maintenance response
-    	if (global.config.isMaintenance && !ADMINBOT.includes(senderID)) {
-    		return api.sendMessage(textFormat('system', 'botUnderMaintenance'), threadID, messageID);
+    	if (isMaintenance && !ADMINBOT.includes(senderID)) {
+    		return api.sendMessage(Utils.textFormat('system', 'botUnderMaintenance'), threadID, messageID);
 		}
 		//console.log(args.length);
 		if (args[0] === '' && !args[1]) {
 			// response that's my prefix
-			return api.sendMessage(textFormat('system', 'botPoked', global.config.PREFIX, global.config.PREFIX), threadID, messageID);
+			return api.sendMessage(Utils.textFormat('system', 'botPoked', global.HADESTIA_BOT_CONFIG.PREFIX, global.HADESTIA_BOT_CONFIG.PREFIX), threadID, messageID);
 		}
         // accept command with spacing
         commandName = (args.length > 1 && args[0] === '') ? args[1] : args.shift().toLowerCase();
 		
-        var command = (commandAliases.has(commandName)) ? commands.get(commandAliases.get(commandName)) : commands.get(commandName);
+        let command = (commandAliases.has(commandName)) ? commands.get(commandAliases.get(commandName)) : commands.get(commandName);
 
-        if (!command) {
-
-            //var allCommandName = [];
-
-            const commandValues = commands['keys']();
-
-            //for (const cmd of commandValues) allCommandName.push(cmd)
-
-            //const checker = stringSimilarity.findBestMatch(commandName, allCommandName);
-
-           // if (checker.bestMatch.rating >= 0.9) command = client.commands.get(checker.bestMatch.target);
-			// const rate = checker.bestMatch.rating;
-			// console.log(rate);
-            return api.sendMessage(textFormat('cmd', 'cmdNotFound', PREFIX_FINAL), threadID, messageID);
-
+        if (!command && allowCommandSimilarity) {
+			var allCommandName = [];
+			const commandValues = commands['keys']();
+    	    for (const cmd of commandValues) allCommandName.push(cmd)
+    	    const checker = stringSimilarity.findBestMatch(commandName, allCommandName);
+    	    if (checker.bestMatch.rating >= 0.9) {
+				command = commands.get(checker.bestMatch.target);
+			}
         }
-
-        if (bannedCommands.get(threadID) || bannedCommands.get(senderID)) {
-
-            if (!ADMINBOT.includes(senderID)) {
-
-                const banThreads = bannedCommands.get(threadID) || [],
-
-                    banUsers = bannedCommands.get(senderID) || [];
-
-                if (banThreads.includes(command.config.name))
-
-                    return api.sendMessage(textFormat('events', 'eventThreadBannedForCommand', command.config.name), threadID, async (err, info) => {
-
-                        await new Promise(resolve => setTimeout(resolve, 5 * 1000))
-
-                        return api.unsendMessage(info.messageID);
-
-                    }, messageID);
-
-                if (banUsers.includes(command.config.name))
-
-                    return api.sendMessage(textFormat('events', 'eventUserBannedForCommand', command.config.name), threadID, async (err, info) => {
-
-                        await new Promise(resolve => setTimeout(resolve, 5 * 1000));
-
-                        return api.unsendMessage(info.messageID);
-
-                    }, messageID);
-
-            }
-
+        
+        // If no command Found
+		if (!command) return api.sendMessage(Utils.textFormat('cmd', 'cmdNotFound', PREFIX_FINAL), threadID, Utils.autoUnsend, messageID);
+        
+        // Commands Env Config;
+        const cmdEnvConfig = commandEnvConfig.get(command.config.name) || command.config.envConfig || {};
+        
+        // if command needs Data fetching and it's not yet initialize
+        if (cmdEnvConfig.needsDataFetching && (!group_data || !user_data)) {
+        	return api.sendMessage(Utils.textFormat('error', 'errOccured', 'Group/User data was initializing, Pls try again later. :)'), threadID, Utils.autoUnsend, messageID);
         }
-
-        if (command.config.commandCategory.toLowerCase() == 'nsfw' && !global.data.threadAllowNSFW.includes(threadID) && !ADMINBOT.includes(senderID))
-
-            return api.sendMessage(global.getText('handleCommand', 'threadNotAllowNSFW'), threadID, async (err, info) => {
-
-                await new Promise(resolve => setTimeout(resolve, 5 * 1000))
-
-                return api.unsendMessage(info.messageID);
-
-            }, messageID);
-
-        var threadInfo2;
-		
-        if (event.isGroup == !![]) {
-
-            try {
-
-                threadInfo2 = (threadInfo.get(threadID) || await Threads.getInfo(threadID))
-
-                if (Object.keys(threadInfo2).length == 0) throw new Error();
-
-            } catch (err) {
-
-                logger(global.getText('handleCommand', 'cantGetInfoThread', 'error'));
-
-            }
-        // if not group
-		} else {
-			if (command.config.envConfig) {
-				if (command.config.envConfig.groupCommandOnly) {
-					global.sendReaction.failed(api, event);
-					return api.sendMessage(
-						textFormat('system', 'commandAvailableOnGCOnly'),
-						event.threadID,
-						global.autoUnsend,
-						event.messageID
-					);
-				}
+        
+        // Handle commands available only for Groups
+		if (!event.isGroup && cmdEnvConfig.groupCommandOnly) {
+				Utils.sendReaction.failed(api, event);.
+				return api.sendMessage(
+					Utils.textFormat('system', 'commandAvailableOnGCOnly'),
+					threadID, Utils.autoUnsend, messageID
+				);
 			}
 		}
+        
+        // check user has banned commands
+        if (groupBannedCommands.length > 0 || userBannedCommands.length > 0) {
+            if (!ADMINBOT.includes(senderID)) {
+                if (groupBannedCommands.includes(command.config.name)) {
+                    return api.sendMessage(Utils.textFormat('events', 'eventThreadBannedForCommand', command.config.name), threadID, Utils.autoUnsend, messageID);
+				}
+                if (userBannedCommands.includes(command.config.name)) {
+                    return api.sendMessage(Utils.textFormat('events', 'eventUserBannedForCommand', command.config.name), threadID, Utils.autoUnsend, messageID);
+				}
+            }
+        }
+
+		// Handle NSFW commands
+        if (command.config.commandCategory.toLowerCase() == 'nsfw' && !threadSetting.allowNSFW; && !ADMINBOT.includes(senderID)) {
+            return api.sendMessage(global.getText('handleCommand', 'threadNotAllowNSFW'), threadID, Utils.autoUnsend, messageID);
+		}
+
 		try {
         	var threadInfoo = (await Threads.getInfo(threadID) || threadInfo.get(threadID));
 			var is_admin_bot = ADMINBOT.includes(senderID.toString());
 			var is_admin_group = threadInfoo.adminIDs.find(el => el.id == senderID);
 		} catch (err) {
-			global.sendReaction.failed(api, event);
-			global.logger(err, 'error');
-			global.logModuleErrorToAdmin(err, __filename, event);
-			return api.sendMessage(textFormat('error', 'errCmdExceptionError', err, PREFIX_FINAL), threadID, messageID);
+			console.log(err);
+			Utils.sendReaction.failed(api, event);
+			Utils.logModuleErrorToAdmin(err, __filename, event);
+			return api.sendMessage(Utils.textFormat('error', 'errCmdExceptionError', err, PREFIX_FINAL), threadID, Utils.autoUnsend, messageID);
 		}
 		
 		var cmdPerm = command.config.hasPermssion;
 		var requiredArgs = (command.config.envConfig) ? command.config.envConfig.requiredArgument || 0 : 0;
 		var eligible = false;
-		
-		if ((command.config.disabled || command.config.underTest) && !is_admin_bot) {
-			return api.sendMessage(textFormat('cmd', 'cmdWasDisabled'), threadID, messageID);
+		// command Under maintenance?
+		if (cmdEnvConfig.disabled && !is_admin_bot) {
+			return api.sendMessage(Utils.textFormat('cmd', 'cmdWasDisabled'), threadID, messageID);
 		}
 		
 		if (cmdPerm == 1) {
@@ -222,151 +167,83 @@ module.exports = function({ api, models, Users, Threads, Banned }) {
 		}
 		
 		if (args.length < requiredArgs) {
-			
-			api.sendMessage(
-				textFormat('cmd', 'cmdWrongUsage', `${PREFIX_FINAL}${command.config.name} ${command.config.usages}`),
-				event.threadID,
-				(err, info) => {
-					if (err) return;
-					setTimeout(() => { api.unsendMessage(info.messageID) }, 10 * 1000);
-				},
-				event.messageID
-			);
-			
-			return; //END_TYPING && END_TYPING();
+			return api.sendMessage(Utils.textFormat('cmd', 'cmdWrongUsage', `${PREFIX_FINAL}${command.config.name} ${command.config.usages}`), threadID, Utils.autoUnsend, messageID);
+			// setTimeout(() => { api.unsendMessage(info.messageID) }, 10 * 1000);
 		}
 		
-		if (command.config.envConfig && command.config.envConfig.inProcessReaction) {
-			global.sendReaction.inprocess(api, event);
+		if (cmdEnvConfig.inProcessReaction) {
+			await Utils.sendReaction.inprocess(api, event);
 		}
 		
         if (!eligible) {
-        	
-        	const permTxt = textFormat('system', 'perm' + cmdPerm)
-			api.sendMessage(
-				textFormat('cmd', 'cmdPermissionNotEnough', permTxt),
-				event.threadID,
-				(err, info) => {
-					if (err) return logger(err, 'error');
-					// remove after 5 seconds
-					setTimeout(() => { api.unsendMessage(info.messageID) }, 5000);
-				},
-				event.messageID
+        	const permTxt = Utils.textFormat('system', 'perm' + cmdPerm)
+			return api.sendMessage(
+				Utils.textFormat('cmd', 'cmdPermissionNotEnough', permTxt),
+				threadID, Utils.autoUnsend, messageID
 			);
-			return;// END_TYPING && END_TYPING();
 		}
 
-        if (!client.cooldowns.has(command.config.name)) {
-			client.cooldowns.set(command.config.name, new Map());
+        if (!HADESTIA_BOT_CLIENT.cooldowns.has(command.config.name)) {
+			HADESTIA_BOT_CLIENT.cooldowns.set(command.config.name, new Map());
 		}
 
-        const timestamps = client.cooldowns.get(command.config.name);
-
+        const timestamps = HADESTIA_BOT_CLIENT.cooldowns.get(command.config.name);
         const expirationTime = (command.config.cooldowns || 1) * 1000;
-        
-        const userCooldown = timestamps.get(senderID) + expirationTime
+        const userCooldown = (timestamps.get(senderID) || 0) + expirationTime;
 
 		const userInCooldown = (timer, currentDate) => {
 			const timeA = new Date(timer);
 			const timeB = new Date(currentDate);
 			
 			const { day, hour, minute, second, toString } = global.secondsToDHMS(Math.abs(timeA - timeB)/1000);
-			api.setMessageReaction(textFormat('reaction', 'userCmdCooldown'), event.messageID, err => (err) ? logger('unable to setMessageReaction for Cooling down command use user', '[ Reactions ]') : '', !![]);
+			api.setMessageReaction(Utils.textFormat('reaction', 'userCmdCooldown'), event.messageID, err => (err) ? Utils.logger('unable to setMessageReaction for Cooling down command use user', '[ Reactions ]') : '', !![]);
 			
 			if (day > 0 || hour > 0 || minute > 2) {
 				api.sendMessage(
-					textFormat('cmd', 'cmdUserCooldown', toString),
-					event.threadID,
-					(err, info) => {
-						if (err) return;
-						// remove after 5 seconds
-						setTimeout(function () {
-							api.unsendMessage(info.messageID);
-							},
-							5000
-						);
-					},
-					event.messageID
+					Utils.textFormat('cmd', 'cmdUserCooldown', toString),
+					threadID, Utils.autoUnsend, messageID
 				);
 			}
 		}
 		
-		// minus 1 sec to prevent 0 sec cooldown
-        if (!is_admin_bot && timestamps.has(senderID) && dateNow < (userCooldown - 1000)) {
+		// User in cooldown?
+        if (!is_admin_bot && dateNow < (userCooldown - 1000)) {
         	return userInCooldown(userCooldown, dateNow);
-            //return END_TYPING && END_TYPING();
 		}
 		
-        var getText2;
-
-        if (command.languages && typeof command.languages == 'object' && command.languages.hasOwnProperty(global.config.language))
-
-            getText2 = (...values) => {
-
-                var lang = command.languages[global.config.language][values[0]] || '';
-
-                for (var i = values.length; i > 0x2533 + 0x1105 + -0x3638; i--) {
-
-                    const expReg = RegExp('%' + i, 'g');
-
-                    lang = lang.replace(expReg, values[i]);
-
-                }
-
-                return lang;
-
-            };
-
-        else getText2 = () => {};
-        
         const logMessageError = (err) => {
-        	if (err) return logger (`${command.config.name}: ${err}`, 'error');
+        	if (err) return console.error(`${command.config.name}: ${err}`);
         }
 
         try {
         	
         	if (DeveloperMode) {
-				
 				const now = Date.now();
 				const userInfo = await api.getUserInfoV2(senderID);
 				const threadInfo = await api.getThreadInfo(threadID);
 				const time2 = moment.tz('Asia/Manila').format('HH:MM:ss MM/DD/YYYY');
-				
-                logger(global.getText('handleCommand', 'executeCommand', time2, commandName, senderID, threadID, args.join(' '), (now - dateNow)), '[ DEV MODE ]');
-				//api.sendMessage(
-					//textFormat('system', 'botLogCmd', time, threadInfo.name, userInfo.name || senderID, args.join(' ')),
-					
-				//);
+                Utils.logger(global.getText('handleCommand', 'executeCommand', time2, commandName, senderID, threadID, args.join(' '), (now - dateNow)), '[ DEV MODE ]');
 			}
 			
 			const returns = {};
-			
 			returns.user_in_cooldown = userInCooldown;
-			
 			returns.remove_usercooldown = function () {
 				try { timestamps.delete(senderID); } catch {}
-				//return END_TYPING && END_TYPING();
 			}
 			
 			returns.invalid_usage = function () {
 				returns.remove_usercooldown();
 				global.sendReaction.failed(api, event);
 				api.sendMessage(
-					textFormat('cmd', 'cmdWrongUsage', `\n${PREFIX_FINAL}${command.config.name} ${command.config.usages}\nAlternatively you can use "${PREFIX_FINAL}help ${command.config.name}" for more information.`),
-					event.threadID,
-					(err, info) => {
-						if (err) return;
-						setTimeout(() => { api.unsendMessage(info.messageID) }, 10 * 1000);
-					},
-					event.messageID
+					Utils.textFormat('cmd', 'cmdWrongUsage', `\n${PREFIX_FINAL}${command.config.name} ${command.config.usages}\nAlternatively you can use "${PREFIX_FINAL}help ${command.config.name}" for more information.`),
+					threadID, Utils.autoUnsend, messageID
 				);
-				//return END_TYPING && END_TYPING();
 			}
 			
 			returns.inaccessible_outside_gc = function () {
 				global.sendReaction.failed(api, event);
 				api.sendMessage(
-					textFormat('system', 'commandAvailableOnGCOnly'),
+					Utils.textFormat('system', 'commandAvailableOnGCOnly'),
 					event.threadID,
 					global.autoUnsend,
 					event.messageID
@@ -383,6 +260,8 @@ module.exports = function({ api, models, Users, Threads, Banned }) {
             Obj.args = args;
 
             Obj.models = models;
+            
+            Obj.Utils = Utils;
 
             Obj.Users = Users;
             
@@ -390,34 +269,30 @@ module.exports = function({ api, models, Users, Threads, Banned }) {
 
             Obj.Threads = Threads;
 
-            Obj.getText = getText2;
+            Obj.getText = Utils.getModuleText(command, event);
+            
+            Obj.groupData = group_data;
+            
+            Obj.userData = user_data;
+            
+            Obj.Prefix = PREFIX_FINAL;
 
-            Obj.textFormat = textFormat;
-
-			Obj.logger = logger;
-			
-			Obj.Prefix = PREFIX_FINAL;
+            Obj.textFormat = Utils.textFormat;
+            
+            Obj.logMessageError = logMessageError;
 
 			Obj.returns = returns;
 			
 			Obj.alias = commandName; // to determine what alias user used to run this command
-			
-			Obj.logMessageError = logMessageError;
 
 			timestamps.set(senderID, dateNow);
 			
-            command.run(Obj);
+            return command.run(Obj);
             
-            return;
-            
-			//return END_TYPING && END_TYPING();
-
         } catch (e) {
 			
 			global.sendReaction.failed(api, event);
-			
             return api.sendMessage(global.getText('handleCommand', 'commandError', commandName, e), threadID);
-			//return END_TYPING && END_TYPING();
         }
 
     };

@@ -6,6 +6,7 @@
         "antiout": true,
         "antijoin": false,
         "guard": false,
+        "allowNSFW": false,
         "isBanned": false,
         "bannedCommands": [],
         "banned": {
@@ -17,7 +18,7 @@
         }
     },
     "user_data_config": {
-        "afk": "",
+        "afk": "<not set>",
         "isBanned": false,
         "bannedCommands": [],
         "banned": {

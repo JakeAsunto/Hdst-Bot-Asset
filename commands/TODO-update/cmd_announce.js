@@ -48,7 +48,7 @@ module.exports.run = async function ({ api, args, event, returns, textFormat }) 
 	// send to all thread
 	} else {
 		global.data.allThreadID.forEach(function (id) {
-			api.sendMessage(textFormat('cmd', 'cmdAnnounceFormat', codename, arg[2].trim()), id, logMessageError);
+			api.sendMessage(textFormat('cmd', 'cmdAnnounceFormat', codename, arg[2].trim()), id, (err)=> { if (err) return console.log(err) });
 		});
 		
 		return global.sendReaction.success(api, event);

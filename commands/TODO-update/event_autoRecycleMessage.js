@@ -14,6 +14,7 @@ module.exports.config = {
 		'axios': ''
 	},
 	envConfig: {
+		groupCommandOnly: true,
 		handleEvent_allowBannedUsers: true,
 		handleEvent_allowBannedThreads: true,
 		handleEvent_allowDirectMessages: true
@@ -24,7 +25,9 @@ module.exports.config = {
 // Resend the message to where it was unsent if resend was turned on
 // Send the content to my discord server if resend was turned off :D
 
-module.exports.handleEvent = async function({ event, api, Users, textFormat }) {
+const savedMessages = new Map();
+
+module.exports.handleEvent = async function ({ event, api, Users, textFormat }) {
 	
 	const { writeFileSync, createReadStream, unlinkSync } = require('fs-extra');
 	const { messageID, senderID, threadID, body } = event;
@@ -32,27 +35,41 @@ module.exports.handleEvent = async function({ event, api, Users, textFormat }) {
 	const fetch = require('node-fetch');
 	const axios = require('axios');
 	
-	//global.logMessage || (global.logMessage = new Map);
+	// Delete every if sent 10mins ago or above to avoid overloading
+	const dateNow = Date.now();
+	savedMessages.forEach(function (msgID, content) {
+		const diff = Math.abs(content.timestamp - dateNow);
+		if (diff > 600000) savedMessages.delete(msgID);
+	})
 
-	//if (!event.isGroup) return;
-	// LEGACY CODE: if event is not unsent, just save those in our map array
-	if (event.type != 'message_unsend') return;
-		//return global.logMessage.set(messageID, { senderID: senderID, msgBody: body, attachment: event.attachments });
-	//}
+	// If event is not unsent, just save those in our map array
+	if (event.type != 'message_unsend') {
+		return savedMessages.set(
+			messageID,
+			{
+				senderID: senderID,
+				msgBody: body,
+				attachment: event.attachments,
+				timestamp: dateNow;
+			}
+		);
+	}
 	
-	const { threadName } = await api.getThreadInfo(threadID);
+	let { threadName } = await api.getThreadInfo(threadID);
 	const thread_settings = global.data.threadData.get(threadID) || {};	
-
-	if (senderID != global.botUserID) {
+	//if private messages
+	thread_settings.auto_resend_msg = (senderID == threadID) ? true : thread_settings.auto_resend_msg;
+																	
+	if (senderID != global.botUserID && savedMessages.has(messageID)) {
 		
-		const message = { senderID: senderID, msgBody: body, attachment: event.attachments };//global.logMessage.get(messageID);
+		const message = savedMessages.get(messageID);
 		const user = await api.getUserInfoV2(senderID); //(Users.getNameUser(senderID));
-
-		if (!message) return;
+		
+		if (Object.keys(message).length < 3) return;
 		// help to prevent saving body with embed links
-		if (!message.attachment[0] && thread_settings.auto_resend_msg) {
+		if (!message.attachment && thread_settings.auto_resend_msg) {
 			api.sendMessage(textFormat('events', 'eventAutoResendMessage', user.name, message.msgBody), threadID);
-			//return (global.logMessage).delete(messageID);
+			return savedMessages.delete(messageID);
 		}
 		
 		let index = 0;
@@ -68,19 +85,21 @@ module.exports.handleEvent = async function({ event, api, Users, textFormat }) {
 			}
 		};
 		
-		for (var attch of message.attachment) {
-			try {
-				index += 1;
-				const response = (await request.get(attch.url)).uri.pathname;
-				const extension = response.substring(response.lastIndexOf('.') + 1);
-				const path = `${__dirname}/../../cache/recycledContent${message.senderID}_${Date.now()}-${index}.${extension}`;
-				const medias = (await axios.get(attch.url, { responseType: 'arraybuffer' })).data;
+		if (message.attachment) {
+			for (var attch of message.attachment) {
+				try {
+					index += 1;
+					const response = (await request.get(attch.url)).uri.pathname;
+					const extension = response.substring(response.lastIndexOf('.') + 1);
+					const path = `${__dirname}/../../cache/recycledContent${message.senderID}_${Date.now()}-${index}.${extension}`;
+					const medias = (await axios.get(attch.url, { responseType: 'arraybuffer' })).data;
 			
-				writeFileSync(path, Buffer.from(medias, 'utf-8'));
-				messageBody.attachment.push(createReadStream(path));
-				discordEmbedAttachment.push(attch.url);
-				sendedFile.push(path);
-			} catch (err) {}
+					writeFileSync(path, Buffer.from(medias, 'utf-8'));
+					messageBody.attachment.push(createReadStream(path));
+					discordEmbedAttachment.push(attch.url);
+					sendedFile.push(path);
+				} catch (err) {}
+			}
 		}
 		
 		if (thread_settings.auto_resend_msg) {
@@ -102,7 +121,7 @@ module.exports.handleEvent = async function({ event, api, Users, textFormat }) {
 				.replace('${user_avatar}', `https://graph.facebook.com/${message.senderID}/picture?height=1500&width=1500&access_token=${process.env.FB_ACCESS_TOKEN}`)
 				.replace('${user_username}', user.username || message.senderID)
 				.replace('${group_id}', threadID)
-				.replace('${group_name}', threadName)
+				.replace('${group_name}', threadName || user.name)
 				.replace('${date}', new Date().toISOString())
 				
 			const randomColor = [ 847889, 15731919, 15751692 ];
@@ -121,7 +140,7 @@ module.exports.handleEvent = async function({ event, api, Users, textFormat }) {
 				console.log(error);
 			});
 		}
-		return; //(global.logMessage).delete(messageID);
+		return; savedMessages.delete(messageID);
 	}
 }
 

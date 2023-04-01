@@ -19,7 +19,7 @@ module.exports.config = {
 	//disabled: true
 }
 
-module.exports.handleReply = async function ({ api, event, returns, handleReply }) {
+module.exports.handleReply = async function ({ api, event, returns, handleReply, Utils }) {
 	
     const axios = require('axios');
     const { body, threadID, messageID, senderID } = event;
@@ -38,22 +38,22 @@ module.exports.handleReply = async function ({ api, event, returns, handleReply 
         
         if (statSync(path).size > 6291456) {
         	try { unlinkSync(path); } catch (_) {}
-			global.sendReaction.failed(api, event);
-			api.sendMessage(textFormat('cmd', 'cmdPlayMusicFileWasBig', 6), threadID, messageID);
+			Utils.sendReaction.failed(api, event);
+			api.sendMessage(Utils.textFormat('cmd', 'cmdPlayMusicFileWasBig', 6), threadID, messageID);
 			return returns.delete_data();
 		}
         
         api.sendMessage(
 			{ 
-				body: global.textFormat('cmd', 'cmdPlayMusicSuccess', data.title),
+				body: Utils.textFormat('cmd', 'cmdPlayMusicSuccess', data.title),
 				attachment: createReadStream(path)
 			},
 			threadID,
 			(e) => { if (!e) {
 				// set reaction for the request
-				global.sendReaction.success(api, { messageID: handleReply.requestMsgID });
+				Utils.sendReaction.success(api, { messageID: handleReply.requestMsgID });
 				// Also for the selection
-				global.sendReaction.success(api, event);
+				Utils.sendReaction.success(api, event);
 			} try { return unlinkSync(path) } catch {} },
 			handleReply.requestMsgID
 		);
@@ -61,23 +61,22 @@ module.exports.handleReply = async function ({ api, event, returns, handleReply 
     }
     catch (e) {
 		console.log(e);
-    	global.sendReaction.failed(api, event);
-		global.logModuleErrorToAdmin(e, __filename, event);
-		return api.sendMessage(global.textFormat('error', 'errCmdExceptionError', e, global.config.PREFIX), threadID, messageID);
+    	Utils.sendReaction.failed(api, { messageID: handleReply.requestMsgID });
+		Utils.logModuleErrorToAdmin(e, __filename, event);
+		return api.sendMessage(global.textFormat('error', 'errCmdExceptionError', e, global.HADESTIA_BOT_CONFIG.PREFIX), threadID, messageID);
     }
 }
 
-module.exports.run = async function ({ api, args, event, logger, textFormat }) {
+module.exports.run = async function ({ api, args, event, Utils, Prefix }) {
 	
 	const { threadID, messageID, senderID } = event;
 	const axios = require("axios");
     const fs = require("fs-extra");
-    const request = require("request");
 	
 	const song = args.join(' ');
 	const directory = `${__dirname}/../../cache/`;
 	
-	global.sendReaction.custom(api, event, '🔍');
+	Utils.sendReaction.custom(api, event, '🔍');
 	// handle search via link
 	if (song.indexOf('https://') !== -1) {
 		try {
@@ -85,18 +84,18 @@ module.exports.run = async function ({ api, args, event, logger, textFormat }) {
 			const data = await downloadMusicFromYoutube(song, path);
 			// if request was larger than 8mb
 			if (fs.statSync(path).size > 8388608) {
-				global.sendReaction.failed(api, event);
-				return api.sendMessage(textFormat('cmd', 'cmdPlayMusicFileWasBig', 8), threadID, () => fs.unlinkSync(path), messageID);
+				Utils.sendReaction.failed(api, event);
+				return api.sendMessage(Utils.textFormat('cmd', 'cmdPlayMusicFileWasBig', 8), threadID, () => fs.unlinkSync(path), messageID);
 			}
 					
 			return api.sendMessage(
 				{ 
-					body: textFormat('cmd', 'cmdPlayMusicSuccess', data.title),
+					body: Utils.textFormat('cmd', 'cmdPlayMusicSuccess', data.title),
 					attachment: fs.createReadStream(path)
 				},
 				threadID,
 				(e) => { if (!i) {
-					global.sendReaction.success(api, event);
+					Utils.sendReaction.success(api, event);
 					return fs.unlinkSync(path);
 				} },
 				messageID
@@ -104,9 +103,9 @@ module.exports.run = async function ({ api, args, event, logger, textFormat }) {
 					
 		} catch (err_link_req) {
 			console.log(err_link_req);
-			global.sendReaction.success(api, event);
-			global.logModuleErrorToAdmin(err_link_req, __filename, event);
-			return api.sendMessage(textFormat('error', 'errCmdExceptionError', err_link_req, global.config.PREFIX), threadID, messageID);
+			Utils.sendReaction.success(api, event);
+			Utils.sendRequestError(err_link_req, event, Prefix);
+			return Utils.logModuleErrorToAdmin(err_link_req, __filename, event);
 		}
 		return;
 	}
@@ -122,7 +121,7 @@ module.exports.run = async function ({ api, args, event, logger, textFormat }) {
 		for (const value of data) {
 			link.push(value.id);
 			num += 1;
-			msg += `${textFormat('cmd', 'cmdPlayMusicSearchResultItemFormat', num, value.title)}\n`;
+			msg += `${Utils.textFormat('cmd', 'cmdPlayMusicSearchResultItemFormat', num, value.title)}\n`;
 		}
 				
 		const messageBody = textFormat('cmd', 'cmdPlayMusicSearchResultFormat', msg);
@@ -131,8 +130,8 @@ module.exports.run = async function ({ api, args, event, logger, textFormat }) {
 			messageBody,
 			threadID,
 			(e, info) => {
-				if (e) return api.sendMessage(textFormat('error', 'errCmdExceptionError', e, global.config.PREFIX), threadID, messageID);
-				global.sendReaction.inprocess(api, event);
+				if (e) return Utils.sendRequestError(e, event, Prefix);
+				Utils.sendReaction.inprocess(api, event);
 				global.client.handleReply.push({
 					name: this.config.name,
 					messageID: info.messageID,
@@ -146,9 +145,9 @@ module.exports.run = async function ({ api, args, event, logger, textFormat }) {
 		);
 	} catch (api_second_error_manual_search) {
 		console.log(api_second_error_manual_search)
-		global.sendReaction.failed(api, event);
-		global.logModuleErrorToAdmin(api_second_error_manual_search, __filename, event);
-		return api.sendMessage(textFormat('error', 'errCmdExceptionError', api_second_error_manual_search, global.config.PREFIX), threadID, messageID);
+		Utils.sendReaction.failed(api, event);
+		Utils.sendRequestError(api_second_error_manual_search, event, Prefix)
+		return Utils.logModuleErrorToAdmin(api_second_error_manual_search, __filename, event);
 	}
 }
 

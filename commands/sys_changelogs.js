@@ -2,51 +2,54 @@ module.exports.config = {
 	name: 'changelog',
 	version: '2.0.1',
 	usages: '[ set ]',
-	description: 'Enable or Disable receiving patch notes about this bot. Or vier patch notes by running the command.',
+	description: 'Enable or Disable receiving patch notes, Or view patch notes.',
 	commandCategory: 'system',
 	credits: 'Hadestia',
 	hasPermssion: 0,
-	cooldowns: 30
+	cooldowns: 30,
+	envConfig: {
+		needsDataFetching: true
+	}
 }
 
-module.exports.lateInit = async function ({ api, models }) {
+module.exports.lateInit = async function ({ api, Threads }) {
 	
 	const { readFileSync, writeFileSync } = require('fs-extra');
-	
-	const Threads = require(`${__dirname}/../../includes/controllers/controller_threads`)({ models, api });
     const isUpdated = readFileSync(`${__dirname}/../../cache/keep/!asset-has-update.txt`, { encoding: 'utf-8' });
 	const assets = require(`${__dirname}/../../json/!asset-update.json`);
-	const botAdmins = global.config.ADMINBOT;
-
-	global.BOT_VERSION = assets.VERSION;
+	const { ADMINBOT, PREFIX } = global.HADESTIA_BOT_CONFIG;
+	
+	//global.BOT_VERSION = assets.VERSION;
 	//console.log(global.data.threadData[id]['recieve-update']);
 	// Notify each group about the patch notes
 	if (isUpdated == 'true') {
     	try {
-			for (const thread of global.data.allThreadID) {
-				var { data } = await Threads.getData(thread);
-				data = data || {};
-				const idIndex = global.data.allThreadID.indexOf(thread);
+    		const allThreads = await Threads.getAll(['threadID', 'threadInfo', 'data']);
+
+			for (const thread of allThreads) {
+				const data = thread.data;
+				const threadID = String(thread.threadID);
+				const threadPrefix = data.PREFIX || PREFIX;
 				
 				if (data.receive_update) {
 					api.sendMessage(
-						`Bot has been updated to version: ${assets.VERSION}\nrun "${global.config.PREFIX}changelog" to see full details.\n\nYou can also use "${global.config.PREFIX}changelog set" to turn on/off this update notification.`,
-						thread,
+						`Bot has been updated to version: ${assets.VERSION}\nrun "${threadPrefix}changelog" to see full details.\n\nYou can also use "${threadPrefix}changelog set" to turn on/off this update notification.`,
+						threadID,
 						async (err) => {
 							// if this fails that means its an old thread data
 							// that probably bot are not a member anymore
 							if (err) {
-								(idIndex !== -1) ? (global.data.allThreadID).slice(idIndex, 1) : '';
-								await Threads.delData(thread);
+								await Threads.delData(threadID);
 							}
 						}
 					);
 				}
 			}
 			// notify admins too
-			for (const admin of botAdmins) {
-				api.sendMessage(global.textFormat('system', 'botUpdateFormat', assets.VERSION, assets.CHANGELOGS), admin);
+			for (const admin of ADMINBOT) {
+				api.sendMessage(global.Utils.textFormat('system', 'botUpdateFormat', assets.VERSION, assets.CHANGELOGS), admin);
 			}
+			
 		} catch (e) {
         	//logger (e);
 			console.log(`BOT update notif: ${e}`, 'warn');
@@ -56,7 +59,7 @@ module.exports.lateInit = async function ({ api, models }) {
 	await writeFileSync(`${__dirname}/../../cache/keep/!asset-has-update.txt`, 'false', 'utf-8');
 }
 
-module.exports.run = async function ({ api, args, event, textFormat, Threads }) {
+module.exports.run = async function ({ api, args, event, groupData, Utils, Threads }) {
 	
 	const { threadID, messageID } = event;
 
@@ -68,26 +71,17 @@ module.exports.run = async function ({ api, args, event, textFormat, Threads }) 
 		
 		// if has argument and not GC
 		if (!event.isGroup) {
-			return api.sendMessage(textFormat('system', 'botUpdateSettingOnlyGC'), threadID, messageID);
+			return api.sendMessage(Utils.textFormat('system', 'botUpdateSettingOnlyGC'), threadID, ()=>{}, messageID);
 		}
 		
-		let data = (await Threads.getData(threadID)).data;
-		
-		// set initial state when not set
-		// if (typeof(data['recieve-update']) == undefined || data['recieve-update'] == true) {
+		const data = groupData.data;
 		data.receive_update = !data.receive_update;
-		//} else 
-			//data['recieve-update'] = true;
-		//}
 		
 		await Threads.setData(threadID, { data });
-		global.data.threadData.set(threadID, data);
 
 		return api.sendMessage(
-			textFormat('system', `botUpdate${(data.recieve_update == true) ? 'On' : 'Off'}`),
-			threadID,
-			global.autoUnsend,
-			messageID
+			Utils.textFormat('system', `botUpdate${(data.recieve_update == true) ? 'On' : 'Off'}`),
+			threadID, Utils.autoUnsend, messageID
 		);
 	}
 	
@@ -95,11 +89,11 @@ module.exports.run = async function ({ api, args, event, textFormat, Threads }) 
 	const asset = await require('../../json/!asset-update.json');
 	
 	return api.sendMessage(
-		textFormat('system', 'botUpdateFormat', asset.VERSION, asset.CHANGELOGS),
+		Utils.textFormat('system', 'botUpdateFormat', asset.VERSION, asset.CHANGELOGS),
 		threadID,
 		(err) => {
-			if (err) return global.sendReaction.failed(api, event);
-			return global.sendReaction.success(api, event);
+			if (err) return Utils.sendReaction.failed(api, event);
+			return Utils.sendReaction.success(api, event);
 		},
 		messageID
 	)

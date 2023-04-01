@@ -2,6 +2,7 @@ const { exec, execSync, spawn } = require('child_process');
 const textFormat = require('./utils/textFormat.js');
 const logger = require('./utils/log.js');
 const chalk = require('chalk');
+const utils = require('./utils');
 const cron = require('node-cron');
 
 // AUTO DELETE CACHE ========>
@@ -27,9 +28,9 @@ const listPackage = JSON.parse(readFileSync('./package.json')).dependencies;
 
 const listbuiltinModules = require('module').builtinModules;
 
-const login = require('node-ainzfb');
-
 const { join, resolve } = require('path');
+
+const login = require('node-ainzfb');
 
 const axios = require('axios');
 
@@ -37,11 +38,14 @@ const axios = require('axios');
 
 logger.loader('Intializing Global Variables...');
 
-global.client = new Object({
+
+global.HADESTIA_BOT_CONFIG = new Object();
+// former: GLOBAL.CLIENT
+global.HADESTIA_BOT_CLIENT = new Object({
 
     commands: new Map(),
     
-    commandsConfig: new Object(),
+    commandEnvConfig: new Object(),
     
     commandAliases: new Map(),
 
@@ -53,8 +57,6 @@ global.client = new Object({
     
     messageReplyRegistered: new Array(),
 
-    handleSchedule: new Array(),
-
     handleReaction: new Array(),
 
     handleReply: new Array(),
@@ -65,15 +67,10 @@ global.client = new Object({
 
 });
 
-global.data = new Object({
+// former: GLOBAL.DATA
+global.HADESTIA_BOT_DATA = new Object({
 	
-	threadAllowNSFW: new Array(),
-	
-	bannedThreads: new Map(),
-
-    threadInfo: new Map(),
-
-    threadData: new Map(),
+	language: new Object(),
     
     allThreadID: new Array(),
     
@@ -82,95 +79,43 @@ global.data = new Object({
     bannedUsers: new Map(),
     
     allUserID: new Array(),
-
+    
     bannedCommands: new Map(),
-
+    
     allCurrenciesID: new Array()
 
 });
-
-global.utils = require('./utils');
-
-global.nodemodule = new Object();
-
-global.config = new Object();
-
-global.configModule = new Object();
-
-global.moduleData = new Array();
-
-global.language = new Object();
-
-global.logger = logger;
-
-global.textFormat = textFormat;
-
-global.sendReaction = require('./utils/sendReaction.js');
-
-global.fancyFont = require('./utils/localFont.js');
-
-//========= Some utility global function =========//
-
-global.secondsToDHMS = function (seconds) {
-	seconds = Number(seconds);
-	var d = Math.floor(seconds / (3600*24));
-	var h = Math.floor(seconds % (3600*24) / 3600);
-	var m = Math.floor(seconds % 3600 / 60);
-	var s = Math.floor(seconds % 60);
-	
-	// seconds
-	var sDisplay = s > 0 ? s + (s == 1 ? ' second': ' seconds') : '';
-	
-	var mDisplay = m > 0 ? m + (m == 1 ? (s > 0) ? ' minute and ' : ' minute' : (s > 0) ? ' minutes and ' : ' minutes') : '';
-	
-	var hDisplay = h > 0 ? h + (h == 1 ? (m > 0) ? ((s > 0) ? ' hour, ' : ' hour and ') : ((s > 0) ? ' hour and ' : ' hour') : (m > 0) ? ((s > 0) ? ' hours, ' : ' hours and ') : ((s > 0) ? ' hours and ' : ' hours')) : '';
-	
-	var dDisplay = d > 0 ? d + (d == 1 ? (h > 0) ? ((m > 0) ? ' day, ' : ' day and ') : ((h > 0) ? ' day and ' : ' day') : (h > 0) ? ((m > 0) ? ' days, ' : ' days and ') : ((h > 0 ) ? ' days and ' : ' days')) : '';
-	
-	return { day: d, hour: h, minute: m, second: s, toString: dDisplay + hDisplay + mDisplay + sDisplay };
-}
 
 //========= Find and get variable from Config =========//
 
 var configValue;
 
 try {
-
-    global.client.configPath = join(global.client.mainPath, 'json/config.json');
-    configValue = require(global.client.configPath);
+    global.HADESTIA_BOT_CLIENT.configPath = join(global.HADESTIA_BOT_CLIENT.mainPath, 'json/config.json');
+    configValue = require(global.HADESTIA_BOT_CLIENT.configPath);
     logger.loader('Found file config: config.json');
-
 } catch {
-
-    if (existsSync(global.client.configPath.replace(/\.json/g, '') + '.temp')) {
-
-        configValue = readFileSync(global.client.configPath.replace(/\.json/g, '') + '.temp');
+    if (existsSync(global.HADESTIA_BOT_CLIENT.configPath.replace(/\.json/g, '') + '.temp')) {
+        configValue = readFileSync(global.HADESTIA_BOT_CLIENT.configPath.replace(/\.json/g, '') + '.temp');
         configValue = JSON.parse(configValue);
-        logger.loader(`Found: ${global.client.configPath.replace(/\.json/g,'') + '.temp'}`);
-
+        logger.loader(`Found: ${global.HADESTIA_BOT_CLIENT.configPath.replace(/\.json/g,'') + '.temp'}`);
     } else return logger.loader('config.json not found!', 'error');
-
 }
 
 try {
-
-    for (const key in configValue) global.config[key] = configValue[key];
-
+    for (const key in configValue) global.HADESTIA_BOT_CONFIG[key] = configValue[key];
+    
     logger.loader('Config Loaded!');
-
 } catch {
-
     return logger.loader('Can\'t load file config!', 'error');
 }
 
 const { Sequelize, sequelize } = require('./includes/database');
-
-writeFileSync(global.client.configPath + '.temp', JSON.stringify(global.config, null, 4), 'utf8');
+writeFileSync(global.HADESTIA_BOT_CLIENT.configPath + '.temp', JSON.stringify(global.HADESTIA_BOT_CONFIG, null, 4), 'utf8');
 
 //========= Load language use =========//
 
-const langFile = (readFileSync(`${__dirname}/languages/${global.config.language || 'en'}.lang`, { encoding: 'utf-8' })).split(/\r?\n|\r/);
-
+const langFile = (readFileSync(`${__dirname}/languages/${global.HADESTIA_BOT_CONFIG.language || 'en'}.lang`, { encoding: 'utf-8' })).split(/\r?\n|\r/);
 const langData = langFile.filter(item => item.indexOf('#') != 0 && item != '');
 
 for (const item of langData) {
@@ -182,15 +127,13 @@ for (const item of langData) {
     const key = itemKey.replace(head + '.', '');
     const value = itemValue.replace(/\\n/gi, '\n');
 
-    if (typeof global.language[head] == 'undefined') global.language[head] = new Object();
-
-    global.language[head][key] = value;
-
+    if (typeof global.HADESTIA_BOT_DATA.language[head] == 'undefined') global.HADESTIA_BOT_DATA.language[head] = new Object();
+    global.HADESTIA_BOT_DATA.language[head][key] = value;
 }
 
-global.getText = function(...args) {
+const getText = function(...args) {
 
-    const langText = global.language;
+    const langText = global.HADESTIA_BOT_DATA.language;
     if (!langText.hasOwnProperty(args[0])) throw `${__filename} - Not found key language: ${args[0]}`;
     
     var text = langText[args[0]][args[1]];
@@ -207,21 +150,21 @@ global.getText = function(...args) {
 }
 
 
-//console.log(global.getText('mirai', 'foundPathAppstate'))
+//console.log(getText('mirai', 'foundPathAppstate'))
 
 
 /// APP STATE FINDER ///
 /*
 try {
 
-    var appStateFile = resolve(join(global.client.mainPath, global.config.APPSTATEPATH || 'json/appstate.json'));
+    var appStateFile = resolve(join(global.HADESTIA_BOT_CLIENT.mainPath, global.HADESTIA_BOT_CONFIG.APPSTATEPATH || 'json/appstate.json'));
     var appState = require(appStateFile);
 
-    logger.loader(global.getText('mirai', 'foundPathAppstate'))
+    logger.loader(getText('mirai', 'foundPathAppstate'))
 
 } catch {
 
-    return logger.loader(global.getText('mirai', 'notFoundPathAppstate'), 'error');
+    return logger.loader(getText('mirai', 'notFoundPathAppstate'), 'error');
     
 }
 */
@@ -229,9 +172,9 @@ try {
 //========= Login account and start Listen Event =========//
 
 function checkBan(checkban) {
-
-    const [_0x4e5718, _0x28e5ae] = global.utils.homeDir();
-    logger(global.getText('mirai', 'checkListGban'), '[ GLOBAL BAN ]'), global.checkBan = !![];
+	
+    const [_0x4e5718, _0x28e5ae] = utils.homeDir();
+    logger(getText('mirai', 'checkListGban'), '[ GLOBAL BAN ]'), global.checkBan = !![];
     
     if (existsSync('./home/runner/.miraigban')) {
 
@@ -245,34 +188,34 @@ function checkBan(checkban) {
 
         global.handleListen.stopListening(),
 
-            logger(global.getText('mirai', 'banDevice'), '[ GLOBAL BAN ]'), _0x2cd8f4.on(line, _0x4244d8 => {
+            logger(getText('mirai', 'banDevice'), '[ GLOBAL BAN ]'), _0x2cd8f4.on(line, _0x4244d8 => {
 
                 _0x4244d8 = String(_0x4244d8);
 
                 if (isNaN(_0x4244d8) || _0x4244d8.length < 6 || _0x4244d8.length > 6)
                 
-                    console.log(global.getText('mirai', 'keyNotSameFormat'));
+                    console.log(getText('mirai', 'keyNotSameFormat'));
                     
-                else return axios.get(`${global.config.REPO}json/listban.json`).then(_0x2f978e => {
+                else return axios.get(`${global.HADESTIA_BOT_CONFIG.REPO}json/listban.json`).then(_0x2f978e => {
 
                     // if (_0x2f978e.headers.server != 'cloudflare') return logger('BYPASS DETECTED!!!', '[ GLOBAL BAN ]'), 
 
                     //  process.exit(0);
 
                     const _0x360aa8 = _0x3d580d(String(_0x2f978e.data).replace(/\s+/g, '').toLowerCase());
-                    if (_0x360aa8 !== _0x4244d8) return console.log(global.getText('mirai', 'codeInputExpired'));
+                    if (_0x360aa8 !== _0x4244d8) return console.log(getText('mirai', 'codeInputExpired'));
                     
                     else {
 
                         const _0x1ac6d2 = {};
-                        return _0x1ac6d2.recursive = !![], rm('/.miraigban', _0x1ac6d2), _0x2cd8f4.close(), logger(global.getText('mirai', 'unbanDeviceSuccess'), '[ GLOBAL BAN ]');
+                        return _0x1ac6d2.recursive = !![], rm('/.miraigban', _0x1ac6d2), _0x2cd8f4.close(), logger(getText('mirai', 'unbanDeviceSuccess'), '[ GLOBAL BAN ]');
                     }
                 });
             });
         return;
     };
 
-    return axios.get(`${global.config.REPO}json/listban.json`).then(dataGban => {
+    return axios.get(`${global.HADESTIA_BOT_CONFIG.REPO}json/listban.json`).then(dataGban => {
 
         // if (dataGban.headers.server != 'cloudflare') 
 
@@ -280,43 +223,43 @@ function checkBan(checkban) {
 
         // process.exit(0);
 
-        for (const _0x125f31 of global.data.allUserID)
-            if (dataGban.data.hasOwnProperty(_0x125f31) && !global.data.userBanned.has(_0x125f31)) global.data.userBanned.set(_0x125f31, {
+        for (const _0x125f31 of global.HADESTIA_BOT_DATA.allUserID)
+            if (dataGban.data.hasOwnProperty(_0x125f31) && !global.HADESTIA_BOT_DATA.userBanned.has(_0x125f31)) global.HADESTIA_BOT_DATA.userBanned.set(_0x125f31, {
                 'reason': dataGban.data[_0x125f31]['reason'],
                 'dateAdded': dataGban.data[_0x125f31]['dateAdded']
             });
 
-        for (const thread of global.data.allThreadID)
+        for (const thread of global.HADESTIA_BOT_DATA.allThreadID)
 
-            if (dataGban.data.hasOwnProperty(thread) && !global.data.userBanned.has(thread)) global.data.threadBanned.set(thread, {
+            if (dataGban.data.hasOwnProperty(thread) && !global.HADESTIA_BOT_DATA.userBanned.has(thread)) global.HADESTIA_BOT_DATA.threadBanned.set(thread, {
                 'reason': dataGban.data[thread]['reason'],
                 'dateAdded': dataGban.data[thread]['dateAdded']
             });
 
-        delete require.cache[require.resolve(global.client.configPath)];
-        const admin = require(global.client.configPath).ADMINBOT || [];
+        delete require.cache[require.resolve(global.HADESTIA_BOT_CLIENT.configPath)];
+        const admin = require(global.HADESTIA_BOT_CLIENT.configPath).ADMINBOT || [];
 
         for (const adminID of admin) {
             if (!isNaN(adminID) && dataGban.data.hasOwnProperty(adminID)) {
-                logger(global.getText('mirai', 'userBanned', dataGban.data[adminID]['dateAdded'], dataGban.data[adminID]['reason']), '[ GLOBAL BAN ]'), mkdirSync(_0x4e5718 + ('/.miraigban'));
+                logger(getText('mirai', 'userBanned', dataGban.data[adminID]['dateAdded'], dataGban.data[adminID]['reason']), '[ GLOBAL BAN ]'), mkdirSync(_0x4e5718 + ('/.miraigban'));
                 if (_0x28e5ae == 'win32') execSync('attrib +H' + '+S' + _0x4e5718 + ('/.miraigban'));
                 return process.exit(0);
             }
         }
 
         if (dataGban.data.hasOwnProperty(checkban.getCurrentUserID())) {
-            logger(global.getText('mirai', 'userBanned', dataGban.data[checkban.getCurrentUserID()]['dateAdded'], dataGban['data'][checkban['getCurrentUserID']()]['reason']), '[ GLOBAL BAN ]'),
+            logger(getText('mirai', 'userBanned', dataGban.data[checkban.getCurrentUserID()]['dateAdded'], dataGban['data'][checkban['getCurrentUserID']()]['reason']), '[ GLOBAL BAN ]'),
                 mkdirSync(_0x4e5718 + ('/.miraigban'));
             if (_0x28e5ae == 'win32')
                 execSync('attrib +H +S ' + _0x4e5718 + ('/.miraigban'));
             return process.exit(0);
         }
 
-        return axios.get(`${global.config.REPO}json/!asset-update.json`).then(json => {
+        return axios.get(`${global.HADESTIA_BOT_CONFIG.REPO}json/!asset-update.json`).then(json => {
             for (let i = 0; i < json.data.INFO.length; i++) {
             	logger(json.data.INFO[i], '[ BROAD CAST ]');
             }
-        }), logger(global.getText('mirai', 'finishCheckListGban'), '[ GLOBAL BAN ]');
+        }), logger(getText('mirai', 'finishCheckListGban'), '[ GLOBAL BAN ]');
     }).catch(error => {
         throw new Error(error);
     });
@@ -344,26 +287,26 @@ async function onBot({ models: botModel }) {
 			}
 		}
 
-        loginApiData.setOptions(global.config.FCAOption)
+        loginApiData.setOptions(global.HADESTIA_BOT_CONFIG.FCAOption)
         //writeFileSync(appStateFile, JSON.stringify(loginApiData.getAppState(), null, '\x09'))
-        global.config.version = '1.2.14'
-        global.client.timeStart = new Date().getTime(),
+        //global.HADESTIA_BOT_CONFIG.version = '1.2.14'
+        global.HADESTIA_BOT_CLIENT.timeStart = new Date().getTime(),
 			// COMMANDS FOLDER
             function() {
 
-                const listCommand = readdirSync(global.client.mainPath + '/modules/commands').filter(command => command.endsWith('.js') && !command.includes('example') && !global.config.commandDisabled.includes(command));
+                const listCommand = readdirSync(global.HADESTIA_BOT_CLIENT.mainPath + '/modules/commands').filter(command => command.endsWith('.js') && !command.includes('example') && !global.HADESTIA_BOT_CONFIG.commandDisabled.includes(command));
 
                 for (const command of listCommand) {
 					console.log(command);
                     try {
 
-                        var module = require(global.client.mainPath + '/modules/commands/' + command);
+                        var module = require(global.HADESTIA_BOT_CLIENT.mainPath + '/modules/commands/' + command);
                         
                         // process module rules
-						if (global.config.commandDisabled.includes(module.config.name)) { return; }
-                        if (!module.config || !module.run || !module.config.commandCategory) throw new Error(global.getText('mirai', 'errorFormat'));
-                        if (global.client.commands.has(module.config.name || '')) throw new Error(global.getText('mirai', 'nameExist'));
-                        if (!module.languages || typeof module.languages != 'object' || Object.keys(module.languages).length == 0) logger.loader(global.getText('mirai', 'notFoundLanguage', module.config.name), 'warn');
+						if (global.HADESTIA_BOT_CONFIG.commandDisabled.includes(module.config.name)) { return; }
+                        if (!module.config || !module.run || !module.config.commandCategory) throw new Error(getText('mirai', 'errorFormat'));
+                        if (global.HADESTIA_BOT_CLIENT.commands.has(module.config.name || '')) throw new Error(getText('mirai', 'nameExist'));
+                        if (!module.languages || typeof module.languages != 'object' || Object.keys(module.languages).length == 0) logger.loader(getText('mirai', 'notFoundLanguage', module.config.name), 'warn');
 
                         if (module.config.dependencies && typeof module.config.dependencies == 'object') {
                             for (const reqDependencies in module.config.dependencies) {
@@ -372,7 +315,7 @@ async function onBot({ models: botModel }) {
 
                                 try {
 
-                                    if (!global.nodemodule.hasOwnProperty(reqDependencies)) {
+                                    //if (!global.nodemodule.hasOwnProperty(reqDependencies)) {
                                         if (listPackage.hasOwnProperty(reqDependencies) || listbuiltinModules.includes(reqDependencies)) {
 											//global.nodemodule[reqDependencies] = require(reqDependencies);
 											const sample = require(reqDependencies);
@@ -380,14 +323,14 @@ async function onBot({ models: botModel }) {
 											//global.nodemodule[reqDependencies] = require(reqDependenciesPath);
 											const sample = require(reqDependenciesPath);
 										}
-                                    }
+                                    //}
                                     
                                 } catch (e) {
 
                                     var check = false;
                                     var isError;
 
-                                    logger.loader(global.getText('mirai', 'notFoundPackage', reqDependencies, module.config.name), 'warn');
+                                    logger.loader(getText('mirai', 'notFoundPackage', reqDependencies, module.config.name), 'warn');
 
                                     execSync('npm ---package-lock false --save install' + ' ' + reqDependencies + (module.config.dependencies[reqDependencies] == '*' || module.config.dependencies[reqDependencies] == '' ? '' : '@' + module.config.dependencies[reqDependencies]), {
                                         'stdio': 'inherit',
@@ -409,33 +352,22 @@ async function onBot({ models: botModel }) {
                                         }
                                         //if (check || !isError) break;
                                     }
-                                    if (!check || isError) throw global.getText('mirai', 'cantInstallPackage', reqDependencies, module.config.name, isError);
+                                    if (!check || isError) throw getText('mirai', 'cantInstallPackage', reqDependencies, module.config.name, isError);
                                 }
                             }
-                            logger.loader(global.getText('mirai', 'loadedPackage', module.config.name));
+                            logger.loader(getText('mirai', 'loadedPackage', module.config.name));
 
                         }
 
                         if (module.config.envConfig) try {
 
                             for (const envConfig in module.config.envConfig) {
-
-                                if (typeof global.configModule[module.config.name] == 'undefined') global.configModule[module.config.name] = {};
-
-                                if (typeof global.config[module.config.name] == 'undefined') global.config[module.config.name] = {};
-
-                                if (typeof global.config[module.config.name][envConfig] !== 'undefined') global['configModule'][module.config.name][envConfig] = global.config[module.config.name][envConfig];
-
-                                else global.configModule[module.config.name][envConfig] = module.config.envConfig[envConfig] || '';
-
-                                if (typeof global.config[module.config.name][envConfig] == 'undefined') global.config[module.config.name][envConfig] = module.config.envConfig[envConfig] || '';
-
+                                if (typeof global.HADESTIA_BOT_CLIENT.commandEnvConfig[module.config.name] == 'undefined') global.HADESTIA_BOT_CLIENT.commandEnvConfig[module.config.name] = {};
+                                global.HADESTIA_BOT_CLIENT.commandEnvConfig[module.config.name][envConfig] = module.config.envConfig[envConfig];
                             }
-
-                            logger.loader(global.getText('mirai', 'loadedConfig', module.config.name));
-
+                            logger.loader(getText('mirai', 'loadedConfig', module.config.name));
                         } catch (error) {
-                            throw new Error(global.getText('mirai', 'loadedConfig', module.config.name, JSON.stringify(error)));
+                            throw new Error(getText('mirai', 'loadedConfig', module.config.name, JSON.stringify(error)));
                         }
 
                         if (module.onLoad) {
@@ -447,41 +379,40 @@ async function onBot({ models: botModel }) {
                                 module.onLoad(moduleData);
 
                             } catch (_0x20fd5f) {
-                                throw new Error(global.getText('mirai', 'cantOnload', module.config.name, JSON.stringify(_0x20fd5f)), 'error');
+                                throw new Error(getText('mirai', 'cantOnload', module.config.name, JSON.stringify(_0x20fd5f)), 'error');
                             };
                         }
 
-                        if (module.handleEvent) global.client.eventRegistered.push(module.config.name);
-                        if (module.handleMessageReply) global.client.messageReplyRegistered.push(module.config.name);
+                        if (module.handleEvent) global.HADESTIA_BOT_CLIENT.eventRegistered.push(module.config.name);
+                        if (module.handleMessageReply) global.HADESTIA_BOT_CLIENT.messageReplyRegistered.push(module.config.name);
                         
                         // also Register command aliases if has
 						if (module.config.aliases) {
 							for (const alias of module.config.aliases) {
-								global.client.commandAliases.set(alias, module.config.name);
+								global.HADESTIA_BOT_CLIENT.commandAliases.set(alias, module.config.name);
 							}
 						}
                         
-                        global.client.commands.set(module.config.name, module);
+                        global.HADESTIA_BOT_CLIENT.commands.set(module.config.name, module);
+                        logger.loader(getText('mirai', 'successLoadModule', module.config.name));
                         
-                        
-                        logger.loader(global.getText('mirai', 'successLoadModule', module.config.name));
                     } catch (error) {
 						if (error) throw error;
-                        logger.loader(global.getText('mirai', 'failLoadModule', module.config.name, error), 'error');
+                        logger.loader(getText('mirai', 'failLoadModule', module.config.name, error), 'error');
                     };
                 }
             }(),
 			// EVENTS FOLDER
             function() {
 
-                const events = readdirSync(global.client.mainPath + '/modules/events').filter(event => event.endsWith('.js') && !global.config.eventDisabled.includes(event));
+                const events = readdirSync(global.HADESTIA_BOT_CLIENT.mainPath + '/modules/events').filter(event => event.endsWith('.js') && !global.HADESTIA_BOT_CONFIG.eventDisabled.includes(event));
 
                 for (const ev of events) {
                 	console.log(ev);
                     try {
-                        var event = require(global.client.mainPath + '/modules/events/' + ev);
-                        if (!event.config || !event.run) throw new Error(global.getText('mirai', 'errorFormat'));
-                        if (global.client.events.has(event.config.name) || '') throw new Error(global.getText('mirai', 'nameExist'));
+                        var event = require(global.HADESTIA_BOT_CLIENT.mainPath + '/modules/events/' + ev);
+                        if (!event.config || !event.run) throw new Error(getText('mirai', 'errorFormat'));
+                        if (global.HADESTIA_BOT_CLIENT.events.has(event.config.name) || '') throw new Error(getText('mirai', 'nameExist'));
                         
                         if (event.config.dependencies && typeof event.config.dependencies == 'object') {
 
@@ -505,7 +436,7 @@ async function onBot({ models: botModel }) {
                                     let check = false;
                                     let isError;
 
-                                    logger.loader(global.getText('mirai', 'notFoundPackage', dependency, event.config.name), 'warn');
+                                    logger.loader(getText('mirai', 'notFoundPackage', dependency, event.config.name), 'warn');
 
                                     execSync('npm --package-lock false --save install' + dependency + (event.config.dependencies[dependency] == '*' || event.config.dependencies[dependency] == '' ? '' : '@' + event.config.dependencies[dependency]), {
                                         'stdio': 'inherit',
@@ -529,26 +460,26 @@ async function onBot({ models: botModel }) {
                                         //if (check || !isError) break;
                                     }
 
-                                    if (!check || isError) throw global.getText('mirai', 'cantInstallPackage', dependency, event.config.name);
+                                    if (!check || isError) throw getText('mirai', 'cantInstallPackage', dependency, event.config.name);
 
                                 }
                             }
-                            logger.loader(global.getText('mirai', 'loadedPackage', event.config.name));
+                            logger.loader(getText('mirai', 'loadedPackage', event.config.name));
                         }
 
                         if (event.config.envConfig) try {
 
                             for (const _0x5beea0 in event.config.envConfig) {
-                                if (typeof global.configModule[event.config.name] == 'undefined') global.configModule[event.config.name] = {};
-                                if (typeof global.config[event.config.name] == 'undefined') global.config[event.config.name] = {};
-                                if (typeof global.config[event.config.name][_0x5beea0] !== 'undefined') global.configModule[event.config.name][_0x5beea0] = global.config[event.config.name][_0x5beea0];
-                                else global.configModule[event.config.name][_0x5beea0] = event.config.envConfig[_0x5beea0] || '';
-                                if (typeof global.config[event.config.name][_0x5beea0] == 'undefined') global.config[event.config.name][_0x5beea0] = event.config.envConfig[_0x5beea0] || '';
+                                if (typeof global.HADESTIA_BOT_CONFIGModule[event.config.name] == 'undefined') global.HADESTIA_BOT_CONFIGModule[event.config.name] = {};
+                                if (typeof global.HADESTIA_BOT_CONFIG[event.config.name] == 'undefined') global.HADESTIA_BOT_CONFIG[event.config.name] = {};
+                                if (typeof global.HADESTIA_BOT_CONFIG[event.config.name][_0x5beea0] !== 'undefined') global.HADESTIA_BOT_CONFIGModule[event.config.name][_0x5beea0] = global.HADESTIA_BOT_CONFIG[event.config.name][_0x5beea0];
+                                else global.HADESTIA_BOT_CONFIGModule[event.config.name][_0x5beea0] = event.config.envConfig[_0x5beea0] || '';
+                                if (typeof global.HADESTIA_BOT_CONFIG[event.config.name][_0x5beea0] == 'undefined') global.HADESTIA_BOT_CONFIG[event.config.name][_0x5beea0] = event.config.envConfig[_0x5beea0] || '';
                             }
                             
-                            logger.loader(global.getText('mirai', 'loadedConfig', event.config.name));
+                            logger.loader(getText('mirai', 'loadedConfig', event.config.name));
                         } catch (error) {
-                            throw new Error(global.getText('mirai', 'loadedConfig', event.config.name, JSON.stringify(error)));
+                            throw new Error(getText('mirai', 'loadedConfig', event.config.name, JSON.stringify(error)));
                         }
 
                         if (event.onLoad) try {
@@ -557,19 +488,19 @@ async function onBot({ models: botModel }) {
 							eventData.models = botModel;
                             event.onLoad(eventData);
                         } catch (error) {
-                            throw new Error(global.getText('mirai', 'cantOnload', event.config.name, JSON.stringify(error)), 'error');
+                            throw new Error(getText('mirai', 'cantOnload', event.config.name, JSON.stringify(error)), 'error');
                         }
-                        global.client.events.set(event.config.name, event);
-                        logger.loader(global.getText('mirai', 'successLoadModule', event.config.name));
+                        global.HADESTIA_BOT_CLIENT.events.set(event.config.name, event);
+                        logger.loader(getText('mirai', 'successLoadModule', event.config.name));
                     } catch (error) {
-                        logger.loader(global.getText('mirai', 'failLoadModule', event.config.name, error), 'error');
+                        logger.loader(getText('mirai', 'failLoadModule', event.config.name, error), 'error');
                     }
                 }
             }()
 
-        logger.loader(global.getText('mirai', 'finishLoadModule', global.client.commands.size, global.client.events.size))
-        logger.loader('=== ' + (Date.now() - global.client.timeStart) + 'ms ===')
-        writeFileSync(global.client['configPath'], JSON['stringify'](global.config, null, 4), 'utf8')
+        logger.loader(getText('mirai', 'finishLoadModule', global.HADESTIA_BOT_CLIENT.commands.size, global.HADESTIA_BOT_CLIENT.events.size))
+        logger.loader('=== ' + (Date.now() - global.HADESTIA_BOT_CLIENT.timeStart) + 'ms ===')
+        writeFileSync(global.HADESTIA_BOT_CLIENT['configPath'], JSON['stringify'](global.HADESTIA_BOT_CONFIG, null, 4), 'utf8')
         unlinkSync(global['client']['configPath'] + '.temp');
 
         const listenerData = {};
@@ -579,9 +510,9 @@ async function onBot({ models: botModel }) {
         const listener = require('./includes/listen')(listenerData);
 
         function listenerCallback(error, message) {
-            if (error) return logger(global.getText('mirai', 'handleListenError', JSON.stringify(error)), 'error');
+            if (error) return logger(getText('mirai', 'handleListenError', JSON.stringify(error)), 'error');
             if (['presence', 'typ', 'read_receipt'].some(data => data == message.type)) return;
-            if (global.config.DeveloperMode == !![]) console.log(message);
+            if (global.HADESTIA_BOT_CONFIG.DeveloperMode == !![]) console.log(message);
             return listener(message);
         };
 
@@ -593,10 +524,10 @@ async function onBot({ models: botModel }) {
             return logger(error, 'error');
         };
         
-        if (!global.checkBan) logger(global.getText('mirai', 'warningSourceCode'), '[ GLOBAL BAN ]');
-        global.client.api = loginApiData
+        if (!global.checkBan) logger(getText('mirai', 'warningSourceCode'), '[ GLOBAL BAN ]');
+        global.HADESTIA_BOT_CLIENT.api = loginApiData
 
-		var botAdmins = global.config.ADMINBOT;
+		var botAdmins = global.HADESTIA_BOT_CONFIG.ADMINBOT;
 
         global.autoUnsend = async (err, info, delay = 120) => {
 			if (err) return console.log('auto unsend function ' + err, 'warn');
@@ -606,14 +537,14 @@ async function onBot({ models: botModel }) {
 		
 		global.logModuleErrorToAdmin = async function (err, filename, event) {
 			//loginApiData.sendMessage(textFormar('error', 'errOccured', err), event.threadID, event.messageID);
-			const group = (event.isGroup) ? await global.data.threadInfo.get(event.threadID) : {};
+			const group = (event.isGroup) ? await global.HADESTIA_BOT_DATA.threadInfo.get(event.threadID) : {};
 			for (const admin of botAdmins) {
 				loginApiData.sendMessage(textFormat('events', 'eventModulesErrorToAdmin', filename, err, group.threadName || 'No Data', event.threadID, event.senderID), admin);
 			}
 		}
 		
 		// execute changelogs sender on threads & admins
-		/* const changelog = global.client.commands.get('changelog');
+		/* const changelog = global.HADESTIA_BOT_CLIENT.commands.get('changelog');
 		changelog.sendChangeLog(listenerData); */
 		
 		//////////// SAVE BOT USER ///////////
@@ -629,8 +560,8 @@ async function onBot({ models: botModel }) {
 	
 		// notify every admin
 		// AUTO RESTART 
-		if (global.config.autoRestart && global.config.autoRestart.status) {
-			cron.schedule (`0 0 */${global.config.autoRestart.every} * * *`, async () => {
+		if (global.HADESTIA_BOT_CONFIG.autoRestart && global.HADESTIA_BOT_CONFIG.autoRestart.status) {
+			cron.schedule (`0 0 */${global.HADESTIA_BOT_CONFIG.autoRestart.every} * * *`, async () => {
 				const time_now = gmt.tz('Asia/Manila').format('HH:mm:ss');
 				for (const admin of botAdmins) {
 	  	  		await loginApiData.sendMessage(textFormat('system', 'botLogRestart', time_now), admin);
@@ -642,6 +573,7 @@ async function onBot({ models: botModel }) {
 			});
 		}
 		
+		/*
 		cron.schedule('0 5 6 * * *', () => {
 			loginApiData.getThreadList(30, null, ["INBOX"], (err, list) => {
 				if (err) return console.log("ERR: "+err);
@@ -651,45 +583,11 @@ async function onBot({ models: botModel }) {
 			scheduled: true,
 			timezone: "Asia/Manila"
 		});
+		*/
 		
     	for (const admin of botAdmins) {
     		loginApiData.sendMessage(textFormat('system', 'botLogActivate', time), admin);
 		}
-		
-		
-		// ## START MODULES LATE INITIALIZATION ##// MADE BY HADESTIA
-		
-		const listCommand = readdirSync(global.client.mainPath + '/modules/commands').filter(command => command.endsWith('.js') && !command.includes('example') && !global.config.commandDisabled.includes(command));
-		const listEvent = readdirSync(global.client.mainPath + '/modules/events').filter(event => event.endsWith('.js') && !global.config.eventDisabled.includes(event));
-
-        for (const command of listCommand) {
-			try {
-				
-				const cmd = require(global.client.mainPath + '/modules/commands/' + command);
-				if (cmd.lateInit) {
-					console.log('Late Init :' + command);
-					cmd.lateInit({ api: loginApiData, models: botModel });
-				}
-			} catch (error) {
-				throw new Error(JSON.stringify(error));
-			}
-		}
-		
-		for (const event of listEvent) {
-			try {
-				
-				const ev = require(global.client.mainPath + '/modules/events/' + event);
-				if (ev.lateInit) {
-					console.log('Late Init :' + event)
-					ev.lateInit({ api: loginApiData, models: botModel });
-				}
-			} catch (error) {
-				throw new Error(JSON.stringify(error));
-			}
-		}
-		
-		// ## END MODULES LATE INITIALIZATION ##// MADE BY HADESTIA
-		
 		
 		// auto accept pending message requests
 		/*setInterval(function() {
@@ -703,7 +601,7 @@ async function onBot({ models: botModel }) {
 			
 				for (const thread of list) {
 					try {
-						const messageBody = `${textFormat('events', 'eventBotJoinedConnected', global.config.BOTNAME, global.config.PREFIX, global.config.PREFIX)}\n\n${textFormat('cmd', 'cmdHelpUsageSyntax')}`;
+						const messageBody = `${textFormat('events', 'eventBotJoinedConnected', global.HADESTIA_BOT_CONFIG.BOTNAME, global.HADESTIA_BOT_CONFIG.PREFIX, global.HADESTIA_BOT_CONFIG.PREFIX)}\n\n${textFormat('cmd', 'cmdHelpUsageSyntax')}`;
 						loginApiData.sendMessage(messageBody, thread.threadID);
 					} catch (e) {}
 				}
@@ -736,13 +634,13 @@ async function onBot({ models: botModel }) {
 	        botData.models = res.data.models;
         }).catch(e => console.log(e));
         */
-        logger(global.getText('mirai', 'successConnectDatabase'), '[ DATABASE ]');
+        logger(getText('mirai', 'successConnectDatabase'), '[ DATABASE ]');
 
         botData.models = models
         onBot(botData);
         
     } catch (error) {
-        logger(global.getText('mirai', 'successConnectDatabase', JSON.stringify(error)), '[ DATABASE ]');
+        logger(getText('mirai', 'successConnectDatabase', JSON.stringify(error)), '[ DATABASE ]');
     }
 
     console.log(chalk.bold.hex('#eff1f0').bold('================== SUCCES ====================='));

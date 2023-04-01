@@ -13,7 +13,7 @@ module.exports.config = {
 	}
 };
 
-module.exports.run = async function ({ api, args, event, textFormat }) {
+module.exports.run = async function ({ api, args, event, textFormat, logMessageError, Utils }) {
 	
 	const { threadID, messageID } = event;
 	const title = args.join(' ');
@@ -21,10 +21,10 @@ module.exports.run = async function ({ api, args, event, textFormat }) {
 	const lyrics = await lyricsFinder(title) || 'error';
 	
 	if (lyrics == 'error') {
-    	global.sendReaction.failed(api, event);
+    	Utils.sendReaction.failed(api, event);
 		return api.sendMessage(textFormat('cmd', 'cmdGetLyricsFailed', title), threadID, messageID);
 	}
-    global.sendReaction.success(api, event);
+    Utils.sendReaction.success(api, event);
     const upperTitle = await global.fancyFont.get((title.toUpperCase()), 1);
-    return api.sendMessage(textFormat('cmd', 'cmdGetLyricsFormat', upperTitle, lyrics), threadID, messageID);
+    return api.sendMessage(textFormat('cmd', 'cmdGetLyricsFormat', upperTitle, lyrics), threadID, logMessageError, messageID);
 }

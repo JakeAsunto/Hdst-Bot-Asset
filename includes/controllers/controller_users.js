@@ -32,6 +32,16 @@ module.exports = function ({ models, api }) {
 			throw new Error(error);
 		}
 	}
+	
+	async function hasRecord(userID) {
+		try {
+			const data = await Users.findOne({ where: { userID } });
+			return (data) ? true : false;
+		} catch (error) {
+			console.error(error);
+			throw new Error(error);
+		}
+	}
 
 	async function getData(userID) {
 		try {
@@ -89,6 +99,7 @@ module.exports = function ({ models, api }) {
 		getInfo,
 		getNameUser,
 		getAll,
+		hasRecord,
 		getData,
 		setData,
 		delData,
