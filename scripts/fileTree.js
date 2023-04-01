@@ -18,7 +18,7 @@ module.exports.checkAndMakeDir = async function (obj, basePath) {
 				if (typeof obj[key] === 'object') {
 					this.checkAndMakeDir(obj[key], path);
 				}
-			}
+			});
 		});
 	});
 }
