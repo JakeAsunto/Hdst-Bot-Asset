@@ -14,7 +14,7 @@ module.exports.config = {
 	}
 };
 
-module.exports.run = async function({ api, event, Threads }) {
+module.exports.run = async function({ api, event, Threads, Utils }) {
 
 	//const { Readable } = require('stream');
 	const { threadID, logMessageData } = event;
@@ -24,7 +24,7 @@ module.exports.run = async function({ api, event, Threads }) {
 	
 	//if (threadID !== '5742405099128283') return;
 	
-	const CACHE = `${global.client.mainPath}/cache`;
+	const CACHE = `${global.HADESTIA_BOT_CLIENT.mainPath}/cache`;
 	
 	// thread info
 	const { imageSrc, threadName, participantIDs } = await api.getThreadInfo(threadID);
@@ -32,7 +32,7 @@ module.exports.run = async function({ api, event, Threads }) {
 	const thread_name = removeNonASCII((threadName || 'This Group').normalize('NFKD'));
 	
 	const canvas = require('canvas');
-	const GIF = require(`${global.client.mainPath}/utils/editGif.js`);
+	const GIF = require(`${global.HADESTIA_BOT_CLIENT.mainPath}/utils/editGif.js`);
 	const gifEncoder = require('gif-encoder-2');
 	const axios = require('axios');
 	const path = require('path');
@@ -78,15 +78,15 @@ module.exports.run = async function({ api, event, Threads }) {
 		 
 			api.sendMessage(
 				{
-					body: global.textFormat('events', 'eventMembersJoined', await global.fancyFont.get(thread_name, 1), await names.join(', '), await global.fancyFont.get(`${participantIDs.length}`, 1)),
+					body: Utils.textFormat('events', 'eventMembersJoined', await global.fancyFont.get(thread_name, 1), await names.join(', '), await global.fancyFont.get(`${participantIDs.length}`, 1)),
 					mentions,
 					attachment: fs.createReadStream(final_welcome_members_path)
 				},
 				threadID,
-				global.autoUnsend
+				Utils.autoUnsend
 			);
 		} catch (err) {
-			//global.logger(err, 'error');
+			//Utils.logger(err, 'error');
 			console.log(err);
 			global.logModuleErrorToAdmin(err, __filename, event);
 		}
@@ -100,7 +100,7 @@ module.exports.run = async function({ api, event, Threads }) {
 			
 			const final_welcome_gif_path = path.join(CACHE, `joinNoti_${user.userFbId}_@${threadID}.gif`);
 			// get user avatar && group image
-			const avatarPath = `${global.client.mainPath}/cache/avatar-${user.userFbId}.png`;
+			const avatarPath = `${global.HADESTIA_BOT_CLIENT.mainPath}/cache/avatar-${user.userFbId}.png`;
 			const avatar = (await axios.get(
 				`https://graph.facebook.com/${user.userFbId}/picture?height=1500&width=1500&access_token=${process.env.FB_ACCESS_TOKEN}`,
 				{ responseType: 'arraybuffer' }
@@ -110,7 +110,7 @@ module.exports.run = async function({ api, event, Threads }) {
 			// some of group don't have group photo
 			let groupAvatar;
 			if (imageSrc) {
-				const groupAvaPath = `${global.client.mainPath}/cache/groupAva-${threadID}.png`;
+				const groupAvaPath = `${global.HADESTIA_BOT_CLIENT.mainPath}/cache/groupAva-${threadID}.png`;
 				const groupPhoto = (await axios.get(imageSrc, { responseType: 'arraybuffer' })).data;
 				
 				fs.writeFileSync(groupAvaPath, Buffer.from(groupPhoto, 'utf-8'));
@@ -170,20 +170,20 @@ module.exports.run = async function({ api, event, Threads }) {
 		
 			api.sendMessage(
 				{
-					body: global.textFormat('events', 'eventUserJoined', user.fullName, getOrdinalPosition(participantIDs.length)),
+					body: Utils.textFormat('events', 'eventUserJoined', user.fullName, getOrdinalPosition(participantIDs.length)),
 					mentions: [{ tag: user.fullName, id: user.userFbId }],
 					attachment: fs.createReadStream(final_welcome_gif_path)
 				},
 				threadID,
 				(e, info) => {
 					fs.unlinkSync(final_welcome_gif_path);
-					global.autoUnsend(e, info);
+					Utils.autoUnsend(e, info);
 				}
 			)
 		
 		} catch (err) {
 			console.log(err)
-			global.logModuleErrorToAdmin(err, __filename, event);
+			Utils.logModuleErrorToAdmin(err, __filename, event);
 		}
 	}
 }
@@ -217,6 +217,7 @@ function shortenUserName(name, maxchar) {
 	
 	let first = (shorten_user_name.split(' '))[0];
 	let last = (shorten_user_name.split(' ')).pop();
+	last = (last.length > 8) ? last.slice(0, 8-1) + '...' : last;
 	return (shorten_user_name > maxchar) ? `${first} ${last[0]}.` : shorten_user_name;
 }
 

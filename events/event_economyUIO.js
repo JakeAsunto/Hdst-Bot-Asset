@@ -9,7 +9,7 @@ module.exports.config = {
 	}
 };
 
-module.exports.run = async function({ api, event, Threads }) {
+module.exports.run = async function({ api, event, Threads, Utils }) {
 	
 	const { threadID } = event;
 	
@@ -29,7 +29,7 @@ module.exports.run = async function({ api, event, Threads }) {
 					if (user.userFbId != global.botUserID) {
 						this.initUserEco({
 							userID: user.userFbId,
-							threadID, Threads
+							threadID, Threads, Utils
 						});
 					}
 				}
@@ -38,7 +38,7 @@ module.exports.run = async function({ api, event, Threads }) {
 				if (event.logMessageData.leftParticipantFbId != global.botUserID) {
 					this.delUserEco({
 						userID: event.logMessageData.leftParticipantFbId,
-						threadID, Threads
+						threadID, Threads, Utils,
 					})
 				}
 				break;
@@ -51,10 +51,10 @@ module.exports.run = async function({ api, event, Threads }) {
 	}
 }
 
-module.exports.initUserEco = async function ({ userID, threadID, Threads }) {
+module.exports.initUserEco = async function ({ userID, threadID, Threads, Utils }) {
 	
 	try {
-		const economySystem = require(`${global.client.mainPath}/json/economySystem.json`);
+		const economySystem = require(`${global.HADESTIA_BOT_CLIENT.mainPath}/json/economySystem.json`);
 		const threadData = await Threads.getData(threadID);
 		const settings = threadData.data;
 		const economy = threadData.economy;
@@ -62,7 +62,7 @@ module.exports.initUserEco = async function ({ userID, threadID, Threads }) {
 	
 		economy[userID] = new Object(economySystem.userConfig);
 		inventory[userID] = {};
-		global.logger(`Initialize Economy for user ${userID}`, 'economy');
+		Utils.logger(`Initialize Economy for user ${userID}`, 'economy');
 	
 		await Threads.setData(threadID, { economy, inventory });
 	} catch (e) {
@@ -70,10 +70,10 @@ module.exports.initUserEco = async function ({ userID, threadID, Threads }) {
 	}
 }
 
-module.exports.delUserEco = async function ({ userID, threadID, Threads }) {
+module.exports.delUserEco = async function ({ userID, threadID, Threads, Utils }) {
 	
 	try {
-		const economySystem = require(`${global.client.mainPath}/json/economySystem.json`);
+		const economySystem = require(`${global.HADESTIA_BOT_CLIENT.mainPath}/json/economySystem.json`);
 		const threadData = await Threads.getData(threadID);
 		const settings = threadData.data;
 		const economy = threadData.economy;
@@ -81,7 +81,7 @@ module.exports.delUserEco = async function ({ userID, threadID, Threads }) {
 	
 		delete economy[userID];
 		delete inventory[userID];
-		global.logger(`Delete Economy for user ${userID}`, 'economy');
+		Utils.logger(`Delete Economy for user ${userID}`, 'economy');
 	
 		await Threads.setData(threadID, { economy, inventory });
 	} catch (e) {

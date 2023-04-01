@@ -9,12 +9,10 @@ module.exports.config = {
     }
 };
 
-module.exports.run = async function({ api, event, Threads, Banned }) {
+module.exports.run = async function({ api, event, Utils, Threads, Banned }) {
 	
-    // if (!global.configModule[this.config.name].enable) return;
-    
     const logger = require(`${global.client.mainPath}/utils/log`);
-    const { threadName, participantIDs, imageSrc } = await api.getThreadInfo(event.threadID);
+    const threadInfo = await api.getThreadInfo(event.threadID);
     const moment = require('moment-timezone');
 
 	const date = moment.tz("Asia/Manila").format("MM/DD/YYYY");
@@ -28,14 +26,9 @@ module.exports.run = async function({ api, event, Threads, Banned }) {
    	 switch (event.logMessageType) {
     	
      	   case "log:thread-name":
-        		const threadInfo = await Threads.getInfo(threadID);
-        		
-   	         const oldInfo = (global.data.threadInfo).get(threadID) || {};
-  	          const oldName = oldInfo.threadName || 'Unknown';
-  
-      	      action = `Update the group name from ${oldName} to '${threadName}'`;
-      
-				global.data.threadInfo.set(threadID, threadInfo);
+        		const oldInfo = await Threads.getData(threadID);
+				
+      	      action = `Update the group name from '${oldInfo.threadInfo.threadName}' to '${threadName}'`;
    	         await Threads.setData(threadID, { threadInfo });
    
 				const ban = await Banned.getData(threadID)
@@ -66,10 +59,10 @@ module.exports.run = async function({ api, event, Threads, Banned }) {
   	  }
     
  	   if (action) {
-  	  	const messageBody = global.textFormat('events', 'eventBotLogs', date, threadID, threadName, participantIDs.length, action, res.name || author, author);
+  	  	const messageBody = Utils.textFormat('events', 'eventBotLogs', date, threadID, threadInfo.threadName, threadInfo.participantIDs.length, action, res.name || author, author);
     		api.sendMessage(
 				messageBody,
-				global.config.ADMINBOT[0],
+				global.HADESTIA_BOT_CONFIG.ADMINBOT[0],
 				(err) => {
 					if (err) return logger('event_botLog.js ' + err, 'error');
 				}
@@ -77,6 +70,6 @@ module.exports.run = async function({ api, event, Threads, Banned }) {
 		}
     } catch (err) {
     	console.log(err);
-    	global.logModuleErrorToAdmin(err, __filename, event);
+    	Utils.logModuleErrorToAdmin(err, __filename, event);
     }
 }

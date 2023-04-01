@@ -6,43 +6,41 @@ module.exports.config = {
 	description: 'try to add back users from the group'
 };
 
-module.exports.run = async function ({ event, api, Threads, Users }) {
+module.exports.run = async function ({ event, api, Utils, Threads, Users }) {
 	
 	const threadData = await Threads.getData(event.threadID);
-	const data = threadData.data;
+	const data = (threadData) ? threadData.data : {};
 	
 	if (event.logMessageData.leftParticipantFbId == api.getCurrentUserID()) {
 		try {
-			const index = (global.data.allThreadID).indexOf(event.threadID);
-			(index !== -1) ? (global.data.allThreadID).splice(index, 1) : '';
-			global.logger(`Bot leave group: ${event.threadID}, Deleting group database...`, 'warn');
 			await Threads.delData(event.threadID);
-		} catch {}
+		} catch (e) {}
 		return;
 	}
 	
-	const name = global.data.userName.get(event.logMessageData.leftParticipantFbId) || await Users.getNameUser(event.logMessageData.leftParticipantFbId);
-	const type = (event.author == event.logMessageData.leftParticipantFbId) ? 'self-separation' : 'kicked' ;
+	const user = await Users.getNameUser(event.logMessageData.leftParticipantFbId) || { name: 'Facebook User' } ;
+	const name = user.name;
+	
+	const type = (event.author == event.logMessageData.leftParticipantFbId) ? 'self-separation' : 'kicked';
  
-
 	try {
 		if (type == 'self-separation') {
-			if (data && data.antiout) {
+			if (data.antiout) {
 				api.addUserToGroup(
 					event.logMessageData.leftParticipantFbId,
 					event.threadID,
 					(error, info) => {
 						if (error) {
 							//removeUserEconomy(event.logMessageData.leftParticipantFbId);
-    						return api.sendMessage(global.textFormat('group', 'groupAntiOutFailed', name), event.threadID)
+    						return api.sendMessage(Utils.textFormat('group', 'groupAntiOutFailed', name), event.threadID)
 						}
-						api.sendMessage(global.textFormat('group', 'groupAntiOutSuccess', name, data.PREFIX || global.config.PREFIX), event.threadID);
+						api.sendMessage(Utils.textFormat('group', 'groupAntiOutSuccess', name, data.PREFIX || global.HADESTIA_BOT_CONFIG.PREFIX), event.threadID);
 						try {
 							const ecoUIO = require('./event_economyUIO.js');
 							ecoUIO.initUserEco({
 								userID: event.logMessageData.leftParticipantFbId,
 								threadID: event.threadID,
-								Threads
+								Threads, Utils
 							});
 						} catch (err) {
 							console.log(err);
@@ -52,12 +50,13 @@ module.exports.run = async function ({ event, api, Threads, Users }) {
 			}
 		} else if (type == 'kicked') {
 			return api.sendMessage(
-				global.textFormat('group', 'groupAntiOutKicked', name),
-				event.threadID
+				Utils.textFormat('group', 'groupAntiOutKicked', name),
+				event.threadID,
+				()=>{}
 			);
 		}
 	} catch (err) {
 		console.log(err);
-		global.logModuleErrorToAdmin(err, __filename, event);
+		Utils.logModuleErrorToAdmin(err, __filename, event);
 	}
 }
