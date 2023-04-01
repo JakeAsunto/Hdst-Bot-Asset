@@ -37,14 +37,16 @@ const utils = require('./utils');
 
 logger.loader('Intializing Global Variables...');
 
-
 global.HADESTIA_BOT_CONFIG = new Object();
+
 // former: GLOBAL.CLIENT
 global.HADESTIA_BOT_CLIENT = new Object({
 
     commands: new Map(),
     
     commandEnvConfig: new Object(),
+    
+    eventEnvConfig: new Object(),
     
     commandAliases: new Map(),
 
@@ -311,7 +313,7 @@ async function onBot({ models: botModel }) {
                                 const _0x21abed = join(__dirname, 'modules', 'other_nodemodules', 'node_modules', dependency);
 
                                 try {
-                                    if (!global.nodemodule.hasOwnProperty(dependency)) {
+                                    //if (!global.nodemodule.hasOwnProperty(dependency)) {
                                         if (listPackage.hasOwnProperty(dependency) || listbuiltinModules.includes(dependency)) {
                                         	// if these sample fails: will undergo package installing
 											//global.nodemodule[dependency] = require(dependency);
@@ -320,7 +322,7 @@ async function onBot({ models: botModel }) {
 											//global.nodemodule[dependency] = require(_0x21abed);
 											const sample = require(_0x21abed);
 										}
-                                    }
+                                    //}
                                 } catch (e) {
 
                                     let check = false;
@@ -360,11 +362,11 @@ async function onBot({ models: botModel }) {
                         if (event.config.envConfig) try {
 
                             for (const _0x5beea0 in event.config.envConfig) {
-                                if (typeof global.HADESTIA_BOT_CONFIGModule[event.config.name] == 'undefined') global.HADESTIA_BOT_CONFIGModule[event.config.name] = {};
-                                if (typeof global.HADESTIA_BOT_CONFIG[event.config.name] == 'undefined') global.HADESTIA_BOT_CONFIG[event.config.name] = {};
-                                if (typeof global.HADESTIA_BOT_CONFIG[event.config.name][_0x5beea0] !== 'undefined') global.HADESTIA_BOT_CONFIGModule[event.config.name][_0x5beea0] = global.HADESTIA_BOT_CONFIG[event.config.name][_0x5beea0];
-                                else global.HADESTIA_BOT_CONFIGModule[event.config.name][_0x5beea0] = event.config.envConfig[_0x5beea0] || '';
-                                if (typeof global.HADESTIA_BOT_CONFIG[event.config.name][_0x5beea0] == 'undefined') global.HADESTIA_BOT_CONFIG[event.config.name][_0x5beea0] = event.config.envConfig[_0x5beea0] || '';
+                                if (typeof global.HADESTIA_BOT_CLIENT.eventEnvConfig[event.config.name] == 'undefined') {
+									global.HADESTIA_BOT_CLIENT.eventEnvConfig[event.config.name] = {};
+                                } else {
+									global.HADESTIA_BOT_CLIENT.eventEnvConfig[event.config.name][_0x5beea0] = event.config.envConfig[_0x5beea0] || '';
+								}
                             }
                             
                             logger.loader(getText('mirai', 'loadedConfig', event.config.name));

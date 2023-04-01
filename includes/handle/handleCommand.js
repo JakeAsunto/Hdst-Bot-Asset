@@ -112,7 +112,7 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
         
         // Handle commands available only for Groups
 		if (!event.isGroup && cmdEnvConfig.groupCommandOnly) {
-				Utils.sendReaction.failed(api, event);.
+				Utils.sendReaction.failed(api, event);
 				return api.sendMessage(
 					Utils.textFormat('system', 'commandAvailableOnGCOnly'),
 					threadID, Utils.autoUnsend, messageID

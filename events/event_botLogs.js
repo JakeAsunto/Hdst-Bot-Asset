@@ -4,14 +4,13 @@ module.exports.config = {
 	version: "1.0.2",
 	credits: "Mirai Team", // modified by Hadestia
 	description: "Record bot activity notifications.",
-    envConfig: {
-        enable: true
+    dependencies: {
+    	'moment-timezone': ''
     }
 };
 
 module.exports.run = async function({ api, event, Utils, Threads, Banned }) {
 	
-    const logger = require(`${global.client.mainPath}/utils/log`);
     const threadInfo = await api.getThreadInfo(event.threadID);
     const moment = require('moment-timezone');
 
@@ -31,10 +30,11 @@ module.exports.run = async function({ api, event, Utils, Threads, Banned }) {
       	      action = `Update the group name from '${oldInfo.threadInfo.threadName}' to '${threadName}'`;
    	         await Threads.setData(threadID, { threadInfo });
    
-				const ban = await Banned.getData(threadID)
+				const ban = await Banned.getData(threadID);
 				if (ban) {
-					ban.name = threadName;
-					await Banned.setData(threadID, { data: ban });
+					const data = ban.data;
+					data.name = threadName;
+					await Banned.setData(threadID, { data });
 				}
    	         break;
         
@@ -64,7 +64,7 @@ module.exports.run = async function({ api, event, Utils, Threads, Banned }) {
 				messageBody,
 				global.HADESTIA_BOT_CONFIG.ADMINBOT[0],
 				(err) => {
-					if (err) return logger('event_botLog.js ' + err, 'error');
+					if (err) return Utils.logger('event_botLog.js ' + err, 'error');
 				}
 			);
 		}

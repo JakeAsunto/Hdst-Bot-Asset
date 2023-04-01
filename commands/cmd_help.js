@@ -57,7 +57,7 @@ module.exports.run = async function({ api, event, args, Utils, Prefix }) {
         			arrayInfo.push(name);
 				}
         	}
-      	  arrayInfo.sort((a, b) => return (a > b) ? 1 : -1);
+      	  arrayInfo.sort((a, b) => { return (a > b) ? 1 : -1 });
         
       	  const totalPages = Math.ceil(arrayInfo.length/itemPerPage);
        	 const page = (requestPage > totalPages) ? 1 : requestPage;
@@ -100,8 +100,8 @@ module.exports.run = async function({ api, event, args, Utils, Prefix }) {
 				return (a.name > b.name) ? 1 : -1;
 			});
 			
-			categoryCommands.forEach((item) => {
-				msgBodyList += '' + Utils.textFormat('cmd', 'cmdListCatCmd', item.name, item.desc, await item.aliases.join(', ')) + '\n\n';
+			categoryCommands.forEach( async (item) => {
+				msgBodyList = msgBodyList + (Utils.textFormat('cmd', 'cmdListCatCmd', item.name, item.desc, await (item.aliases).join(', '))) + '\n\n';
 			});
 			
 			if (categoryCommands.length == 0) {

@@ -18,13 +18,13 @@ module.exports = function (input) {
 				Users,
 				Banned,
 				Threads
-				//Commands
 			},
 			use: function (modelName) {
 				return this.model[`${modelName}`];
 			}
-		} catch (e) {
-			return console.error(__filename, e);
 		}
+		
+	} catch (e) {
+		return console.error(__filename, e);
 	}
 }

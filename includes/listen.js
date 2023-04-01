@@ -16,11 +16,11 @@ module.exports = function({ api, models }) {
 	
 	///////// Initialize Utility Functions //
 	const Utils = {
-		sendReaction = require('../utils/sendReaction.js'),
-		textFormat = require('../utils/textFormat.js'),
-		fancyFont = require('../utils/localFont.js'),
-		editGif = require('../utils/editGif.js'),
-		logger = require('../utils/log.js')
+		sendReaction : require('../utils/sendReaction.js'),
+		textFormat : require('../utils/textFormat.js'),
+		fancyFont : require('../utils/localFont.js'),
+		editGif : require('../utils/editGif.js'),
+		logger : require('../utils/log.js')
 	}
 	
 	for (const key in util) {
@@ -80,7 +80,7 @@ module.exports = function({ api, models }) {
     	return text;
 	}
     
-    Utils.getRemainingTime = function (seconds, v2 = true) {=
+    Utils.getRemainingTime = function (seconds, v2 = true) {
 		function hasS (pref, count) {
 			return (count > 0) ? (count > 1) ? pref+'s' : pref : '';
 		}
@@ -267,7 +267,7 @@ module.exports = function({ api, models }) {
 		}
 	});
 	
-	logger(`${api.getCurrentUserID()} - [ ${global.config.PREFIX} ] • ${(!global.config.BOTNAME) ? 'This bot was forked & modified from original made by CatalizCS and SpermLord' : global.config.BOTNAME}`, '[ BOT INFO ]');
+	logger(`${api.getCurrentUserID()} - [ ${global.HADESTIA_BOT_CONFIG.PREFIX} ] • ${(!global.HADESTIA_BOT_CONFIG.BOTNAME) ? 'This bot was forked & modified from original made by CatalizCS and SpermLord' : global.HADESTIA_BOT_CONFIG.BOTNAME}`, '[ BOT INFO ]');
 	
 	// preset
 	/*api.getUserInfoV2 = async function (ids, callback) {
@@ -526,13 +526,13 @@ module.exports = function({ api, models }) {
         const bannedUserData = (event.senderID) ? await Banned.getData(event.senderID) : false;
         const bannedGroupData = (event.threadID && event.isGroup) ? await Banned.getData(event.threadID) : false;
         
+        const input = {
+			event,
+			bannedUserData,
+			bannedGroupData
+		}
+        
 		switch (event.type) {
-			
-			const input = {
-				event,
-				bannedUserData,
-				bannedGroupData
-			}
 			
 			case 'message':
 			
