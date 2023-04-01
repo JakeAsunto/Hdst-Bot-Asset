@@ -54,7 +54,7 @@ module.exports = function({ api, models }) {
        
         return function (...values) {
         	if (!module.language.hasOwnProperty(global.HADESTIA_BOT_CONFIG.language)) {
-        		const msg = global.getText('handleCommand', 'notFoundLanguage', module.config.name);
+        		const msg = Utils.getText('handleCommand', 'notFoundLanguage', module.config.name);
         		api.sendMessage(msg, event.threadID, ()=>{}, event.messageID);
 				return Utils.logModuleErrorToAdmin(msg, module.config.name, event);
             }
@@ -129,7 +129,7 @@ module.exports = function({ api, models }) {
 
 		try {
 			
-			logger(global.getText('listen', 'startLoadEnvironment'), '[ DATABASE ]');
+			logger(Utils.getText('listen', 'startLoadEnvironment'), '[ DATABASE ]');
 			
 			let users = await Users.getAll(['userID', 'name', 'data']),
 				threads = await Threads.getAll(['threadID', 'threadInfo', 'data']);
@@ -183,7 +183,7 @@ module.exports = function({ api, models }) {
 				//*/
 			}
 			
-			logger.loader(global.getText('listen', 'loadedEnvironmentThread'));
+			logger.loader(Utils.getText('listen', 'loadedEnvironmentThread'));
 			
 			for (const userData of users) {
 				const userID = String(userData.userID);
@@ -231,11 +231,11 @@ module.exports = function({ api, models }) {
 				//*/
 			}
 			
-			logger.loader(global.getText('listen', 'loadedEnvironmentUser'))
-			logger(global.getText('listen', 'successLoadEnvironment'), '[ DATABASE ]');
+			logger.loader(Utils.getText('listen', 'loadedEnvironmentUser'))
+			logger(Utils.getText('listen', 'successLoadEnvironment'), '[ DATABASE ]');
 			
 		} catch (error) {
-			return logger.loader(global.getText('listen', 'failLoadEnvironment', error), 'error');
+			return logger.loader(Utils.getText('listen', 'failLoadEnvironment', error), 'error');
 		}
 		
 	}());

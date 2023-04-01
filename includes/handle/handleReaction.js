@@ -16,7 +16,7 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
 
             const handleNeedExec = commands.get(indexOfMessage.name);
 
-            if (!handleNeedExec) return api.sendMessage(global.getText('handleReaction', 'missingValue'), threadID, messageID);
+            if (!handleNeedExec) return api.sendMessage(Utils.getText('handleReaction', 'missingValue'), threadID, messageID);
 
             try {
 
@@ -46,7 +46,7 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
 
             } catch (error) {
 
-                return api.sendMessage(global.getText('handleReaction', 'executeError', error), threadID, messageID);
+                return api.sendMessage(Utils.getText('handleReaction', 'executeError', error), threadID, messageID);
 
             }
 

@@ -63,7 +63,7 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
 
             	} catch (error) {
 
-               	 Utils.logger(global.getText('handleCommandEvent', 'moduleError', command.config.name), 'error');
+               	 Utils.logger(Utils.getText('handleCommandEvent', 'moduleError', command.config.name), 'error');
 
            	 }
        	 }

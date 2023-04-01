@@ -134,7 +134,7 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
 
 		// Handle NSFW commands
         if (command.config.commandCategory.toLowerCase() == 'nsfw' && !threadSetting.allowNSFW; && !ADMINBOT.includes(senderID)) {
-            return api.sendMessage(global.getText('handleCommand', 'threadNotAllowNSFW'), threadID, Utils.autoUnsend, messageID);
+            return api.sendMessage(Utils.getText('handleCommand', 'threadNotAllowNSFW'), threadID, Utils.autoUnsend, messageID);
 		}
 
 		try {
@@ -222,7 +222,7 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
 				const userInfo = await api.getUserInfoV2(senderID);
 				const threadInfo = await api.getThreadInfo(threadID);
 				const time2 = moment.tz('Asia/Manila').format('HH:MM:ss MM/DD/YYYY');
-                Utils.logger(global.getText('handleCommand', 'executeCommand', time2, commandName, senderID, threadID, args.join(' '), (now - dateNow)), '[ DEV MODE ]');
+                Utils.logger(Utils.getText('handleCommand', 'executeCommand', time2, commandName, senderID, threadID, args.join(' '), (now - dateNow)), '[ DEV MODE ]');
 			}
 			
 			const returns = {};
@@ -292,7 +292,7 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
         } catch (e) {
 			
 			global.sendReaction.failed(api, event);
-            return api.sendMessage(global.getText('handleCommand', 'commandError', commandName, e), threadID);
+            return api.sendMessage(Utils.getText('handleCommand', 'commandError', commandName, e), threadID);
         }
 
     };

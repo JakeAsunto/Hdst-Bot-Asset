@@ -125,7 +125,7 @@ module.exports = function({ Utils, Users, Threads, Banned }) {
 							
 							// SAVE
 							await Users.createData(UID, { 'name': singleData.name, 'data': data });
-                            Utils.logger(global.getText('handleCreateDatabase', 'newUser', chalk.hex("#" + random)(`New user:  `) + chalk.hex("#" + random1)(`${singleData.name}`) + "  ||  " + chalk.hex("#" + random2)(`${UID}`)), '[ USER ]');
+                            Utils.logger(Utils.getText('handleCreateDatabase', 'newUser', chalk.hex("#" + random)(`New user:  `) + chalk.hex("#" + random1)(`${singleData.name}`) + "  ||  " + chalk.hex("#" + random2)(`${UID}`)), '[ USER ]');
                             
 						}
 
@@ -135,7 +135,7 @@ module.exports = function({ Utils, Users, Threads, Banned }) {
                 }
                 // SAVE
 				await Threads.setData(threadID, THREAD_ALL_DATA);
-                Utils.logger(global.getText('handleCreateDatabase', 'newThread', chalk.hex("#" + random)(`New group: `) + chalk.hex("#" + random1)(`${threadID}`) + "  ||  " + chalk.hex("#" + random2)(`${threadIn4.threadName}`)), '[ THREAD ]');
+                Utils.logger(Utils.getText('handleCreateDatabase', 'newThread', chalk.hex("#" + random)(`New group: `) + chalk.hex("#" + random1)(`${threadID}`) + "  ||  " + chalk.hex("#" + random2)(`${threadIn4.threadName}`)), '[ THREAD ]');
 
             }
 
@@ -161,7 +161,7 @@ module.exports = function({ Utils, Users, Threads, Banned }) {
                 
                 // SAVE
                 await Users.createData(senderID, USER_ALL_DATA);
-                Utils.logger(global.getText('handleCreateDatabase', 'newUser', chalk.hex("#" + random)(`New users: `) + chalk.hex("#" + random1)(`${infoUsers.name}`) + " || " + chalk.hex("#" + random2)(`${senderID}`)), '[ USER ]');
+                Utils.logger(Utils.getText('handleCreateDatabase', 'newUser', chalk.hex("#" + random)(`New users: `) + chalk.hex("#" + random1)(`${infoUsers.name}`) + " || " + chalk.hex("#" + random2)(`${senderID}`)), '[ USER ]');
 
             }
             

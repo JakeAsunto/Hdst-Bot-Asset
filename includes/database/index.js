@@ -1,6 +1,6 @@
 const Sequelize = require("sequelize");
 const { resolve } = require("path");
-const { DATABASE } = global.config;
+const { DATABASE } = global.HADESTIA_BOT_CONFIG;
 
 var dialect = Object.keys(DATABASE), storage;
 dialect = dialect[0]; 

@@ -29,7 +29,7 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
             
             if (event.senderID !== indexOfMessage.author) return api.sendMessage(Utils.textFormat('error', 'errCommandReplyInteractionFailed'), threadID, (err, info) => { Utils.autoUnsend(err, info, 5) }, messageID);
 
-            if (!handleNeedExec) return api.sendMessage(global.getText('handleReply', 'missingValue'), threadID, messageID);
+            if (!handleNeedExec) return api.sendMessage(Utils.getText('handleReply', 'missingValue'), threadID, messageID);
 			
 			if (indexOfMessage.timeout && indexOfMessage.timeout < timeNow) {
 				deleteData();
@@ -81,7 +81,7 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
                 return;
                 
             } catch (error) {
-                return api.sendMessage(global.getText('handleReply', 'executeError', error), threadID, messageID);
+                return api.sendMessage(Utils.getText('handleReply', 'executeError', error), threadID, messageID);
             }
         }
     };

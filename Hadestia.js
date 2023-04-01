@@ -2,7 +2,6 @@ const { exec, execSync, spawn } = require('child_process');
 const textFormat = require('./utils/textFormat.js');
 const logger = require('./utils/log.js');
 const chalk = require('chalk');
-const utils = require('./utils');
 const cron = require('node-cron');
 
 // AUTO DELETE CACHE ========>
@@ -74,22 +73,17 @@ global.HADESTIA_BOT_DATA = new Object({
     
     allThreadID: new Array(),
     
-    userName: new Map(),
-
-    bannedUsers: new Map(),
-    
     allUserID: new Array(),
     
-    bannedCommands: new Map(),
-    
-    allCurrenciesID: new Array()
+    bannedCommands: new Map()
 
 });
 
+global.utils = require('./utils');
+
 //========= Find and get variable from Config =========//
 
-var configValue;
-
+let configValue;
 try {
     global.HADESTIA_BOT_CLIENT.configPath = join(global.HADESTIA_BOT_CLIENT.mainPath, 'json/config.json');
     configValue = require(global.HADESTIA_BOT_CLIENT.configPath);
@@ -170,10 +164,9 @@ try {
 */
 
 //========= Login account and start Listen Event =========//
-
 function checkBan(checkban) {
 	
-    const [_0x4e5718, _0x28e5ae] = utils.homeDir();
+    const [_0x4e5718, _0x28e5ae] = global.utils.homeDir();
     logger(getText('mirai', 'checkListGban'), '[ GLOBAL BAN ]'), global.checkBan = !![];
     
     if (existsSync('./home/runner/.miraigban')) {
@@ -291,7 +284,7 @@ async function onBot({ models: botModel }) {
         //writeFileSync(appStateFile, JSON.stringify(loginApiData.getAppState(), null, '\x09'))
         //global.HADESTIA_BOT_CONFIG.version = '1.2.14'
         global.HADESTIA_BOT_CLIENT.timeStart = new Date().getTime(),
-			// COMMANDS FOLDER
+		// COMMANDS FOLDER
             function() {
 
                 const listCommand = readdirSync(global.HADESTIA_BOT_CLIENT.mainPath + '/modules/commands').filter(command => command.endsWith('.js') && !command.includes('example') && !global.HADESTIA_BOT_CONFIG.commandDisabled.includes(command));
@@ -303,7 +296,6 @@ async function onBot({ models: botModel }) {
                         var module = require(global.HADESTIA_BOT_CLIENT.mainPath + '/modules/commands/' + command);
                         
                         // process module rules
-						if (global.HADESTIA_BOT_CONFIG.commandDisabled.includes(module.config.name)) { return; }
                         if (!module.config || !module.run || !module.config.commandCategory) throw new Error(getText('mirai', 'errorFormat'));
                         if (global.HADESTIA_BOT_CLIENT.commands.has(module.config.name || '')) throw new Error(getText('mirai', 'nameExist'));
                         if (!module.languages || typeof module.languages != 'object' || Object.keys(module.languages).length == 0) logger.loader(getText('mirai', 'notFoundLanguage', module.config.name), 'warn');
@@ -496,7 +488,7 @@ async function onBot({ models: botModel }) {
                         logger.loader(getText('mirai', 'failLoadModule', event.config.name, error), 'error');
                     }
                 }
-            }()
+            }();
 
         logger.loader(getText('mirai', 'finishLoadModule', global.HADESTIA_BOT_CLIENT.commands.size, global.HADESTIA_BOT_CLIENT.events.size))
         logger.loader('=== ' + (Date.now() - global.HADESTIA_BOT_CLIENT.timeStart) + 'ms ===')

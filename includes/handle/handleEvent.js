@@ -52,11 +52,11 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
 
                     if (DeveloperMode == !![])
 
-                        Utils.logger(global.getText('handleEvent', 'executeEvent', time, eventRun.config.name, threadID, Date.now() - timeStart), '[ Event ]');
+                        Utils.logger(Utils.getText('handleEvent', 'executeEvent', time, eventRun.config.name, threadID, Date.now() - timeStart), '[ Event ]');
 
                 } catch (error) {
 
-                    Utils.logger(global.getText('handleEvent', 'eventError', eventRun.config.name, JSON.stringify(error)), "error");
+                    Utils.logger(Utils.getText('handleEvent', 'eventError', eventRun.config.name, JSON.stringify(error)), "error");
 
                 }
 
