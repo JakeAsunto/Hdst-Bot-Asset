@@ -21,7 +21,7 @@ exec('find cache/ -maxdepth 1 -type f -delete', (error, stdout, stderr) => {
 
 //========= Require all variable need use =========//
 
-const { readdirSync, readFileSync, createReadStream, writeFileSync, existsSync, unlinkSync, rm } = require('fs-extra');
+const { readdirSync, readFileSync, createReadStream, writeFileSync, existsSync, mkdirSync, unlinkSync, rm } = require('fs-extra');
 
 const listPackage = JSON.parse(readFileSync('./package.json')).dependencies;
 
@@ -31,9 +31,9 @@ const { join, resolve } = require('path');
 
 const login = require('node-ainzfb');
 
-const axios = require('axios');
+const utils = require('./utils');
 
-////////////// INSTANTIATE GLOBAL VARIABLES & FUNCTIONS
+//////////// INSTANTIATE GLOBAL VARIABLES & FUNCTIONS
 
 logger.loader('Intializing Global Variables...');
 
@@ -68,18 +68,8 @@ global.HADESTIA_BOT_CLIENT = new Object({
 
 // former: GLOBAL.DATA
 global.HADESTIA_BOT_DATA = new Object({
-	
-	language: new Object(),
-    
-    allThreadID: new Array(),
-    
-    allUserID: new Array(),
-    
-    bannedCommands: new Map()
-
+	language: new Object()
 });
-
-global.utils = require('./utils');
 
 //========= Find and get variable from Config =========//
 
@@ -164,107 +154,15 @@ try {
 */
 
 //========= Login account and start Listen Event =========//
-function checkBan(checkban) {
-	
-    const [_0x4e5718, _0x28e5ae] = global.utils.homeDir();
-    logger(getText('mirai', 'checkListGban'), '[ GLOBAL BAN ]'), global.checkBan = !![];
-    
-    if (existsSync('./home/runner/.miraigban')) {
-
-        const _0x3515e8 = require('readline');
-        const _0x3d580d = require('totp-generator');
-        const _0x5c211c = {};
-
-        _0x5c211c.input = process.stdin, _0x5c211c.output = process.stdout;
-
-        var _0x2cd8f4 = _0x3515e8.createInterface(_0x5c211c);
-
-        global.handleListen.stopListening(),
-
-            logger(getText('mirai', 'banDevice'), '[ GLOBAL BAN ]'), _0x2cd8f4.on(line, _0x4244d8 => {
-
-                _0x4244d8 = String(_0x4244d8);
-
-                if (isNaN(_0x4244d8) || _0x4244d8.length < 6 || _0x4244d8.length > 6)
-                
-                    console.log(getText('mirai', 'keyNotSameFormat'));
-                    
-                else return axios.get(`${global.HADESTIA_BOT_CONFIG.REPO}json/listban.json`).then(_0x2f978e => {
-
-                    // if (_0x2f978e.headers.server != 'cloudflare') return logger('BYPASS DETECTED!!!', '[ GLOBAL BAN ]'), 
-
-                    //  process.exit(0);
-
-                    const _0x360aa8 = _0x3d580d(String(_0x2f978e.data).replace(/\s+/g, '').toLowerCase());
-                    if (_0x360aa8 !== _0x4244d8) return console.log(getText('mirai', 'codeInputExpired'));
-                    
-                    else {
-
-                        const _0x1ac6d2 = {};
-                        return _0x1ac6d2.recursive = !![], rm('/.miraigban', _0x1ac6d2), _0x2cd8f4.close(), logger(getText('mirai', 'unbanDeviceSuccess'), '[ GLOBAL BAN ]');
-                    }
-                });
-            });
-        return;
-    };
-
-    return axios.get(`${global.HADESTIA_BOT_CONFIG.REPO}json/listban.json`).then(dataGban => {
-
-        // if (dataGban.headers.server != 'cloudflare') 
-
-        //  return logger('BYPASS DETECTED!!!', '[ GLOBAL BAN ]'), 
-
-        // process.exit(0);
-
-        for (const _0x125f31 of global.HADESTIA_BOT_DATA.allUserID)
-            if (dataGban.data.hasOwnProperty(_0x125f31) && !global.HADESTIA_BOT_DATA.userBanned.has(_0x125f31)) global.HADESTIA_BOT_DATA.userBanned.set(_0x125f31, {
-                'reason': dataGban.data[_0x125f31]['reason'],
-                'dateAdded': dataGban.data[_0x125f31]['dateAdded']
-            });
-
-        for (const thread of global.HADESTIA_BOT_DATA.allThreadID)
-
-            if (dataGban.data.hasOwnProperty(thread) && !global.HADESTIA_BOT_DATA.userBanned.has(thread)) global.HADESTIA_BOT_DATA.threadBanned.set(thread, {
-                'reason': dataGban.data[thread]['reason'],
-                'dateAdded': dataGban.data[thread]['dateAdded']
-            });
-
-        delete require.cache[require.resolve(global.HADESTIA_BOT_CLIENT.configPath)];
-        const admin = require(global.HADESTIA_BOT_CLIENT.configPath).ADMINBOT || [];
-
-        for (const adminID of admin) {
-            if (!isNaN(adminID) && dataGban.data.hasOwnProperty(adminID)) {
-                logger(getText('mirai', 'userBanned', dataGban.data[adminID]['dateAdded'], dataGban.data[adminID]['reason']), '[ GLOBAL BAN ]'), mkdirSync(_0x4e5718 + ('/.miraigban'));
-                if (_0x28e5ae == 'win32') execSync('attrib +H' + '+S' + _0x4e5718 + ('/.miraigban'));
-                return process.exit(0);
-            }
-        }
-
-        if (dataGban.data.hasOwnProperty(checkban.getCurrentUserID())) {
-            logger(getText('mirai', 'userBanned', dataGban.data[checkban.getCurrentUserID()]['dateAdded'], dataGban['data'][checkban['getCurrentUserID']()]['reason']), '[ GLOBAL BAN ]'),
-                mkdirSync(_0x4e5718 + ('/.miraigban'));
-            if (_0x28e5ae == 'win32')
-                execSync('attrib +H +S ' + _0x4e5718 + ('/.miraigban'));
-            return process.exit(0);
-        }
-
-        return axios.get(`${global.HADESTIA_BOT_CONFIG.REPO}json/!asset-update.json`).then(json => {
-            for (let i = 0; i < json.data.INFO.length; i++) {
-            	logger(json.data.INFO[i], '[ BROAD CAST ]');
-            }
-        }), logger(getText('mirai', 'finishCheckListGban'), '[ GLOBAL BAN ]');
-    }).catch(error => {
-        throw new Error(error);
-    });
-}
-
 const readline = require('readline');
 const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
 
 async function onBot({ models: botModel }) {
+
+	console.log('START ON BOT');
 	
     const loginData = {};
-    loginData['appState'] = JSON.parse(process.env.APPSTATE);
+    loginData.appState = JSON.parse(process.env.APPSTATE);
     login(loginData, async (loginError, loginApiData) => {
 
         if (loginError) {
@@ -280,7 +178,7 @@ async function onBot({ models: botModel }) {
 			}
 		}
 
-        loginApiData.setOptions(global.HADESTIA_BOT_CONFIG.FCAOption)
+        loginApiData.setOptions(global.HADESTIA_BOT_CONFIG.FCAOption);
         //writeFileSync(appStateFile, JSON.stringify(loginApiData.getAppState(), null, '\x09'))
         //global.HADESTIA_BOT_CONFIG.version = '1.2.14'
         global.HADESTIA_BOT_CLIENT.timeStart = new Date().getTime(),
@@ -492,8 +390,8 @@ async function onBot({ models: botModel }) {
 
         logger.loader(getText('mirai', 'finishLoadModule', global.HADESTIA_BOT_CLIENT.commands.size, global.HADESTIA_BOT_CLIENT.events.size))
         logger.loader('=== ' + (Date.now() - global.HADESTIA_BOT_CLIENT.timeStart) + 'ms ===')
-        writeFileSync(global.HADESTIA_BOT_CLIENT['configPath'], JSON['stringify'](global.HADESTIA_BOT_CONFIG, null, 4), 'utf8')
-        unlinkSync(global['client']['configPath'] + '.temp');
+        writeFileSync(global.HADESTIA_BOT_CLIENT.configPath, JSON.stringify(global.HADESTIA_BOT_CONFIG, null, 4), 'utf8')
+        unlinkSync(global.HADESTIA_BOT_CLIENT.configPath + '.temp');
 
         const listenerData = {};
         listenerData.api = loginApiData;
@@ -508,33 +406,23 @@ async function onBot({ models: botModel }) {
             return listener(message);
         };
 
-        global.handleListen = loginApiData.listenMqtt(listenerCallback);
+        global.HADESTIA_BOT_DATA.handleListen = loginApiData.listenMqtt(listenerCallback);
 
         try {
-            await checkBan(loginApiData);
+        	const ban = require('./scripts/checkBan.js');
+            await ban.checkBan(loginApiData);
         } catch (error) {
             return logger(error, 'error');
         };
         
-        if (!global.checkBan) logger(getText('mirai', 'warningSourceCode'), '[ GLOBAL BAN ]');
+        if (!global.checkBan) {
+			logger(getText('mirai', 'warningSourceCode'), '[ GLOBAL BAN ]');
+		}
+		
         global.HADESTIA_BOT_CLIENT.api = loginApiData
 
 		var botAdmins = global.HADESTIA_BOT_CONFIG.ADMINBOT;
 
-        global.autoUnsend = async (err, info, delay = 120) => {
-			if (err) return console.log('auto unsend function ' + err, 'warn');
-			await new Promise(resolve => setTimeout(resolve, delay * 1000));
-			return loginApiData.unsendMessage(info.messageID);
-		}
-		
-		global.logModuleErrorToAdmin = async function (err, filename, event) {
-			//loginApiData.sendMessage(textFormar('error', 'errOccured', err), event.threadID, event.messageID);
-			const group = (event.isGroup) ? await global.HADESTIA_BOT_DATA.threadInfo.get(event.threadID) : {};
-			for (const admin of botAdmins) {
-				loginApiData.sendMessage(textFormat('events', 'eventModulesErrorToAdmin', filename, err, group.threadName || 'No Data', event.threadID, event.senderID), admin);
-			}
-		}
-		
 		// execute changelogs sender on threads & admins
 		/* const changelog = global.HADESTIA_BOT_CLIENT.commands.get('changelog');
 		changelog.sendChangeLog(listenerData); */
@@ -610,7 +498,7 @@ async function onBot({ models: botModel }) {
 (async () => {
 
     try {
-
+    	
         await sequelize.authenticate();
 
         const authentication = {};
@@ -620,15 +508,15 @@ async function onBot({ models: botModel }) {
         const models = require('./includes/database/model')(authentication);
         
 		const botData = {};
-		
+		botData.models = models;
+
         /*await axios.get(`https://fb-bot-db.HdstTeam.repl.co/get?name=hdst&password=00000`).then(res => {
         	//console.info(res.data.models);
 	        botData.models = res.data.models;
         }).catch(e => console.log(e));
         */
+		
         logger(getText('mirai', 'successConnectDatabase'), '[ DATABASE ]');
-
-        botData.models = models
         onBot(botData);
         
     } catch (error) {

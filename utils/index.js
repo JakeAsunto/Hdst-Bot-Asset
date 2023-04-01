@@ -130,27 +130,3 @@ module.exports.homeDir = function () {
 
 	return [typeof os.homedir === 'function' ? os.homedir() : returnHome, typeSystem];
 }
-
-// download raw github file from private repo
-module.exports.downloadRawFile = async function (url, path) {
-	const { createWriteStream } = require('fs');
-	const request = require('request');
-
-	const config = {
-		url: url,
-		headers: {
-			Authorization: 'token' + process.env.REPO_TOKEN
-		}
-	};
-	
-	const req = request(config);
-
-	const writer = createWriteStream(path);
-
-	req.pipe(writer);
-
-	return new Promise((resolve, reject) => {
-		writer.on('finish', resolve);
-		writer.on('error', reject);
-	});
-}
