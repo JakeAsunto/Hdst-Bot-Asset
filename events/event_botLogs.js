@@ -27,13 +27,13 @@ module.exports.run = async function({ api, event, Utils, Users, Threads, Banned 
      	   case "log:thread-name":
         		const oldInfo = await Threads.getData(threadID);
 				
-      	      action = `Update the group name from '${oldInfo.threadInfo.threadName}' to '${threadName}'`;
+      	      action = `Update the group name from '${oldInfo.threadInfo.threadName}' to '${threadInfo.threadName}'`;
    	         await Threads.setData(threadID, { threadInfo });
    
 				const ban = await Banned.getData(threadID);
 				if (ban) {
 					const data = ban.data;
-					data.name = threadName;
+					data.name = threadInfo.threadName;
 					await Banned.setData(threadID, { data });
 				}
    	         break;
