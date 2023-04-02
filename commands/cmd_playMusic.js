@@ -4,9 +4,9 @@ module.exports.config = {
 	hasPermssion: 0,
 	credits: 'Hadestia',
 	commandCategory: 'media',
-	description: 'Play a music from YouTube from the given title. or YouTube link',
-	usages: '<music title or link >',
-	replyUsages: '< number(index/position) >',
+	description: 'Play a music from YouTube from the given title or YouTube link.',
+	usages: '<music title or link>',
+	replyUsages: '<number(index/position)>',
 	cooldowns: 60,
 	dependencies: {
 		'axios': '',

@@ -24,11 +24,11 @@ module.exports.lateInit = async function ({ api, Threads }) {
 	// Notify each group about the patch notes
 	if (isUpdated == 'true') {
     	try {
-    		const allThreads = await Threads.getAll(['threadID', 'threadInfo', 'data']);
+    		const allThreads = await Threads.getAll(['threadID', 'data']);
 
 			for (const thread of allThreads) {
-				const data = thread.data;
 				const threadID = String(thread.threadID);
+				const data = thread.data;
 				const threadPrefix = data.PREFIX || PREFIX;
 				
 				if (data.receive_update) {

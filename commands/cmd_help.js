@@ -79,7 +79,7 @@ module.exports.run = async function({ api, event, args, Utils, Prefix }) {
 		}
 		
 		// Request via Command Category
-		const requestCategory = (args.join(' ') || '').toLowerCase();
+		const requestCategory = (args.join(' ') || '').replace(' ', '_').toLowerCase();
 		if (categoryReference[requestCategory]) {
 			
 			const categoryCommands = [];
@@ -101,7 +101,8 @@ module.exports.run = async function({ api, event, args, Utils, Prefix }) {
 			});
 			
 			categoryCommands.forEach( async (item) => {
-				msgBodyList = msgBodyList + (Utils.textFormat('cmd', 'cmdListCatCmd', item.name, item.desc, await (item.aliases).join(', '))) + '\n\n';
+				const alias = (command.config.aliases) ? `[ ${ await item.aliases.join(', ')} ]` : 'none',
+				msgBodyList = msgBodyList + (Utils.textFormat('cmd', 'cmdListCatCmd', item.name, item.desc, alias)) + '\n\n';
 			});
 			
 			if (categoryCommands.length == 0) {
@@ -123,7 +124,9 @@ module.exports.run = async function({ api, event, args, Utils, Prefix }) {
 		
 			for (const catName in categoryReference) {
 				const data = categoryReference[catName];
-				msgBody += '' + Utils.textFormat('cmd', 'cmdListCategory', `${data.icon}${catName.charAt(0).toUpperCase() + catName.slice(1)}`, data.description ) + '\n\n';
+				const categoryName = await Utils.fancyFont.get((catName.charAt(0).toUpperCase() + catName.slice(1)).replace('_', ' '), 1);
+				console.log(data);
+				msgBody += '' + Utils.textFormat('cmd', 'cmdListCategory', `${data.icon}${categoryName}`, data.description ) + '\n\n';
 			}
 			
 			return api.sendMessage(
@@ -137,7 +140,7 @@ module.exports.run = async function({ api, event, args, Utils, Prefix }) {
 		const permssion = Utils.textFormat('system', `perm${command.config.hasPermssion || 0}`);
 		const commandUsage = `${Prefix}${command.config.name} ${command.config.usages || ''}`;
 		const cooldown = (command.config.cooldowns && command.config.cooldowns > 1) ? `${command.config.cooldowns} seconds` : 'no cooldown';
-		const commandReplyUsage = (command.config.replyUsages) ? `\n● usage reply:\n${command.config.replyUsages}` : '';
+		const commandReplyUsage = (command.config.replyUsages) ? `\n● reply usage:\n${command.config.replyUsages}` : '';
 		const commandName = await Utils.fancyFont.get(command.config.name, 1);
 	
 		const messageBody = Utils.textFormat(
@@ -159,11 +162,9 @@ module.exports.run = async function({ api, event, args, Utils, Prefix }) {
 		Utils.sendRequestError(err, event, Prefix);
 		Utils.logModuleErrorToAdmin(err, __filename, event);
 	}
-	
-	
-	
-	
-	/*
+}
+
+/* LEGACY CODE
 	if (args.join().indexOf('all') == 0) {
 		const group = [];
 		let messageListBody = '';
@@ -271,4 +272,3 @@ module.exports.run = async function({ api, event, args, Utils, Prefix }) {
 		
 	return api.sendMessage( messageBody, threadID, autoUnsent, messageID);
 	*/
-}

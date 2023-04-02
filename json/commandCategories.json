@@ -3,7 +3,7 @@
         "icon": "🔐",
         "description": "Commands for group administration."
     },
-    "artificial intelligence": {
+    "artificial_intelligence": {
         "icon": "🤖",
         "description": "Commands with the use of artificial intelligence or for interacting with the bot itself."
     },
