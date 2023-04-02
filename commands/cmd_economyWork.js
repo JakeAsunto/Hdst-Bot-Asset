@@ -15,9 +15,9 @@ module.exports.config = {
 	}
 }
 
-module.exports.run = async function ({ api, args, event, returns, textFormat, Prefix, Threads }) {
+module.exports.run = async function ({ api, args, event, returns, Utils, Prefix, Threads }) {
 	
-	const economySystem = require(`${__dirname}/../../json/economySystem.json`);
+	const economySystem = require(`${global.HADESTIA_BOT_CLIENT.mainPath}/json/economySystem.json`);
 
 	const { threadID, messageID, senderID } = event;
 	const dateNow = Date.now();
@@ -50,11 +50,10 @@ module.exports.run = async function ({ api, args, event, returns, textFormat, Pr
 		return api.sendMessage( messageResponse, threadID, messageID);
 		
 	} catch (err) {
-		returns.remove_usercooldown();
-		global.sendReaction.failed(api, event);
-		global.logger(err, 'error');
-		global.logModuleErrorToAdmin(err, __filename, event);
-		return api.sendMessage(textFormat('error', 'errCmdExceptionError', err, Prefix), threadID, messageID);
+		Utils.sendReaction.failed(api, event);
+		console.log(err, 'error');
+		Utils.logModuleErrorToAdmin(err, __filename, event);
+		return api.sendMessage(Utils.textFormat('error', 'errCmdExceptionError', err, Prefix), threadID, messageID);
 	}
 	
 }

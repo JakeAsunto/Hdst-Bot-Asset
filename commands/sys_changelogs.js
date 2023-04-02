@@ -6,10 +6,7 @@ module.exports.config = {
 	commandCategory: 'system',
 	credits: 'Hadestia',
 	hasPermssion: 0,
-	cooldowns: 30,
-	envConfig: {
-		needsDataFetching: true
-	}
+	cooldowns: 30
 }
 
 module.exports.lateInit = async function ({ api, Threads }) {

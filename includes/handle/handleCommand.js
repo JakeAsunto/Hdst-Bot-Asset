@@ -27,9 +27,9 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
 		const group_data = await Threads.getData(threadID);
 		const user_data = await Users.getData(senderID);
 		
-		if (event.isGroup && !group_data) {
+		/*if (event.isGroup && !group_data) {
 			return api.sendMessage(Utils.textFormat('error', 'errOccured', 'Group/User data was initializing, Pls wait a moment and try again later :)'), threadID, Utils.autoUnsend, messageID);
-		}
+		}*/
 
 		if (group_data) {
 			groupBannedCommands = group_data.data.bannedCommands;

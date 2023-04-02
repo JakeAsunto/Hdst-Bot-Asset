@@ -16,7 +16,7 @@ module.exports.config = {
 	}
 }
 
-module.exports.run = async function ({ api, args, event, returns, textFormat, Prefix, Threads }) {
+module.exports.run = async function ({ api, args, event, returns, Utils, Prefix, Threads }) {
 
 	const economySystem = require(`${__dirname}/../../json/economySystem.json`);
 	const { threadID, messageID, senderID } = event;
@@ -24,8 +24,6 @@ module.exports.run = async function ({ api, args, event, returns, textFormat, Pr
 	try {
 		const threadData = await Threads.getData(threadID);
 		const economy = threadData.economy;
-		
-		//global.initializeUserEconomy(senderID, threadID);
 	
 		const currency = threadData.data.default_currency || economySystem.config.default_currency;
 		
@@ -50,22 +48,22 @@ module.exports.run = async function ({ api, args, event, returns, textFormat, Pr
 	
 		for (const data of returnArray) {
 			index += 1;
-			const number = await global.fancyFont.get(`${index}`, 1);
+			const number = await Utils.fancyFont.get(`${index}`, 1);
 			rankingMsg += `${number}. ${((data.name).toLowerCase() == 'facebook user') ? data.name : ((data.name).split(' ')).shift()} • ${currency}${(data.total).toLocaleString('en-US')}\n`;
 		}
 		
-		//const fontedThreadName = await global.fancyFont.get(threadData.threadName || '', 1);
+		//const fontedThreadName = await Utils.fancyFont.get(threadData.threadName || '', 1);
 		return api.sendMessage(
-			textFormat('economy', 'cmdLeaderboard', ((mode == '-cash') ? '𝗖𝗮𝘀𝗵' : (mode == '-bank') ? '𝗕𝗮𝗻𝗸' : ''), rankingMsg, leaderboards.userPosition, page, totalPages),
+			Utils.textFormat('economy', 'cmdLeaderboard', ((mode == '-cash') ? '𝗖𝗮𝘀𝗵' : (mode == '-bank') ? '𝗕𝗮𝗻𝗸' : ''), rankingMsg, leaderboards.userPosition, page, totalPages),
 			threadID,
 			messageID
 		);
 		
 	} catch (err) {
-		global.sendReaction.failed(api, event);
-		global.logger(err, 'error');
-		global.logModuleErrorToAdmin(err, __filename, event);
-		return api.sendMessage(textFormat('error', 'errCmdExceptionError', err, Prefix), threadID, messageID);
+		Utils.sendReaction.failed(api, event);
+		console.log(err, 'error');
+		Utils.logModuleErrorToAdmin(err, __filename, event);
+		return api.sendMessage(Utils.textFormat('error', 'errCmdExceptionError', err, Prefix), threadID, messageID);
 	}
 }
 
@@ -103,7 +101,7 @@ module.exports.sortLeaderboard = async function (userID, economy, mode = '') {
 		cIndex += 1
 		if (data.id == userID) {
 			const ordinals = this.getOrdinalPosition(cIndex);
-			thisUserCurrentRank = await global.fancyFont.get(`${cIndex}${ordinals}`, 2);
+			thisUserCurrentRank = await Utils.fancyFont.get(`${cIndex}${ordinals}`, 2);
 		}
 	}
 	

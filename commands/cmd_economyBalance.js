@@ -15,9 +15,9 @@ module.exports.config = {
 	}
 }
 
-module.exports.run = async function ({ api, args, event, returns, textFormat, Prefix, Threads }) {
+module.exports.run = async function ({ api, args, event, returns, Utils, Prefix, Threads }) {
 
-	const economySystem = require(`${__dirname}/../../json/economySystem.json`);
+	const economySystem = require(`${global.HADESTIA_BOT_CLIENT.mainPath}/json/economySystem.json`);
 	const leaderboard = require('./cmd_economyLeaderboard.js');
 	
 	const { threadID, messageID, senderID } = event;
@@ -49,20 +49,20 @@ module.exports.run = async function ({ api, args, event, returns, textFormat, Pr
 		const currency = threadData.data.default_currency || economySystem.config.default_currency;
 	
 		const owner = await api.getUserInfoV2(ID) || {};
-		const ownerName = await global.fancyFont.get((NAME && (NAME).split(' ')[0]) || (owner.name) ? (owner.name == 'Facebook User') ? owner.name : (owner.name).split(' ')[0] : 'Facebook User', 1);
+		const ownerName = await Utils.fancyFont.get((NAME && (NAME).split(' ')[0]) || (owner.name) ? (owner.name == 'Facebook User') ? owner.name : (owner.name).split(' ')[0] : 'Facebook User', 1);
 		
 		const formatOnHand = (economy[ID].hand).toLocaleString('en-US');
 		const formatOnBank = (economy[ID].bank).toLocaleString('en-US');
 		const formatTotal = (economy[ID].hand + economy[ID].bank).toLocaleString('en-US');
 		
-		return api.sendMessage(textFormat('economy', 'cmdBalance', ownerName, leaderboards.userPosition, currency, formatOnHand, formatOnBank, formatTotal), threadID, messageID);
+		return api.sendMessage(Utils.textFormat('economy', 'cmdBalance', ownerName, leaderboards.userPosition, currency, formatOnHand, formatOnBank, formatTotal), threadID, messageID);
 		
 	} catch (err) {
 		returns.remove_usercooldown();
-		global.sendReaction.failed(api, event);
-		global.logger(err, 'error');
-		global.logModuleErrorToAdmin(err, __filename, event);
-		return api.sendMessage(textFormat('error', 'errCmdExceptionError', err, Prefix), threadID, messageID);
+		Utils.sendReaction.failed(api, event);
+		console.log(err, 'error');
+		Utils.logModuleErrorToAdmin(err, __filename, event);
+		return api.sendMessage(Utils.textFormat('error', 'errCmdExceptionError', err, Prefix), threadID, messageID);
 	}
 	
 }

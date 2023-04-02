@@ -19,7 +19,7 @@ module.exports.config = {
 	}
 }
 
-module.exports.run = async function({ api, event, args, textFormat }) {
+module.exports.run = async function({ api, event, args, Utils }) {
 	
 	const { threadID, messageID, senderID } = event;
 	const fs = require('fs-extra');
@@ -29,12 +29,12 @@ module.exports.run = async function({ api, event, args, textFormat }) {
 	const finalReq = (req.startsWith('what is')) ? req : `what is ${req}`;
 	//const encodedUrl = encodeURI(`https://api.dictionaryapi.dev/api/v2/entries/en/${req}`);
 	const encodedUrl = encodeURI(`https://api-dien.hdstteam.repl.co/googlethis?search=${finalReq}`);
-	//global.sendReaction.inprocess(api, event);
+	//Utils.sendReaction.inprocess(api, event);
 
 	await axios.get(encodedUrl).then( async function (response){
 		const dictionary = response.data.dictionary;
 		// return if no definition found
-		if (!dictionary.word) return api.sendMessage(textFormat('cmd', 'cmdDictionaryNotFound'), threadID, messageID);
+		if (!dictionary.word) return api.sendMessage(Utils.textFormat('cmd', 'cmdDictionaryNotFound'), threadID, messageID);
 		
 		const word = await global.fancyFont.get(dictionary.word, 2);
 		
@@ -42,7 +42,7 @@ module.exports.run = async function({ api, event, args, textFormat }) {
 		// const examples = `● ${await global.fancyFont.get('examples:', 2)}\n${dictionary.examples.join(',\n')}`;
 		
 		for (const index in dictionary.definitions) {
-		 	definitions += `${textFormat('cmd', 'cmdDictionaryDefFormat', dictionary.phonetic, dictionary.definitions[index], (dictionary.examples[index]) ? `\n● ${await global.fancyFont.get('examples:', 2)}\n${dictionary.examples[index]}` : '')}\n\n`;
+		 	definitions += `${Utils.textFormat('cmd', 'cmdDictionaryDefFormat', dictionary.phonetic, dictionary.definitions[index], (dictionary.examples[index]) ? `\n● ${await global.fancyFont.get('examples:', 2)}\n${dictionary.examples[index]}` : '')}\n\n`;
 		}
 		// download pronunciation voicemail
 		try {
@@ -53,12 +53,12 @@ module.exports.run = async function({ api, event, args, textFormat }) {
 			
 			return api.sendMessage(
 				{
-					body: textFormat('cmd', 'cmdDictionaryFormat', word, definitions ),
+					body: Utils.textFormat('cmd', 'cmdDictionaryFormat', word, definitions ),
 					attachment: fs.createReadStream(path)
 				},
 				threadID,
 				() => {
-					global.sendReaction.success(api, event);
+					Utils.sendReaction.success(api, event);
 					try { return fs.unlinkSync(path); } catch (e) {}
 				},
 				messageID
@@ -66,15 +66,15 @@ module.exports.run = async function({ api, event, args, textFormat }) {
 			
 		} catch (e) { 
 			console.log(e);
-			global.logModuleErrorToAdmin(e, __filename, threadID, senderID);
+			Utils.logModuleErrorToAdmin(e, __filename, threadID, senderID);
 		}
 		
-		return api.sendMessage( textFormat('cmd', 'cmdDictionaryFormat', word, definitions ), threadID, () => global.sendReaction.success(api, event), messageID );
+		return api.sendMessage( Utils.textFormat('cmd', 'cmdDictionaryFormat', word, definitions ), threadID, () => Utils.sendReaction.success(api, event), messageID );
 		
 	}).catch(err => {
 		console.log(err);
-		global.sendReaction.failed(api, event);
-		global.logModuleErrorToAdmin(err, __filename, event);
+		Utils.sendReaction.failed(api, event);
+		Utils.logModuleErrorToAdmin(err, __filename, event);
 	});
 	
 	/* DEPRECATED
@@ -95,7 +95,7 @@ module.exports.run = async function({ api, event, args, textFormat }) {
 		
 		meanings.forEach(async (items) => {
 			const example = (items.definitions[0].example) ? `(${items.definitions[0].example[0].toUpperCase() + items.definitions[0].example.slice(1)})` : '';
-			const format = textFormat('cmd', 'cmdDictionaryDefFormat', items.partOfSpeech, `${items.definitions[0].definition[0].toUpperCase() + items.definitions[0].definition.slice(1)}`, example);
+			const format = Utils.textFormat('cmd', 'cmdDictionaryDefFormat', items.partOfSpeech, `${items.definitions[0].definition[0].toUpperCase() + items.definitions[0].definition.slice(1)}`, example);
 			const synonyms = (items.synonyms.length > 0) ? `● ${await global.fancyFont.get('synonyms', 1)}: ${items.synonyms.join(', ')}` : '';
 			const antonyms = (items.antonyms.length > 0) ? `● ${await global.fancyFont.get('antonyms', 1)}: ${items.antonyms.join(', ')}` : '';
 			msg_meanings += `${format}${(synonyms !== '') ? `\n${synonyms}` : ''}${(antonyms !== '') ? `\n${antonyms}` : ''}\n\n`;
@@ -103,18 +103,18 @@ module.exports.run = async function({ api, event, args, textFormat }) {
 		
 		const word = await global.fancyFont.get(data.word.charAt(0).toUpperCase() + data.word.slice(1), 2);
 		const messageBody = {
-			body: textFormat('cmd', 'cmdDictionaryFormat', word, data.phonetic || msg_phonetics, msg_meanings),
+			body: Utils.textFormat('cmd', 'cmdDictionaryFormat', word, data.phonetic || msg_phonetics, msg_meanings),
 			//attachment
 		};
 		
 		
-		return api.sendMessage( messageBody, threadID, () => global.sendReaction.success(api, event), messageID );
+		return api.sendMessage( messageBody, threadID, () => Utils.sendReaction.success(api, event), messageID );
 		
     }).catch(err => {
 		console.log(err)
 		//if (err.response.status && err.response.status === 404) {
-			global.sendReaction.failed(api, event);
-			return api.sendMessage(textFormat('cmd', 'cmdDictionaryNotFound'), threadID, messageID);
+			Utils.sendReaction.failed(api, event);
+			return api.sendMessage(Utils.textFormat('cmd', 'cmdDictionaryNotFound'), threadID, messageID);
 		//}
 	});
 	*/

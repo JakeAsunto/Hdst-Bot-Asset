@@ -11,13 +11,14 @@ module.exports.config = {
 	cooldowns: 0,
 	aliases: [ 'beg' ],
 	envConfig: {
-		groupCommandOnly: true
+		groupCommandOnly: true,
+		needsDataFetching: true
 	}
 }
 
-module.exports.run = async function ({ api, args, event, returns, textFormat, Prefix, Threads }) {
+module.exports.run = async function ({ api, args, event, returns, Utils, Prefix, Threads }) {
 
-	const economySystem = require(`${__dirname}/../../json/economySystem.json`);
+	const economySystem = require(`${global.HADESTIA_BOT_CLIENT.mainPath}/json/economySystem.json`);
 	
 	const { threadID, messageID, senderID } = event;
 	
@@ -34,11 +35,11 @@ module.exports.run = async function ({ api, args, event, returns, textFormat, Pr
 			
 			const timeA = new Date(economy[senderID].beg_cooldown);
 			const timeB = new Date(Date.now());
-			const { toString } = await global.secondsToDHMS(Math.abs(timeA - timeB)/1000)
+			const countdown = await Utils.getRemainingTime(Math.abs(timeA - timeB)/1000)
 			return api.sendMessage(
 				`Quit begging, You may ask me money again in ${toString}.`,
 				threadID,
-				global.autoUnsend,
+				Utils.autoUnsend,
 				messageID
 			);
 		}
@@ -70,11 +71,11 @@ module.exports.run = async function ({ api, args, event, returns, textFormat, Pr
 		await Threads.setData(threadID, { economy });
 		
 	} catch (err) {
-		returns.remove_usercooldown();
-		global.sendReaction.failed(api, event);
-		global.logger(err, 'error');
-		global.logModuleErrorToAdmin(err, __filename, event);
-		return api.sendMessage(textFormat('error', 'errCmdExceptionError', err, Prefix), threadID, messageID);
+		console.log(err, 'error');
+		//returns.remove_usercooldown();
+		Utils.sendReaction.failed(api, event);
+		Utils.logModuleErrorToAdmin(err, __filename, event);
+		return api.sendMessage(Utils.textFormat('error', 'errCmdExceptionError', err, Prefix), threadID, messageID);
 	}
 	
 }

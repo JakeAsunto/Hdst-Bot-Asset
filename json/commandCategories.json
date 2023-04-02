@@ -9,11 +9,11 @@
     },
     "information ": {
         "icon": "📔",
-        "description ": "Commands for retrieving information about the bot or the group."
+        "description": "Commands for retrieving information about the bot or the group."
     },
     "ownership": {
         "icon": "👤",
-        "description ": "Commands for my owner."
+        "description": "Commands for my owner."
     },
     "random": {
         "icon": "🎲",
@@ -21,14 +21,26 @@
     },
     "education ": {
         "icon": "📖",
-        "description ": "Useful commands for education."
+        "description": "Useful commands for education."
     },
     "system": {
         "icon": "⚙️",
-        "description ": "Commands for the system."
+        "description": "Commands for the system."
     },
     "media": {
         "icon": "🎥",
-        "description ": "Commands related to media. e.g Music"
+        "description": "Commands related to media. e.g Music."
+    },
+    "gambling": {
+        "icon": "♠️",
+        "description": "An easy game to earn and loss a lot of money."
+    },
+    "economy": {
+        "icon": "🪙",
+        "description": "Commands that was fun and related to economy system.."
+    },
+    "other": {
+        "icon": "🗑️",
+        "description": "Commands which do not fit in either of the above categories."
     }
 }

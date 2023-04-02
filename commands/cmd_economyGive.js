@@ -16,17 +16,15 @@ module.exports.config = {
 	}
 }
 
-module.exports.run = async function ({ api, args, event, returns, textFormat, Prefix, Threads }) {
+module.exports.run = async function ({ api, args, event, returns, Utils, Prefix, Threads }) {
 
-	const economySystem = require(`${__dirname}/../../json/economySystem.json`);
+	const economySystem = require(`${global.HADESTIA_BOT_CLIENT.mainPath}/json/economySystem.json`);
 
 	const { threadID, messageID, senderID } = event;
 	
 	try {
 		const threadData = await Threads.getData(threadID);
 		const economy = threadData.economy;
-		
-		//global.initializeUserEconomy(senderID, threadID);
 		
 		const currency = threadData.data.default_currency || economySystem.config.default_currency;
 		
@@ -35,7 +33,7 @@ module.exports.run = async function ({ api, args, event, returns, textFormat, Pr
 		
 		if (!amount) {
 			returns.remove_usercooldown();
-			return api.sendMessage(textFormat('error', 'errOccured', `Invalid amount, include the amount you want to give.`), threadID, global.autoUnsend, messageID);
+			return api.sendMessage(Utils.textFormat('error', 'errOccured', `Invalid amount, include the amount you want to give.`), threadID, Utils.autoUnsend, messageID);
 		};
 		
 		// @mention
@@ -50,7 +48,7 @@ module.exports.run = async function ({ api, args, event, returns, textFormat, Pr
 		// if 0 or not enough
 		if (amount == 0 || economy[senderID].hand < amount) {
 			returns.remove_usercooldown();
-			return api.sendMessage(textFormat('error', 'errOccured', `You currently have ${currency}${(economy[senderID].hand).toLocaleString('en-US')} on your hand, withdraw some.`), threadID, global.autoUnsend, messageID);
+			return api.sendMessage(Utils.textFormat('error', 'errOccured', `You currently have ${currency}${(economy[senderID].hand).toLocaleString('en-US')} on your hand, withdraw some.`), threadID, Utils.autoUnsend, messageID);
 		}
 		
 		// get names
@@ -65,19 +63,19 @@ module.exports.run = async function ({ api, args, event, returns, textFormat, Pr
 		await Threads.setData(threadID, { economy });
 		return api.sendMessage(
 			{
-				body: textFormat('success', 'successfulFormat', `@${recipientName} has received your ${currency}${amount.toLocaleString('en-US')}.`),
+				body: Utils.textFormat('success', 'successfulFormat', `@${recipientName} has received your ${currency}${amount.toLocaleString('en-US')}.`),
 				mentions: [{ tag: `@${recipientName}`, id: ID }]
 			},
 			threadID,
-			global.autoUnsend,
+			Utils.autoUnsend,
 			messageID
 		);
 	} catch (err) {
 		returns.remove_usercooldown();
-		global.sendReaction.failed(api, event);
-		global.logger(err, 'error');
-		global.logModuleErrorToAdmin(err, __filename, event);
-		return api.sendMessage(textFormat('error', 'errCmdExceptionError', err, Prefix), threadID, messageID);
+		Utils.sendReaction.failed(api, event);
+		console.log(err, 'error');
+		Utils.logModuleErrorToAdmin(err, __filename, event);
+		return api.sendMessage(Utils.textFormat('error', 'errCmdExceptionError', err, Prefix), threadID, messageID);
 	}
 	
 }

@@ -3,7 +3,7 @@ module.exports.config = {
     version: '1.0.0',
     hasPermssion: 0,
     credits: 'Mirai Team, beautify by Hadestia',
-    description: 'An easy gambling game to earn more money.',
+    description: 'A hard gambling game to earn more money?.',
     commandCategory: 'gambling',
     usages: '< bet >',
     aliases: [ 'slot' ],
@@ -30,18 +30,18 @@ module.exports.config = {
     }
 }*/
 
-module.exports.run = async function({ api, event, args, returns, textFormat, Prefix, Threads }) {
+module.exports.run = async function({ api, event, args, returns, Utils, Prefix, Threads }) {
 	
     const { threadID, messageID, senderID } = event;
-    const Gambling = require(`${global.client.mainPath}/json/textFormat.json`).gamblingSystem;
-    const economySystem = require(`${global.client.mainPath}/json/economySystem.json`);
+    const Gambling = require(`${global.HADESTIA_BOT_CLIENT.mainPath}/json/Utils.textFormat.json`).gamblingSystem;
+    const economySystem = require(`${global.HADESTIA_BOT_CLIENT.mainPath}/json/economySystem.json`);
     
     const message = (msg) => { api.sendMessage(msg, threadID, messageID) };
     
     let bet = ((args.join(' ')).match(/\d+/))
     if (!bet || parseInt(bet[0]) == 0) {
     	returns.remove_usercooldown();
-    	return message(textFormat('gamblingSystem', 'errInvalidAmountOfBet'));
+    	return message(Utils.textFormat('gamblingSystem', 'errInvalidAmountOfBet'));
     }
     // Get user economy
     try {
@@ -60,10 +60,10 @@ module.exports.run = async function({ api, event, args, returns, textFormat, Pre
 		// money not enough
 		if (betAmount < minimumBet) {
     		returns.remove_usercooldown();
-	    	return message(textFormat('error', 'errOccured', `Not enough amount of bet, the minimum bet for this game was ${currency}${minimumBet}.`));
+	    	return message(Utils.textFormat('error', 'errOccured', `Not enough amount of bet, the minimum bet for this game was ${currency}${minimumBet}.`));
   	  } else if (moneyOnHand < betAmount) {
 			returns.remove_usercooldown();
-			return message(textFormat('error', 'errOccured', `You currently have ${currency}${moneyOnHand} on hand.`));
+			return message(Utils.textFormat('error', 'errOccured', `You currently have ${currency}${moneyOnHand} on hand.`));
 		}
 		
 		var number = [], win = false;
@@ -83,12 +83,12 @@ module.exports.run = async function({ api, event, args, returns, textFormat, Pre
    	 switch (win) {
         	case true: {
         		economy[senderID].hand += betAmount;
-        		message(textFormat('gamblingSystem', 'slotResult', slotItems[number[0]], slotItems[number[1]], slotItems[number[2]], `Congratulations, You won ${currency}${betAmount}.`));
+        		message(Utils.textFormat('gamblingSystem', 'slotResult', slotItems[number[0]], slotItems[number[1]], slotItems[number[2]], `Congratulations, You won ${currency}${betAmount}.`));
            	 break;
        	 }
      	   case false: {
           	  economy[senderID].hand -= betAmount;
-				message(textFormat('gamblingSystem', 'slotResult', slotItems[number[0]], slotItems[number[1]], slotItems[number[2]], `Sorry, You loss ${currency}${betAmount}. Better luck next time.`));
+				message(Utils.textFormat('gamblingSystem', 'slotResult', slotItems[number[0]], slotItems[number[1]], slotItems[number[2]], `Sorry, You loss ${currency}${betAmount}. Better luck next time.`));
             	break;
         	}
     	}
@@ -96,9 +96,9 @@ module.exports.run = async function({ api, event, args, returns, textFormat, Pre
     	return;
     } catch (err) {
     	returns.remove_usercooldown();
-		global.sendReaction.failed(api, event);
-		global.logger(err, 'error');
-		global.logModuleErrorToAdmin(err, __filename, event);
-		return message(textFormat('error', 'errCmdExceptionError', err, Prefix));
+		Utils.sendReaction.failed(api, event);
+		console.log(err, 'error');
+		Utils.logModuleErrorToAdmin(err, __filename, event);
+		return message(Utils.textFormat('error', 'errCmdExceptionError', err, Prefix));
     }
 }
