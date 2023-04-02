@@ -9,7 +9,7 @@ module.exports.config = {
     }
 };
 
-module.exports.run = async function({ api, event, Utils, Threads, Banned }) {
+module.exports.run = async function({ api, event, Utils, Users, Threads, Banned }) {
 	
     const threadInfo = await api.getThreadInfo(event.threadID);
     const moment = require('moment-timezone');
@@ -42,6 +42,11 @@ module.exports.run = async function({ api, event, Utils, Threads, Banned }) {
         
    	         if (event.logMessageData.addedParticipants.some(i => i.userFbId == api.getCurrentUserID())) {
 					action = "User added bot to the group";
+					// try to intialize group data
+					try {
+						const handleDB = require(`${global.HADESTIA_BOT_CLIENT.mainPath}/includes/handle/handleCreateDatabase.js`)({ Utils, Users, Threads, Banned });
+						await handleDB({ event });
+					} catch (err) {}
 				}
  	           break;
         
@@ -49,7 +54,7 @@ module.exports.run = async function({ api, event, Utils, Threads, Banned }) {
         
    	         if (event.logMessageData.leftParticipantFbId == api.getCurrentUserID()) {
 					action = "User kicked bot out of the group";
-					//try { await Threads.delData(event.threadID); } catch {}
+					try { await Threads.delData(event.threadID); } catch {}
 				}
     	        break;
         

@@ -11,7 +11,7 @@ module.exports = function({ Utils, Users, Threads, Banned }) {
     // nothing special here just a random hex color for console logging
     let job = ["FF9900", "FFFF33", "33FFFF", "FF99FF", "FF3366", "FFFF66", "FF00FF", "66FF99", "00CCFF", "FF0099", "FF0066", "008E97", "F58220", "38B6FF", "7ED957", "97FFFF", "00BFFF", "76EEC6", "4EEE94", "98F5FF", "AFD788", "00B2BF", "9F79EE", "00FA9A"];
     
-    return async function({ event, bannedUserData: userBannedData, bannedGroupData: groupBannedData }) {
+    return async function({ event }) {
     	
     	const random = job[Math.floor(Math.random() * job.length)];
         const random1 = job[Math.floor(Math.random() * job.length)];
@@ -27,6 +27,9 @@ module.exports = function({ Utils, Users, Threads, Banned }) {
 		
 		const threadData = await Threads.getData(threadID);
 		const userData = await Users.getData(senderID);
+		
+		const bannedGroupData = await Banned.getData(threadID);
+		const bannedUserData = await Banned.getData(senderID);
 		
         try {
 			
@@ -56,8 +59,8 @@ module.exports = function({ Utils, Users, Threads, Banned }) {
                 THREAD_ALL_DATA.data = new Object(databaseSystem.group_data_config);
 				
 				// IF THREAD WAS BANNED
-				if (groupBannedData) {
-					const bd = groupBannedData.data || {};
+				if (bannedGroupData) {
+					const bd = bannedGroupData.data || {};
 					const banned = {
 						caseID: bd.caseID || -1,
 						reason: bd.reason || databaseSystem.group_data_config.banned.reason,
@@ -99,8 +102,6 @@ module.exports = function({ Utils, Users, Threads, Banned }) {
                     	if (thisGroupUserData) {
                     	
 							await Users.setData(UID, { 'name': singleData.name });
-								
-							global.HADESTIA_BOT_DATA.allUserID.push(UID);
 							
 						} else {
 							const data = new Object(databaseSystem.user_data_config);
@@ -143,8 +144,8 @@ module.exports = function({ Utils, Users, Threads, Banned }) {
                 USER_ALL_DATA.data = new Object(databaseSystem.user_data_config);
                 
                 // IF USER WAS BANNED
-				if (userBannedData) {
-					const bd = userBannedData.data || {};
+				if (bannedUserData) {
+					const bd = bannedUserData.data || {};
 					const banned = {
 						caseID: bd.caseID || -1,
 						reason: bd.reason || databaseSystem.user_data_config.banned.reason,
