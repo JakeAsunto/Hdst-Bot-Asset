@@ -4,7 +4,7 @@ module.exports = function ({ models, api }) {
 	async function getAll(...data) {
 		var where, attributes;
 		for (const i of data) {
-			if (typeof i != 'object') throw global.getText("users", "needObjectOrArray");
+			if (typeof i != 'object') throw 'Needs Object or Array';
 			if (Array.isArray(i)) attributes = i;
 			else where = i;
 		}
@@ -40,7 +40,7 @@ module.exports = function ({ models, api }) {
 	}
 
 	async function setData(ID, options = {}) {
-		if (typeof options != 'object' && !Array.isArray(options)) throw global.getText("users", "needObject");
+		if (typeof options != 'object' && !Array.isArray(options)) throw 'Needs Object';
 		try {
 			(await Banned.findOne({ where: { ID } })).update(options);
 			return true;
@@ -67,7 +67,7 @@ module.exports = function ({ models, api }) {
 	}
 
 	async function createData(ID, defaults = {}) {
-		if (typeof defaults != 'object' && !Array.isArray(defaults)) throw global.getText("users", "needObject");
+		if (typeof defaults != 'object' && !Array.isArray(defaults)) throw 'Needs Object';
 		try {
 			await Banned.findOrCreate({ where: { ID }, defaults });
 			//console.log(`Created Ban DB for id ${ID}`);

@@ -9,14 +9,14 @@ module.exports.config = {
 module.exports.run = async function ({ event, api, Utils, Threads, Users }) {
 	
 	const threadInfo = await api.getThreadInfo(event.threadID);
-	const threadData = await Threads.getData(event.threadID) || {};
-	const data = threadData.data || {};
+	const threadData = await Threads.getData(event.threadID) || { data: {} };
+	const data = threadData.data;
 
 	if (event.logMessageData.addedParticipants.some(i => i.userFbId == api.getCurrentUserID())) {
 		return;
 	} else if (data.antijoin) {
 		
-		const bot_is_admkn = threadInfo.adminIDs.find(e => e.id == api.getCurrentUserID());
+		const bot_is_admin = threadInfo.adminIDs.find(e => e.id == api.getCurrentUserID());
 		if (!bot_is_admin) {
 			return api.sendMessage(
 				Utils.textFormat('error', 'errOccured', 'Unable to perform "Anti Join Mode"\n● reason: Bot needs to be an admin.'),

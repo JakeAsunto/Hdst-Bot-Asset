@@ -7,7 +7,6 @@ module.exports.config = {
 	cooldowns: 0,
 	description: 'announce a message to a all groups or on a specified one.',
 	usages: '[all/group ID] | <author> | <message>',
-	aliases: [ 'announcement' ],
 	hidden: true,
 	envConfig: {
 		requiredArgument: 3

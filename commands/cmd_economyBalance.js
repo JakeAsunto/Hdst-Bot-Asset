@@ -2,7 +2,7 @@
 
 module.exports.config = {
 	name: 'balance',
-	version: '1.0.1',
+	version: '3.0.1',
 	hasPermssion: 0,
 	commandCategory: 'economy',
 	usages: '',
@@ -15,7 +15,7 @@ module.exports.config = {
 	}
 }
 
-module.exports.run = async function ({ api, args, event, returns, Utils, Prefix, Threads }) {
+module.exports.run = async function ({ api, args, event, returns, Utils, Prefix, Users, Threads }) {
 
 	const economySystem = require(`${global.HADESTIA_BOT_CLIENT.mainPath}/json/economySystem.json`);
 	const leaderboard = require('./cmd_economyLeaderboard.js');
@@ -44,7 +44,7 @@ module.exports.run = async function ({ api, args, event, returns, Utils, Prefix,
 		}
 		
 		// GET CURRENT USER LEADERBOARD POSITION
-		const leaderboards = await leaderboard.sortLeaderboard(ID, economy);
+		const leaderboards = await leaderboard.sortLeaderboard(ID, economy, '', Users);
 		
 		const currency = threadData.data.default_currency || economySystem.config.default_currency;
 	

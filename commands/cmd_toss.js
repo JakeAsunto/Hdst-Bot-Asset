@@ -2,7 +2,7 @@ module.exports.config = {
 	name: 'toss',
 	version: '1.0.0',
 	hasPermssion: 0,
-	commandCategory: 'games',
+	commandCategory: 'random',
 	credits: 'Hadestia',
 	cooldowns: 0,
 	description: 'A simple toss coin game, will return either heads or tail',

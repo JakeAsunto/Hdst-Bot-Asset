@@ -16,16 +16,16 @@ module.exports.lateInit = async function ({ api, Threads }) {
 	const assets = require(`${__dirname}/../../json/!asset-update.json`);
 	const { ADMINBOT, PREFIX } = global.HADESTIA_BOT_CONFIG;
 	
-	//global.BOT_VERSION = assets.VERSION;
-	//console.log(global.data.threadData[id]['recieve-update']);
+	global.BOT_VERSION = assets.VERSION;
 	// Notify each group about the patch notes
 	if (isUpdated == 'true') {
     	try {
+    	
     		const allThreads = await Threads.getAll(['threadID', 'data']);
-
 			for (const thread of allThreads) {
-				const threadID = String(thread.threadID);
+				
 				const data = thread.data;
+				const threadID = String(thread.threadID);
 				const threadPrefix = data.PREFIX || PREFIX;
 				
 				if (data.receive_update) {
@@ -34,7 +34,7 @@ module.exports.lateInit = async function ({ api, Threads }) {
 						threadID,
 						async (err) => {
 							// if this fails that means its an old thread data
-							// that probably bot are not a member anymore
+							// that probably bot was not a member anymore
 							if (err) {
 								await Threads.delData(threadID);
 							}
@@ -44,7 +44,7 @@ module.exports.lateInit = async function ({ api, Threads }) {
 			}
 			// notify admins too
 			for (const admin of ADMINBOT) {
-				api.sendMessage(global.Utils.textFormat('system', 'botUpdateFormat', assets.VERSION, assets.CHANGELOGS), admin);
+				api.sendMessage(Utils.textFormat('system', 'botUpdateFormat', assets.VERSION, assets.CHANGELOGS), admin);
 			}
 			
 		} catch (e) {

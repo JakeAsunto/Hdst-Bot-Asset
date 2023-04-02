@@ -15,7 +15,7 @@ module.exports = function ({ models, api }) {
 	async function getAll(...data) {
 		var where, attributes;
 		for (const i of data) {
-			if (typeof i != 'object') throw global.getText("threads", "needObjectOrArray");
+			if (typeof i != 'object') throw 'Needs Object or Array';
 			if (Array.isArray(i)) attributes = i;
 			else where = i;
 		}
@@ -48,7 +48,7 @@ module.exports = function ({ models, api }) {
 	}
 
 	async function setData(threadID, options = {}) {
-		if (typeof options != 'object' && !Array.isArray(options)) throw global.getText("threads", "needObject");
+		if (typeof options != 'object' && !Array.isArray(options)) throw 'Needs Object';
 		try {
 			(await Threads.findOne({ where: { threadID } })).update(options);
 			return true;
@@ -75,7 +75,7 @@ module.exports = function ({ models, api }) {
 	}
 
 	async function createData(threadID, defaults = {}) {
-		if (typeof defaults != 'object' && !Array.isArray(defaults)) throw global.getText("threads", "needObject");
+		if (typeof defaults != 'object' && !Array.isArray(defaults)) throw 'Needs Object';
 		try {
 			await Threads.findOrCreate({ where: { threadID }, defaults });
 			console.log(`Created DB for group ${threadID}`);

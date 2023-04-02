@@ -7,20 +7,17 @@ module.exports = function ({ models, api }) {
 
 	async function getNameUser(id) {
 		try {
-			if (global.data.userName.has(id)) return global.data.userName.get(id);
-			else if (global.data.allUserID.includes(id)) {
-				const nameUser = (await getData(id)).name;
-				if (nameUser) return nameUser;
-				else return "Facebook users";
-			} else return "Facebook users";
+			const nameUser = (await getData(id)).name;
+			if (nameUser) return nameUser;
+			else return 'Facebook User';
 		}
-		catch { return "Facebook users" }
+		catch (e) { return 'Facebook User' }
 	}
 
 	async function getAll(...data) {
 		var where, attributes;
 		for (const i of data) {
-			if (typeof i != 'object') throw global.getText("users", "needObjectOrArray");
+			if (typeof i != 'object') throw 'Needs Object or Array';
 			if (Array.isArray(i)) attributes = i;
 			else where = i;
 		}
@@ -56,7 +53,7 @@ module.exports = function ({ models, api }) {
 	}
 
 	async function setData(userID, options = {}) {
-		if (typeof options != 'object' && !Array.isArray(options)) throw global.getText("users", "needObject");
+		if (typeof options != 'object' && !Array.isArray(options)) throw 'Needs Object';
 		try {
 			(await Users.findOne({ where: { userID } })).update(options);
 			return true;
@@ -83,7 +80,7 @@ module.exports = function ({ models, api }) {
 	}
 
 	async function createData(userID, defaults = {}) {
-		if (typeof defaults != 'object' && !Array.isArray(defaults)) throw global.getText("users", "needObject");
+		if (typeof defaults != 'object' && !Array.isArray(defaults)) throw 'Needs Object';
 		try {
 			await Users.findOrCreate({ where: { userID }, defaults });
 			//console.log(`Created DB for user ${userID}`);

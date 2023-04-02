@@ -19,12 +19,13 @@ module.exports.run = async function ({ event, api, Utils, Threads, Users }) {
 		return;
 	}
 	
-	const user = await Users.getNameUser(event.logMessageData.leftParticipantFbId) || { name: 'Facebook User' } ;
-	const name = user.name;
-	
-	const type = (event.author == event.logMessageData.leftParticipantFbId) ? 'self-separation' : 'kicked';
+	const userID = event.logMessageData.leftParticipantFbId
+	const type = (event.author == userID) ? 'self-separation' : 'kicked';
  
 	try {
+		
+		const name = await Users.getNameUser(event.logMessageData.leftParticipantFbId);
+		
 		if (type == 'self-separation') {
 			if (data.antiout) {
 				api.addUserToGroup(

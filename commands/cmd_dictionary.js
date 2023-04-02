@@ -36,13 +36,13 @@ module.exports.run = async function({ api, event, args, Utils }) {
 		// return if no definition found
 		if (!dictionary.word) return api.sendMessage(Utils.textFormat('cmd', 'cmdDictionaryNotFound'), threadID, messageID);
 		
-		const word = await global.fancyFont.get(dictionary.word, 2);
+		const word = await Utils.fancyFont.get(dictionary.word, 2);
 		
 		let definitions = '';
-		// const examples = `● ${await global.fancyFont.get('examples:', 2)}\n${dictionary.examples.join(',\n')}`;
+		// const examples = `● ${await Utils.fancyFont.get('examples:', 2)}\n${dictionary.examples.join(',\n')}`;
 		
 		for (const index in dictionary.definitions) {
-		 	definitions += `${Utils.textFormat('cmd', 'cmdDictionaryDefFormat', dictionary.phonetic, dictionary.definitions[index], (dictionary.examples[index]) ? `\n● ${await global.fancyFont.get('examples:', 2)}\n${dictionary.examples[index]}` : '')}\n\n`;
+		 	definitions += `${Utils.textFormat('cmd', 'cmdDictionaryDefFormat', dictionary.phonetic, dictionary.definitions[index], (dictionary.examples[index]) ? `\n● ${await Utils.fancyFont.get('examples:', 2)}\n${dictionary.examples[index]}` : '')}\n\n`;
 		}
 		// download pronunciation voicemail
 		try {
@@ -96,12 +96,12 @@ module.exports.run = async function({ api, event, args, Utils }) {
 		meanings.forEach(async (items) => {
 			const example = (items.definitions[0].example) ? `(${items.definitions[0].example[0].toUpperCase() + items.definitions[0].example.slice(1)})` : '';
 			const format = Utils.textFormat('cmd', 'cmdDictionaryDefFormat', items.partOfSpeech, `${items.definitions[0].definition[0].toUpperCase() + items.definitions[0].definition.slice(1)}`, example);
-			const synonyms = (items.synonyms.length > 0) ? `● ${await global.fancyFont.get('synonyms', 1)}: ${items.synonyms.join(', ')}` : '';
-			const antonyms = (items.antonyms.length > 0) ? `● ${await global.fancyFont.get('antonyms', 1)}: ${items.antonyms.join(', ')}` : '';
+			const synonyms = (items.synonyms.length > 0) ? `● ${await Utils.fancyFont.get('synonyms', 1)}: ${items.synonyms.join(', ')}` : '';
+			const antonyms = (items.antonyms.length > 0) ? `● ${await Utils.fancyFont.get('antonyms', 1)}: ${items.antonyms.join(', ')}` : '';
 			msg_meanings += `${format}${(synonyms !== '') ? `\n${synonyms}` : ''}${(antonyms !== '') ? `\n${antonyms}` : ''}\n\n`;
 		});
 		
-		const word = await global.fancyFont.get(data.word.charAt(0).toUpperCase() + data.word.slice(1), 2);
+		const word = await Utils.fancyFont.get(data.word.charAt(0).toUpperCase() + data.word.slice(1), 2);
 		const messageBody = {
 			body: Utils.textFormat('cmd', 'cmdDictionaryFormat', word, data.phonetic || msg_phonetics, msg_meanings),
 			//attachment

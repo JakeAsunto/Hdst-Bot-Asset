@@ -190,7 +190,7 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
 		}
 		
 		if (cmdEnvConfig.inProcessReaction) {
-			await Utils.sendReaction.inprocess(api, event);
+			Utils.sendReaction.inprocess(api, event);
 		}
 
         if (!HADESTIA_BOT_CLIENT.cooldowns.has(command.config.name)) {

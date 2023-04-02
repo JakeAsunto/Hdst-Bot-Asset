@@ -16,7 +16,7 @@ module.exports.config = {
 	}
 }
 
-module.exports.run = async function ({ api, args, event, returns, Utils, Prefix, Threads }) {
+module.exports.run = async function ({ api, args, event, returns, Utils, Prefix, Users, Threads }) {
 
 	const economySystem = require(`${__dirname}/../../json/economySystem.json`);
 	const { threadID, messageID, senderID } = event;
@@ -34,7 +34,7 @@ module.exports.run = async function ({ api, args, event, returns, Utils, Prefix,
 		
 		let rankingMsg = '';
 		
-		const leaderboards = await this.sortLeaderboard(senderID, economy, mode);
+		const leaderboards = await this.sortLeaderboard(senderID, economy, mode, Users);
 
 		await Threads.setData(threadID, { economy: leaderboards.updatedEconomy });
 		
@@ -74,7 +74,7 @@ module.exports.getOrdinalPosition = function (pos) {
 	return (endNum == 1) ? 'st' : (endNum == 2) ? 'nd' : (endNum == 3) ? 'rd' : 'th';
 }
 
-module.exports.sortLeaderboard = async function (userID, economy, mode = '') {
+module.exports.sortLeaderboard = async function (userID, economy, mode = '', Users) {
 
 	const updatedEconomy = {};
 	const rankingInfo = [];
@@ -83,7 +83,8 @@ module.exports.sortLeaderboard = async function (userID, economy, mode = '') {
 	
 	for (const id in economy) {
 		if (economy[id]) {
-			const name = ((global.data.userName).has(id)) ? (global.data.userName).get(id) : 'Facebook User';
+			const user = Users.getData(id);
+			const name = (user) ? user.name : `@user${id}`;
 			const total = (mode == '-cash') ? economy[id].hand : (mode == '-bank') ? economy[id].bank : (economy[id].bank + economy[id].hand) ;
 			rankingInfo.push({ id, name, total });
 			// use to remove left user and update the economy

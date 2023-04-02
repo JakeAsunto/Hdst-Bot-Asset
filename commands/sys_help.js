@@ -79,12 +79,11 @@ module.exports.run = async function({ api, event, args, Utils, Prefix }) {
 		}
 		
 		// Request via Command Category
-		const requestCategory = (args.join(' ') || '').replace(' ', '_').toLowerCase();
+		const initRequest = (args.join('_').trim())
+		const requestCategory = initRequest.toLowerCase();
+		console.log(`"${requestCategory}"`);
 		if (categoryReference[requestCategory]) {
-			
 			const categoryCommands = [];
-			let msgBodyList = '';
-
 			for (const cmd of commands.values()) {
 				if (cmd.config.commandCategory.toLowerCase() == requestCategory) {
 					const name = await Utils.fancyFont.get(`${Prefix}${cmd.config.name}`, 6);
@@ -100,64 +99,64 @@ module.exports.run = async function({ api, event, args, Utils, Prefix }) {
 				return (a.name > b.name) ? 1 : -1;
 			});
 			
-			categoryCommands.forEach( async (item) => {
-				const alias = (command.config.aliases) ? `[ ${ await item.aliases.join(', ')} ]` : 'none',
+			let msgBodyList = '';
+			for (const item of categoryCommands) {
+				const alias = (item.aliases.length > 0) ? `[ ${ await item.aliases.join(', ')} ]` : 'none';
 				msgBodyList = msgBodyList + (Utils.textFormat('cmd', 'cmdListCatCmd', item.name, item.desc, alias)) + '\n\n';
-			});
+			}
 			
 			if (categoryCommands.length == 0) {
 				msgBodyList = '`No Available Commands`';
 			}
 			
 			const categoryItem = categoryReference[requestCategory];
-			const catName = await Utils.fancyFont.get(`${categoryItem.icon}${requestCategory.charAt(0).toUpperCase() + requestCategory.slice(1)}`, 1);
+			const catName = await Utils.fancyFont.get(`${categoryItem.icon} ${(requestCategory.charAt(0).toUpperCase() + requestCategory.slice(1)).replace('_', ' ')}`, 1);
 			return api.sendMessage(
 				Utils.textFormat('cmd', 'cmdCatCommandsFormat', catName, msgBodyList, Prefix),
 				threadID, autoUnsent, messageID
 			);
-		}
+		} else {
 	
-		// User just typed "help" only?
-		if (!command) {
-			// Display all CATEGORIES and category description
-			let msgBody = '';
+			// User just typed "help" only?
+			if (!command) {
+				// Display all CATEGORIES and category description
+				let msgBody = '';
 		
-			for (const catName in categoryReference) {
-				const data = categoryReference[catName];
-				const categoryName = await Utils.fancyFont.get((catName.charAt(0).toUpperCase() + catName.slice(1)).replace('_', ' '), 1);
-				console.log(data);
-				msgBody += '' + Utils.textFormat('cmd', 'cmdListCategory', `${data.icon}${categoryName}`, data.description ) + '\n\n';
+				for (const catName in categoryReference) {
+					const data = categoryReference[catName];
+					const categoryName = await Utils.fancyFont.get((catName.charAt(0).toUpperCase() + catName.slice(1)).replace('_', ' '), 1);
+					msgBody += '' + Utils.textFormat('cmd', 'cmdListCategory', data.icon, categoryName, data.description ) + '\n\n';
+				}
+			
+				return api.sendMessage(
+					Utils.textFormat('cmd', 'cmdListCategoryFormat', Prefix, msgBody),
+					threadID,
+					autoUnsent,
+					messageID
+				);
 			}
 			
-			return api.sendMessage(
-				Utils.textFormat('cmd', 'cmdListCategoryFormat', Prefix, msgBody),
-				threadID,
-				autoUnsent,
-				messageID
+			const permssion = Utils.textFormat('system', `perm${command.config.hasPermssion || 0}`);
+			const commandUsage = `${Prefix}${command.config.name} ${command.config.usages || ''}`;
+			const cooldown = (command.config.cooldowns && command.config.cooldowns > 1) ? `${command.config.cooldowns} seconds` : 'no cooldown';
+			const commandReplyUsage = (command.config.replyUsages) ? `\n● reply usage:\n${command.config.replyUsages}` : '';
+			const commandName = await Utils.fancyFont.get(command.config.name, 1);
+	
+			const messageBody = Utils.textFormat(
+				'cmd', 'cmdShowInfo',
+				`${Prefix}${commandName}`,
+				command.config.description,
+				commandUsage,
+				commandReplyUsage,
+				command.config.commandCategory,
+				cooldown,
+				permssion,
+				(command.config.aliases) ? `\n[ ${command.config.aliases.join(', ')} ]` : 'none',
+				command.config.credits || 'ctto'
 			);
+		
+			return api.sendMessage( messageBody, threadID, autoUnsent, messageID);
 		}
-		
-		const permssion = Utils.textFormat('system', `perm${command.config.hasPermssion || 0}`);
-		const commandUsage = `${Prefix}${command.config.name} ${command.config.usages || ''}`;
-		const cooldown = (command.config.cooldowns && command.config.cooldowns > 1) ? `${command.config.cooldowns} seconds` : 'no cooldown';
-		const commandReplyUsage = (command.config.replyUsages) ? `\n● reply usage:\n${command.config.replyUsages}` : '';
-		const commandName = await Utils.fancyFont.get(command.config.name, 1);
-	
-		const messageBody = Utils.textFormat(
-			'cmd', 'cmdShowInfo',
-			`${Prefix}${commandName}`,
-			command.config.description,
-			commandUsage,
-			commandReplyUsage,
-			command.config.commandCategory,
-			cooldown,
-			permssion,
-			(command.config.aliases) ? `\n[ ${command.config.aliases.join(', ')} ]` : 'none',
-			command.config.credits || 'ctto'
-		);
-		
-		return api.sendMessage( messageBody, threadID, autoUnsent, messageID);
-	
 	} catch (err) {
 		Utils.sendRequestError(err, event, Prefix);
 		Utils.logModuleErrorToAdmin(err, __filename, event);
