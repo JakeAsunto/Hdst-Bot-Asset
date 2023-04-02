@@ -5,7 +5,7 @@
         "https://facebook.com/mensaherong.iantot",
         "This repository was linked to bot assets repository of Hadestia that include assets auto updater."
     ],
-    "VERSION": "6.11.15 [Beta]",
+    "VERSION": "6.11.16 [Beta]",
     "CHANGELOGS": "- Refactor bot structure, and removes vulnerable codes from the original structure (Mirai).\n\n- Lessen the used of global variable from the original structure.\n\n- Removes most of the command, will \nupdate one by one due to update.\n\n- Make some horizontal lines more thinner.\n\n- Rework `help` command.\n\n● Bot version was currently set to `Beta` due to major changes.\n\n@6.10.9\n- Fix handleEvent for commands not interacting on private messages.\n\n- Fix crash on auto response event listener.\n\n- Add more environment configuration for commands for handleEvents.\n\n- Support mentioning for ban checking.\n\n- Remove global map for unsent messages.\n\n- Add \"auto-resend\" option for group command to enable and disable auto resending unsent messages.\n\n- Add user ID (UID) information for stalk command.",
     "PRIORITY": {
         "fileTree.js": {

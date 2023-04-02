@@ -124,7 +124,7 @@ module.exports.run = async function ({ api, args, event, Utils, Prefix }) {
 			msg += `${Utils.textFormat('cmd', 'cmdPlayMusicSearchResultItemFormat', num, value.title)}\n`;
 		}
 				
-		const messageBody = textFormat('cmd', 'cmdPlayMusicSearchResultFormat', msg);
+		const messageBody = Utils.textFormat('cmd', 'cmdPlayMusicSearchResultFormat', msg);
 				
 		return api.sendMessage(
 			messageBody,
@@ -132,7 +132,7 @@ module.exports.run = async function ({ api, args, event, Utils, Prefix }) {
 			(e, info) => {
 				if (e) return Utils.sendRequestError(e, event, Prefix);
 				Utils.sendReaction.inprocess(api, event);
-				global.client.handleReply.push({
+				global.HADESTIA_BOT_CLIENT.handleReply.push({
 					name: this.config.name,
 					messageID: info.messageID,
 					requestMsgID: messageID,

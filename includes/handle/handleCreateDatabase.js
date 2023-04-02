@@ -47,13 +47,7 @@ module.exports = function({ Utils, Users, Threads, Banned }) {
                 setting.nicknames = threadIn4.nicknames;
 
                 const dataThread = setting;
-
-				// insert this group chat id to local table of all GCs
-                allThreadID.push(threadID) // insert this group to 
-				
-				// insert this thread info. also in the local table of GCs infos.
-                threadInfo.set(threadID, dataThread);
-
+                
 				// set initial data for thread data on DB
                 const THREAD_ALL_DATA = {};
                 

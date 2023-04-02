@@ -26,7 +26,7 @@ module.exports.run = async function({ api, event, args, Utils, Prefix }) {
 	
 	async function autoUnsent(err, info) {
 		if (err) console.log(err);
-		const { autoUnsend, delayUnsend } = this.config.envConfig;
+		const { autoUnsend, delayUnsend } = module.exports.config.envConfig;
 		if (autoUnsend) {
 			await new Promise(resolve => setTimeout(resolve, delayUnsend * 1000));
 			return api.unsendMessage(info.messageID);
@@ -109,7 +109,7 @@ module.exports.run = async function({ api, event, args, Utils, Prefix }) {
 			}
 			
 			const categoryItem = categoryReference[requestCategory];
-			const catName = await Utils.fancyFont.get(`${categoryItem.icon}${requestCategory.atChar(0).toUpperCase() + requestCategory.slice(1)}`, 1);
+			const catName = await Utils.fancyFont.get(`${categoryItem.icon}${requestCategory.charAt(0).toUpperCase() + requestCategory.slice(1)}`, 1);
 			return api.sendMessage(
 				Utils.textFormat('cmd', 'cmdCatCommandsFormat', catName, msgBodyList, Prefix),
 				threadID, autoUnsent, messageID
@@ -123,7 +123,7 @@ module.exports.run = async function({ api, event, args, Utils, Prefix }) {
 		
 			for (const catName in categoryReference) {
 				const data = categoryReference[catName];
-				msgBody += '' + Utils.textFormat('cmd', 'cmdListCategory', `${data.icon}${catName.atChar(0).toUpperCase() + catName.slice(1)}`, data.description ) + '\n\n';
+				msgBody += '' + Utils.textFormat('cmd', 'cmdListCategory', `${data.icon}${catName.charAt(0).toUpperCase() + catName.slice(1)}`, data.description ) + '\n\n';
 			}
 			
 			return api.sendMessage(

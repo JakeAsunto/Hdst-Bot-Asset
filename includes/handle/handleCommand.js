@@ -200,12 +200,12 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
 			const timeA = new Date(timer);
 			const timeB = new Date(currentDate);
 			
-			const { day, hour, minute, second, toString } = global.secondsToDHMS(Math.abs(timeA - timeB)/1000);
+			const remaining = Utils.getRemainingTime(Math.abs(timeA - timeB)/1000);
 			api.setMessageReaction(Utils.textFormat('reaction', 'userCmdCooldown'), event.messageID, err => (err) ? Utils.logger('unable to setMessageReaction for Cooling down command use user', '[ Reactions ]') : '', !![]);
 			
 			if (day > 0 || hour > 0 || minute > 2) {
 				api.sendMessage(
-					Utils.textFormat('cmd', 'cmdUserCooldown', toString),
+					Utils.textFormat('cmd', 'cmdUserCooldown', remaining),
 					threadID, Utils.autoUnsend, messageID
 				);
 			}
