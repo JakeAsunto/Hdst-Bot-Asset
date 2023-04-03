@@ -41,11 +41,11 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
 
                 Obj.getText = Utils.getModuleText(command, event);
 
-                if (cmd) cmd.handleMessageReply(Obj);
+                if (command) command.handleMessageReply(Obj);
 
             } catch (error) {
 
-                Utils.logger(Utils.getText('handleCommandEvent', 'moduleError', cmd.config.name), 'error');
+                Utils.logger(Utils.getText('handleCommandEvent', 'moduleError', command.config.name), 'error');
 
             }
 

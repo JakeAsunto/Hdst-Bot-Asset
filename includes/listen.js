@@ -304,11 +304,11 @@ module.exports = function({ api, models }) {
 	for (const [key, module] of commands.entries()) {
 		try {
 			if (module.lateInit) {
-				console.log('Late Init :' + name);
+				console.log('Late Init :' + key);
 				module.lateInit({ api, models, Utils, Users, Banned, Threads });
 			}
 		} catch (error) {
-			throw new Error(JSON.stringify(error));
+			throw new Error(error);
 		}
 	}
 		
@@ -316,11 +316,11 @@ module.exports = function({ api, models }) {
 	for (const [key, module] of events.entries()) {
 		try {
 			if (module.lateInit) {
-				console.log('Late Init :' + name);
+				console.log('Late Init :' + key);
 				module.lateInit({ api, models, Utils, Users, Banned, Threads });
 			}
 		} catch (error) {
-			throw new Error(JSON.stringify(error));
+			throw new Error(error);
 		}
 	}
 
