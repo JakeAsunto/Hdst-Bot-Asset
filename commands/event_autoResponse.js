@@ -17,12 +17,11 @@ module.exports.config = {
 
 module.exports.handleEvent = async ({ api, event, Utils, Users, Threads }) => {
 	
+	const { body, mentions, threadID, messageID, senderID } = event;
 	const threadData = await Threads.getData(threadID);
-	
 	if (event.isGroup && !threadData) return;
 	
 	const threadSettings = (threadData) ? threadData.data : {};
-	const { body, mentions, threadID, messageID, senderID } = event;
 	
 	const dictionary = require('../../json/autoResponse.json');
 	const senderBody = body.toLowerCase();
@@ -120,7 +119,7 @@ async function constructMessage(api, event, text, Users, Threads) {
 	const moment = require('moment-timezone');
 	const hour = moment.tz('Asia/Manila').format('HH');
 	
-	const threadData = await Threads.getData(threadID);
+	const threadData = await Threads.getData(event.threadID);
 	const threadSetting = threadData.data;
 	
 	const botPrefix = (threadSetting.hasOwnProperty('PREFIX')) ? threadSetting.PREFIX : global.HADESTIA_BOT_CONFIG.PREFIX;

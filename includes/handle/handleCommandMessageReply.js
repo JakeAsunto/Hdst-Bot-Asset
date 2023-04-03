@@ -44,8 +44,8 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
                 if (command) command.handleMessageReply(Obj);
 
             } catch (error) {
-
-                Utils.logger(Utils.getText('handleCommandEvent', 'moduleError', command.config.name), 'error');
+				console.log(error);
+                Utils.logger(Utils.getText('handleCommandEvent', 'moduleError', command.config.name, error), 'error');
 
             }
 

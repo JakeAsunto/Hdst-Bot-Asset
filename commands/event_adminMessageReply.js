@@ -15,7 +15,7 @@ module.exports.handleMessageReply = async function ({ api, event, Utils, Threads
 	
 	try {
 		// return if not replies on bot
-		if (event.type === 'message_reply' && !event.body.startsWith(global.config.PREFIX)) {
+		if (event.type === 'message_reply' && !event.body.startsWith(global.HADESTIA_BOT_CONFIG.PREFIX)) {
 			if (!event.messageReply) {
 				return Utils.sendReaction.failed(api, event);
 			}
@@ -25,7 +25,7 @@ module.exports.handleMessageReply = async function ({ api, event, Utils, Threads
 	
 			const { messageReply, threadID, messageID, senderID, body } = event;
 			const replyBody = event.messageReply.body;
-			const { ADMINBOT } = global.config;
+			const { ADMINBOT } = global.HADESTIA_BOT_CONFIG;
 		
 			// handle reply from other thread
 			if (!ADMINBOT.includes(threadID)) {

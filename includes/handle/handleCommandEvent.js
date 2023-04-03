@@ -60,11 +60,11 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
                 
                	 Obj.getText = Utils.getModuleText(command, event);
                
-               	 if (cmd) command.handleEvent(Obj);
+               	 if (command) command.handleEvent(Obj);
 
             	} catch (error) {
-
-               	 Utils.logger(Utils.getText('handleCommandEvent', 'moduleError', command.config.name), 'error');
+					console.log(error);
+               	 Utils.logger(Utils.getText('handleCommandEvent', 'moduleError', command.config.name, error), 'error');
 
            	 }
        	 }
