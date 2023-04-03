@@ -2,7 +2,7 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
 	
     const moment = require("moment");
 
-    return function({ event, groupData, bannedUserData, bannedGroupData }) {
+    return function({ event }) {
 
         const timeStart = Date.now()
 
@@ -12,10 +12,11 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
 
         const { events } = global.HADESTIA_BOT_CLIENT;
 
-        var { senderID, threadID } = event;
+        const { senderID, threadID } = event;
 
-        senderID = String(senderID);
-        threadID = String(threadID);
+        const bannedUserData = await Banned.getData(senderID);
+        const bannedGroupData = await Banned.getData(threadID);
+        const groupData = await Threads.getData(threadID);
         
         // Group Banned? User Banned? Is PM?
         if (bannedUserData || bannedGroupData || !allowInbox && senderID == threadID) return;
@@ -24,9 +25,8 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
 			
 			const evn = value.config.eventType
 			const envConfig = value.config.envConfig || {};
-			const needData = envConfig.needsDataFetching && !groupData;
 			
-            if (evn.indexOf(event.logMessageType) !== -1 && !needData) {
+            if (evn.indexOf(event.logMessageType) !== -1 && !groupData) {
 
                 const eventRun = events.get(key);
 

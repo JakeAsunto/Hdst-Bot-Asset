@@ -88,19 +88,14 @@ module.exports.handleEvent = async ({ api, event, Utils, Users, Threads }) => {
 	}
 }
 
-module.exports.run = async function ({ api, event, GroupData, Threads, Utils }) {
+module.exports.run = async function ({ api, event, Threads, Utils }) {
 	if (!GroupData) return;
 	
 	const { threadID, messageID } = event;
-	let data = GroupData.data;
+	const threadData = await Threads.getData(threadID);
+	let data = threadData.data;
 	
-	
-	// set initial state when not set
-	// if (typeof(data['auto-response-listener']) == undefined || data['auto-response-listener'] == true) {
 	data.auto_response_listener = !data.auto_response_listener;
-	// } else {
-		//data['auto-response-listener'] = true;
-	//}
 	
 	const state = data.auto_response_listener;
 	// update data

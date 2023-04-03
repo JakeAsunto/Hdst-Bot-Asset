@@ -1,6 +1,6 @@
 module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
 	
-    return function({ event, bannedUserData, bannedGroupData, groupData, userData }) {
+    return function({ event }) {
     	
     	if (!groupData || !userData) return;
     	
@@ -11,9 +11,14 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
         const { cooldowns, commands, eventRegistered } = global.HADESTIA_BOT_CLIENT;
 
         let { senderID, threadID } = event;
-
+        
         senderID = String(senderID);
         threadID = String(threadID);
+        
+        const bannedUserData = await Banned.getData(senderID);
+        const bannedGroupData = await Banned.getData(threadID);
+        const groupData = await Threads.getData(threadID);
+        const userData = await Users.getData(senderID);
 		
         // LEGACY CODE: if (bannedUsers.has(senderID) || bannedThreads.has(threadID) || allowInbox == !![] && senderID == threadID) return;
 
@@ -21,12 +26,7 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
         	
             const command = commands.get(eventReg);
 			const config = command.config.envConfig || {};
-			const allowBannedUser =  || false;
-			const allowBannedGroup = config.handleEvent_allowBannedThreads || false;
-			const allowDirectMessage = config.handleEvent_allowDirectMessages || false;
-			const needGroupData = config.needGroupData || false;
-			const needUserData = config.needUserData || false;
-		
+			
 			// allow ban User
 			let pass1 = (bannedUserData) ? config.handleEvent_allowBannedUsers || false : true;
 			// allow ban threads

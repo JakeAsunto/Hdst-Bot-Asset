@@ -332,20 +332,8 @@ module.exports = function({ api, models }) {
 	return async (event) => {
 		
 		event.body = (event.body !== undefined) ? (event.body).normalize('NFKD') : '';
-		// type Object if has data else return false
-        const bannedUserData = (event.senderID) ? await Banned.getData(event.senderID) : false;
-        const bannedGroupData = (event.threadID && event.isGroup) ? await Banned.getData(event.threadID) : false;
-        
-        const groupData = await Threads.getData(event.threadID) || false;
-        const userData = await Users.getData(event.senderID) || false;
-        
-        const input = {
-			event,
-			userData,
-			groupData,
-			bannedUserData,
-			bannedGroupData
-		}
+		
+        const input = { event }
         
 		switch (event.type) {
 			

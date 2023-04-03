@@ -156,14 +156,15 @@ module.exports.handleEvent = async function ({ event, api, Users, Threads, Utils
 	}
 }
 
-module.exports.run = async function({ api, event, GroupData, Threads, Utils }) {
+module.exports.run = async function({ api, event, Threads, Utils }) {
 	
 	const { threadID, messageID } = event;
-	let thread_settings = GroupData.data;
+	const threadData = Threads.getData(threadID);
+	const data = threadData.data;
 	
-	thread_settings.auto_resend_msg = !thread_settings.auto_resend_msg;
+	data.auto_resend_msg = !data.auto_resend_msg;
 	
-	await Threads.setData(threadID, { data: thread_settings });
+	await Threads.setData(threadID, { data });
 	
 	return api.sendMessage(Utils.textFormat('events', 'eventAutoResendSetState', (thread_settings.auto_resend_msg) ? 'on' : 'off'), threadID, messageID);
 };

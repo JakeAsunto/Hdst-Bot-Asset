@@ -1,6 +1,6 @@
 module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
 	
-    return async function({ event, groupData, userData }) {
+    return async function({ event }) {
     	
     	const { body, messageID, senderID, threadID, messageReply } = event;
     
@@ -8,9 +8,15 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
     
     	const { allowInbox } = global.HADESTIA_BOT_CONFIG;
     	
-    	const threadData = await Threads.getData(threadID);
+    	const bannedUserData = await Banned.getData(senderID);
+    
+        const bannedGroupData = await Banned.getData(threadID);
         
-        const threadSetting = (threadData) ? threadData.data : {};
+        const groupData = await Threads.getData(threadID);
+        
+        const userData = await Users.getData(senderID);
+    	
+        const threadSetting = (groupData) ? groupData.data : {};
         
         const botPrefix = (threadSetting.hasOwnProperty('PREFIX')) ? threadSetting.PREFIX : global.HADESTIA_BOT_CONFIG.PREFIX;
         

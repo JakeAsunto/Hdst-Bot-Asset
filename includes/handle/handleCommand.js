@@ -5,7 +5,7 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
 
     const moment = require('moment-timezone');
 
-    return async ({ event, groupData, userData, bannedUserData, bannedGroupData }) => {
+    return async ({ event }) => {
     	
     	const time = moment.tz('Asia/Manila').format('HH:MM:ss DD/MM/YYYY');
 		const { allowInbox, adminOnly, isMaintenance, allowCommandSimilarity, PREFIX, ADMINBOT, DeveloperMode } = global.HADESTIA_BOT_CONFIG;
@@ -13,9 +13,14 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
 		const { allThreadID } = global.HADESTIA_BOT_DATA;
         const dateNow = Date.now()
         
-        var { body, mentions, senderID, threadID, messageID } = event;
-        var senderID = String(senderID), threadID = String(threadID);
+        let { body, mentions, senderID, threadID, messageID } = event;
+        senderID = String(senderID);
+		threadID = String(threadID);
         
+        const bannedUserData = await Banned.getData(senderID);
+        const bannedGroupData = await Banned.getData(threadID);
+        const groupData = await Threads.getData(threadID);
+        const userData = await Users.getData(senderID);
         // Intial values For Group & User Data (to avoid undefined type)
 		let threadSetting = {},
 			threadInfo = {};
@@ -110,7 +115,7 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
         const cmdEnvConfig = commandEnvConfig[command.config.name] || command.config.envConfig || {};
         
         // if command needs Data fetching and it's not yet initialize
-        if ((cmdEnvConfig.needGroupData && !groupData) || && (cmdEnvConfig.needUserData && !userData)) {
+        if ((cmdEnvConfig.needGroupData && !groupData) || (cmdEnvConfig.needUserData && !userData)) {
         	return api.sendMessage(Utils.textFormat('error', 'errOccured', 'Group/User data was initializing, Pls try again later. :)'), threadID, Utils.autoUnsend, messageID);
         }
         
@@ -268,10 +273,6 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
             Obj.Banned = Banned;
 
             Obj.Threads = Threads;
-            
-            Obj.GroupData = groupData;
-            
-            Obj.UserData = userData;
             
             Obj.Prefix = PREFIX_FINAL;
 
