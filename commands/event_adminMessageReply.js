@@ -11,7 +11,7 @@ module.exports.config = {
 // nothing to do here this is a hidden command
 module.exports.run = function ({ api, args, event }) {}
 
-module.exports.handleMessageReply = async function ({ api, event Utils, Threads }) {
+module.exports.handleMessageReply = async function ({ api, event, Utils, Threads }) {
 	
 	try {
 		// return if not replies on bot

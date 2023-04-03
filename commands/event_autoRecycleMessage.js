@@ -51,7 +51,7 @@ module.exports.handleEvent = async function ({ event, api, Users, Threads, Utils
 				senderID: senderID,
 				msgBody: body,
 				attachment: event.attachments,
-				timestamp: dateNow;
+				timestamp: dateNow
 			}
 		);
 	}

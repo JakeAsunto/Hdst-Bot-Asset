@@ -21,7 +21,7 @@ module.exports.handleEvent = async ({ api, event, Utils, Users, Threads }) => {
 	
 	if (event.isGroup && !threadData) return;
 	
-	const threadSettings = (threadData) ? threadData.data || {};
+	const threadSettings = (threadData) ? threadData.data : {};
 	const { body, mentions, threadID, messageID, senderID } = event;
 	
 	const dictionary = require('../../json/autoResponse.json');

@@ -322,7 +322,7 @@ module.exports = function({ api, models }) {
 		} catch (error) {
 			throw new Error(JSON.stringify(error));
 		}
-	});
+	}
 
 
 	//////////////////////////////////////////////////
