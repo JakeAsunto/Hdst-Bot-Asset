@@ -159,7 +159,7 @@ module.exports.handleEvent = async function ({ event, api, Users, Threads, Utils
 module.exports.run = async function({ api, event, Threads, Utils }) {
 	
 	const { threadID, messageID } = event;
-	const threadData = Threads.getData(threadID);
+	const threadData = await Threads.getData(threadID);
 	const data = threadData.data;
 	
 	data.auto_resend_msg = !data.auto_resend_msg;
