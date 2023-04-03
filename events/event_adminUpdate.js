@@ -9,18 +9,19 @@ module.exports.config = {
 	}
 };
 
-module.exports.run = async function ({ event, api, GroupData, Utils, Threads, Users }) {
+module.exports.run = async function ({ event, api, Utils, Threads, Users }) {
 	
 	const fs = require('fs');
     const { threadID, logMessageType, logMessageData } = event;
 
-    const data = GroupData.data;
+	const threadData = await Threads.getData(threadID);
+    const data = threadData.data;
     
     if (!data.adminUpdate) return;
 
     try {
     	
-        let dataThread = GroupData.threadInfo;
+        let dataThread = threadData.threadInfo;
         
         switch (logMessageType) {
         	

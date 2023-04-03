@@ -9,9 +9,10 @@ module.exports.config = {
 	}
 };
 
-module.exports.run = async function ({ event, api, GroupData, Utils, Threads, Users }) {
+module.exports.run = async function ({ event, api, Utils, Threads, Users }) {
 	
-	const data = GroupData.data;
+	const threadData = await Threads.getData(event.threadID);
+	const data = threadData.data;
 	
 	if (event.logMessageData.leftParticipantFbId == api.getCurrentUserID()) {
 		try {

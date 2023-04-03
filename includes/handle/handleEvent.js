@@ -48,8 +48,6 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
 
                     Obj.Threads = Threads;
                     
-                    Obj.GroupData = groupData;
-                    
                     Obj.getText = Utils.getModuleText(eventRun, event);
 
                     eventRun.run(Obj);

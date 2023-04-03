@@ -11,8 +11,9 @@ module.exports.config = {
 
 module.exports.run = async function ({ event, api, Utils, Threads, Users }) {
 	
-	const threadInfo = GroupData.threadInfo;
-	const data = GroupData.data;
+	const threadData = await Threads.getData(event.threadID);
+	const threadInfo = threadData.threadInfo;
+	const data = threadData.data;
 
 	if (event.logMessageData.addedParticipants.some(i => i.userFbId == api.getCurrentUserID())) {
 		return;

@@ -12,11 +12,12 @@ module.exports.config = {
 	}
 };
 
-module.exports.run = async function({ api, event, GroupData, Utils, Users, Threads, Banned }) {
+module.exports.run = async function({ api, event, Utils, Users, Threads, Banned }) {
+	
+	const moment = require('moment-timezone');
 	
     const threadInfo = await api.getThreadInfo(event.threadID);
-    const moment = require('moment-timezone');
-
+    
 	const date = moment.tz("Asia/Manila").format("MM/DD/YYYY");
 	const time = moment.tz("Asia/Manila").format("HH:mm:ss");
 	const res = await api.getUserInfo(event.author);
@@ -28,9 +29,10 @@ module.exports.run = async function({ api, event, GroupData, Utils, Users, Threa
    	 switch (event.logMessageType) {
     	
      	   case "log:thread-name":
-        		const oldInfo = GroupData;
+				const threadData = await Threads.getData(event.threadID);
+        		const oldInfo = threadData.threadInfo;
 				
-      	      action = `Update the group name from '${oldInfo.threadInfo.threadName}' to '${threadInfo.threadName}'`;
+      	      action = `Update the group name from '${oldInfo.threadName}' to '${threadInfo.threadName}'`;
    	         await Threads.setData(threadID, { threadInfo });
    
 				const ban = await Banned.getData(threadID);

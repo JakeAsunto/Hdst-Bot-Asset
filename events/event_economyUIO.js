@@ -9,12 +9,12 @@ module.exports.config = {
 	}
 };
 
-module.exports.run = async function({ api, event, GroupData, Threads, Utils }) {
+module.exports.run = async function({ api, event, Threads, Utils }) {
 	
 	const { threadID } = event;
 	
 	try {
-		const threadData = GroupData;
+		const threadData = await Threads.getData(event.threadID);	
 		let settings = threadData.data;
 		let economy = threadData.economy;
 		let inventory = threadData.inventory;

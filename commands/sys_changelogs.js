@@ -9,7 +9,7 @@ module.exports.config = {
 	cooldowns: 30
 }
 
-module.exports.lateInit = async function ({ api, Threads }) {
+module.exports.lateInit = async function ({ api, Threads, Utils }) {
 	
 	const { readFileSync, writeFileSync } = require('fs-extra');
     const isUpdated = readFileSync(`${__dirname}/../../cache/keep/!asset-has-update.txt`, { encoding: 'utf-8' });
@@ -56,7 +56,7 @@ module.exports.lateInit = async function ({ api, Threads }) {
 	await writeFileSync(`${__dirname}/../../cache/keep/!asset-has-update.txt`, 'false', 'utf-8');
 }
 
-module.exports.run = async function ({ api, args, event, groupData, Utils, Threads }) {
+module.exports.run = async function ({ api, args, event, Utils, Threads }) {
 	
 	const { threadID, messageID } = event;
 
@@ -71,15 +71,19 @@ module.exports.run = async function ({ api, args, event, groupData, Utils, Threa
 			return api.sendMessage(Utils.textFormat('system', 'botUpdateSettingOnlyGC'), threadID, ()=>{}, messageID);
 		}
 		
-		const data = groupData.data;
-		data.receive_update = !data.receive_update;
+		try {
+			const { data } = await Threads.getData(threadID);
+			data.receive_update = !data.receive_update;
 		
-		await Threads.setData(threadID, { data });
+			await Threads.setData(threadID, { data });
 
-		return api.sendMessage(
-			Utils.textFormat('system', `botUpdate${(data.recieve_update == true) ? 'On' : 'Off'}`),
-			threadID, Utils.autoUnsend, messageID
-		);
+			return api.sendMessage(
+				Utils.textFormat('system', `botUpdate${(data.recieve_update == true) ? 'On' : 'Off'}`),
+				threadID, Utils.autoUnsend, messageID
+			);
+		} catch (e) {
+			return Utils.sendReaction.failed(api, event);
+		}
 	}
 	
 	// const { threadID, messageID } = event;

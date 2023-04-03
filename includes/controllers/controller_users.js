@@ -9,9 +9,9 @@ module.exports = function ({ models, api }) {
 		try {
 			const nameUser = (await getData(id)).name;
 			if (nameUser) return nameUser;
-			else return 'Facebook User';
+			else return `@user${id}`;
 		}
-		catch (e) { return 'Facebook User' }
+		catch (e) { return `@user${id}` }
 	}
 
 	async function getAll(...data) {

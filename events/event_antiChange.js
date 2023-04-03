@@ -6,10 +6,12 @@ module.exports.config = {
     description: 'Prevent admin changes',
 };
 
-module.exports.run = async function ({ event, api, GroupData, Utils, Threads, Users }) {
+module.exports.run = async function ({ event, api, Utils, Threads, Users }) {
 	
-    const { logMessageType, logMessageData, senderID } = event;
-	const data = GroupData.data;
+    const { logMessageType, logMessageData, senderID, threadID } = event;
+    
+    const threadData = await Threads.getData(threadID);
+	const data = threadData.data;
 	
 	if (!data.guard) return;
 	
