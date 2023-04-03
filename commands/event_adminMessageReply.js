@@ -11,13 +11,13 @@ module.exports.config = {
 // nothing to do here this is a hidden command
 module.exports.run = function ({ api, args, event }) {}
 
-module.exports.handleMessageReply = async function ({ api, event }) {
+module.exports.handleMessageReply = async function ({ api, event Utils, Threads }) {
 	
 	try {
 		// return if not replies on bot
 		if (event.type === 'message_reply' && !event.body.startsWith(global.config.PREFIX)) {
 			if (!event.messageReply) {
-				return global.sendReaction.failed(api, event);
+				return Utils.sendReaction.failed(api, event);
 			}
 			
 			if (event.messageReply.senderID !== global.botUserID) return;
@@ -30,19 +30,19 @@ module.exports.handleMessageReply = async function ({ api, event }) {
 			// handle reply from other thread
 			if (!ADMINBOT.includes(threadID)) {
 			
-				const group = (event.isGroup) ? await global.data.threadInfo.get(threadID) : {};
-				const sender = await api.getUserInfoV2(senderID);
+				const group = (event.isGroup) ? Threads.getInfo(threadID) : {};
+				const sender = (await api.getUserInfo(senderID))[senderID];
 			
 				// contruct message that will send to admin
-				const message = global.textFormat('events', 'eventMessageReplyToAdmin', (event.isGroup) ? group.threadName || '<No Data>' : sender.name, sender.name, body, messageReply.body, threadID, messageID);
+				const message = Utils.textFormat('events', 'eventMessageReplyToAdmin', (event.isGroup) ? group.threadName || '<No Data>' : sender.name, sender.name, body, messageReply.body, threadID, messageID);
 			
 				for (const adminID of ADMINBOT) {
 					api.sendMessage(
 						message, adminID,
 						(e) => {
 							if (replyBody.indexOf('𝗔𝗱𝗺𝗶𝗻 𝗿𝗲𝗽𝗹𝘆') !== -1) {
-								if (e) return global.sendReaction.failed(api, event);
-								return global.sendReaction.success(api, event);
+								if (e) return Utils.sendReaction.failed(api, event);
+								return Utils.sendReaction.success(api, event);
 							}
 						}
 					);
@@ -72,10 +72,10 @@ module.exports.handleMessageReply = async function ({ api, event }) {
 				//# handle admin reply to bot report
 				if (replyBody.indexOf('𝗔𝗱𝗺𝗶𝗻 𝗿𝗲𝗽𝗹𝘆') !== -1 || replyBody.indexOf('𝗕𝗼𝘁 𝗥𝗲𝗽𝗼𝗿𝘁') !== -1) {
 					return api.sendMessage(
-						textFormat('events', 'eventAdminReply', body), thread_id,
+						Utils.textFormat('events', 'eventAdminReply', body), thread_id,
 						(err) => {
-							if (err) return global.sendReaction.failed(api, event);
-							global.sendReaction.success(api, event);
+							if (err) return Utils.sendReaction.failed(api, event);
+							Utils.sendReaction.success(api, event);
 						},
 						track_id
 					);
@@ -83,8 +83,8 @@ module.exports.handleMessageReply = async function ({ api, event }) {
 				} else if (replyBody.indexOf('𝗠𝗲𝘀𝘀𝗮𝗴𝗲 𝗿𝗲𝗽𝗹𝘆') !== -1) {
 					return api.sendMessage(
 						body, thread_id, (err) => {
-						if (err) return global.sendReaction.failed(api, event);
-							global.sendReaction.success(api, event);
+						if (err) return Utils.sendReaction.failed(api, event);
+							Utils.sendReaction.success(api, event);
 						},
 						track_id
 					);
@@ -93,6 +93,6 @@ module.exports.handleMessageReply = async function ({ api, event }) {
 		}
 	} catch (err) {
 		console.log(err);
-		global.logModuleErrorToAdmin(err, __filename, event);
+		Utils.logModuleErrorToAdmin(err, __filename, event);
 	}
 }

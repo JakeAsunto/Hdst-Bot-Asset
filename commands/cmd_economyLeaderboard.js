@@ -34,7 +34,7 @@ module.exports.run = async function ({ api, args, event, returns, Utils, Prefix,
 		
 		let rankingMsg = '';
 		
-		const leaderboards = await this.sortLeaderboard(senderID, economy, mode, Users);
+		const leaderboards = await this.sortLeaderboard(senderID, economy, mode, Users, Utils);
 
 		await Threads.setData(threadID, { economy: leaderboards.updatedEconomy });
 		
@@ -74,7 +74,7 @@ module.exports.getOrdinalPosition = function (pos) {
 	return (endNum == 1) ? 'st' : (endNum == 2) ? 'nd' : (endNum == 3) ? 'rd' : 'th';
 }
 
-module.exports.sortLeaderboard = async function (userID, economy, mode = '', Users) {
+module.exports.sortLeaderboard = async function (userID, economy, mode = '', Users, Utils) {
 
 	const updatedEconomy = {};
 	const rankingInfo = [];

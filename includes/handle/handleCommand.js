@@ -5,7 +5,7 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
 
     const moment = require('moment-timezone');
 
-    return async ({ event, bannedUserData, bannedGroupData }) => {
+    return async ({ event, groupData, userData, bannedUserData, bannedGroupData }) => {
     	
     	const time = moment.tz('Asia/Manila').format('HH:MM:ss DD/MM/YYYY');
 		const { allowInbox, adminOnly, isMaintenance, allowCommandSimilarity, PREFIX, ADMINBOT, DeveloperMode } = global.HADESTIA_BOT_CONFIG;
@@ -22,23 +22,15 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
 			
 		let groupBannedCommands = [],
 			userBannedCommands = [];
-		
-		// Get Data / Settings
-		const group_data = await Threads.getData(threadID);
-		const user_data = await Users.getData(senderID);
-		
-		/*if (event.isGroup && !group_data) {
-			return api.sendMessage(Utils.textFormat('error', 'errOccured', 'Group/User data was initializing, Pls wait a moment and try again later :)'), threadID, Utils.autoUnsend, messageID);
-		}*/
 
-		if (group_data) {
-			groupBannedCommands = group_data.data.bannedCommands;
-			threadSetting = group_data.data;
-			threadInfo = group_data.threadInfo;
+		if (groupData) {
+			groupBannedCommands = groupData.data.bannedCommands;
+			threadSetting = groupData.data;
+			threadInfo = groupData.threadInfo;
 		}
 		
-		if (user_data) {
-			userBannedCommands = user_data.data.bannedCommands;
+		if (userData) {
+			userBannedCommands = userData.data.bannedCommands;
 		}
 		
 		// ## HANDLE BOT PREFIX ## //
@@ -118,7 +110,7 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
         const cmdEnvConfig = commandEnvConfig[command.config.name] || command.config.envConfig || {};
         
         // if command needs Data fetching and it's not yet initialize
-        if (cmdEnvConfig.needsDataFetching && (!group_data || !user_data)) {
+        if (cmdEnvConfig.needsDataFetching && ((event.isGroup && !groupData) || !userData)) {
         	return api.sendMessage(Utils.textFormat('error', 'errOccured', 'Group/User data was initializing, Pls try again later. :)'), threadID, Utils.autoUnsend, messageID);
         }
         
@@ -276,12 +268,10 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
             Obj.Banned = Banned;
 
             Obj.Threads = Threads;
-
-            Obj.getText = Utils.getModuleText(command, event);
             
-            Obj.groupData = group_data;
+            Obj.GroupData = groupData;
             
-            Obj.userData = user_data;
+            Obj.UserData = userData;
             
             Obj.Prefix = PREFIX_FINAL;
 
@@ -290,6 +280,8 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
             Obj.logMessageError = logMessageError;
 
 			Obj.returns = returns;
+			
+			Obj.getText = Utils.getModuleText(command, event);
 			
 			Obj.alias = commandName; // to determine what alias user used to run this command
 

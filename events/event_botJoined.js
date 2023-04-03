@@ -3,10 +3,7 @@ module.exports.config = {
 	eventType: ['log:subscribe'],
 	version: '1.0.3',
 	credits: 'Hadestia',
-	description: 'Set up bot when connected to the group.',
-	dependencies: {
-		'fs-extra': ''
-	}
+	description: 'Set up bot when connected to the group.'
 };
 
 module.exports.run = async function({ api, event, Utils }) {

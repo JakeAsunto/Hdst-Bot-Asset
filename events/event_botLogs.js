@@ -6,10 +6,13 @@ module.exports.config = {
 	description: "Record bot activity notifications.",
     dependencies: {
     	'moment-timezone': ''
-    }
+    },
+    envConfig: {
+		needsDataFetching: true
+	}
 };
 
-module.exports.run = async function({ api, event, Utils, Users, Threads, Banned }) {
+module.exports.run = async function({ api, event, GroupData, Utils, Users, Threads, Banned }) {
 	
     const threadInfo = await api.getThreadInfo(event.threadID);
     const moment = require('moment-timezone');
@@ -25,7 +28,7 @@ module.exports.run = async function({ api, event, Utils, Users, Threads, Banned 
    	 switch (event.logMessageType) {
     	
      	   case "log:thread-name":
-        		const oldInfo = await Threads.getData(threadID);
+        		const oldInfo = GroupData;
 				
       	      action = `Update the group name from '${oldInfo.threadInfo.threadName}' to '${threadInfo.threadName}'`;
    	         await Threads.setData(threadID, { threadInfo });
@@ -61,13 +64,15 @@ module.exports.run = async function({ api, event, Utils, Users, Threads, Banned 
     
  	   if (action) {
   	  	const messageBody = Utils.textFormat('events', 'eventBotLogs', date, threadID, threadInfo.threadName, threadInfo.participantIDs.length, action, res.name || author, author);
-    		api.sendMessage(
-				messageBody,
-				global.HADESTIA_BOT_CONFIG.ADMINBOT[0],
-				(err) => {
-					if (err) return Utils.logger('event_botLog.js ' + err, 'error');
-				}
-			);
+			for (const adminID of global.HADESTIA_BOT_CONFIG.ADMINBOT) {
+    			api.sendMessage(
+					messageBody,
+					adminID,
+					(err) => {
+						if (err) return Utils.logger('event_botLog.js ' + err, 'error');
+					}
+				);
+			}
 		}
     } catch (err) {
     	console.log(err);

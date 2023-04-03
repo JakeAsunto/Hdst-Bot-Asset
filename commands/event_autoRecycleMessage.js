@@ -15,6 +15,7 @@ module.exports.config = {
 	},
 	envConfig: {
 		groupCommandOnly: true,
+		needsDataFetching: true,
 		handleEvent_allowBannedUsers: true,
 		handleEvent_allowBannedThreads: true,
 		handleEvent_allowDirectMessages: true
@@ -27,7 +28,7 @@ module.exports.config = {
 
 const savedMessages = new Map();
 
-module.exports.handleEvent = async function ({ event, api, Users, textFormat }) {
+module.exports.handleEvent = async function ({ event, api, Users, Threads, Utils }) {
 	
 	const { writeFileSync, createReadStream, unlinkSync } = require('fs-extra');
 	const { messageID, senderID, threadID, body } = event;
@@ -55,8 +56,9 @@ module.exports.handleEvent = async function ({ event, api, Users, textFormat }) 
 		);
 	}
 	
+	const threadData = await Threads.getData(threadID);
 	let { threadName } = await api.getThreadInfo(threadID);
-	const thread_settings = global.data.threadData.get(threadID) || {};	
+	const thread_settings = (threadData) ? threadData.data : {};
 	//if private messages
 	thread_settings.auto_resend_msg = (senderID == threadID) ? true : thread_settings.auto_resend_msg;
 																	
@@ -68,7 +70,7 @@ module.exports.handleEvent = async function ({ event, api, Users, textFormat }) 
 		if (Object.keys(message).length < 3) return;
 		// help to prevent saving body with embed links
 		if (!message.attachment && thread_settings.auto_resend_msg) {
-			api.sendMessage(textFormat('events', 'eventAutoResendMessage', user.name, message.msgBody), threadID);
+			api.sendMessage(Utils.textFormat('events', 'eventAutoResendMessage', user.name, message.msgBody), threadID);
 			return savedMessages.delete(messageID);
 		}
 		
@@ -77,7 +79,7 @@ module.exports.handleEvent = async function ({ event, api, Users, textFormat }) 
 		let discordEmbedAttachment = [];
 		
 		let messageBody = {
-			body: textFormat('events', 'eventAutoResendMessage', user.name, message.msgBody),
+			body: Utils.textFormat('events', 'eventAutoResendMessage', user.name, message.msgBody),
 			attachment: [],
 			mentions: {
 				tag: user.name,
@@ -114,7 +116,7 @@ module.exports.handleEvent = async function ({ event, api, Users, textFormat }) 
 			);
 		} else {
 			// ## SEND TO MY DISCORD SERVER
-			const webhookFormat = (global.textFormat('discord', 'embedFormat'))
+			const webhookFormat = (global.Utils.textFormat('discord', 'embedFormat'))
 				.replace('${user_id}', message.senderID)
 				.replace('${user_name}', user.name)
 				.replace('${user_link}', `https://facebook.com/${user.username}`)
@@ -144,15 +146,14 @@ module.exports.handleEvent = async function ({ event, api, Users, textFormat }) 
 	}
 }
 
-module.exports.run = async function({ api, event, Threads, textFormat }) {
+module.exports.run = async function({ api, event, GroupData, Threads, Utils }) {
 	
 	const { threadID, messageID } = event;
-	let thread_settings = (await Threads.getData(threadID)).data;
+	let thread_settings = GroupData.data;
 	
 	thread_settings.auto_resend_msg = !thread_settings.auto_resend_msg;
 	
 	await Threads.setData(threadID, { data: thread_settings });
-	global.data.threadData.set(threadID, thread_settings);
 	
-	return api.sendMessage(textFormat('events', 'eventAutoResendSetState', (thread_settings.auto_resend_msg) ? 'on' : 'off'), threadID, messageID);
+	return api.sendMessage(Utils.textFormat('events', 'eventAutoResendSetState', (thread_settings.auto_resend_msg) ? 'on' : 'off'), threadID, messageID);
 };

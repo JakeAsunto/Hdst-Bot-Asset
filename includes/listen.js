@@ -4,11 +4,11 @@ module.exports = function({ api, models }) {
 	const moment = require('moment-timezone');
 	const axios = require('axios');
 	
-	const Utils = require(`${global.HADESTIA_BOT_CLIENT.mainPath}/scripts/utils.js`)({ api, Users, Banned, Threads });
 	const Users = require('./controllers/controller_users')({ models, api }),
 		Threads = require('./controllers/controller_threads')({ models, api }),
 		Banned = require('./controllers/controller_banned')({ models, api });
 	
+	const Utils = require(`${global.HADESTIA_BOT_CLIENT.mainPath}/scripts/utils.js`)({ api, Users, Banned, Threads });
 	const databaseConfig = require('../json/databaseConfig.json');
 	const GroupDataConfig = databaseConfig.group_data_config;
 	const UserDataConfig = databaseConfig.user_data_config;
@@ -66,7 +66,7 @@ module.exports = function({ api, models }) {
 				}
 			}
 			
-			logger.loader(Utils.getText('listen', 'loadedEnvironmentThread'));
+			Utils.logger.loader(Utils.getText('listen', 'loadedEnvironmentThread'));
 			
 			for (const userData of users) {
 				
@@ -104,42 +104,15 @@ module.exports = function({ api, models }) {
 				}
 			}
 			
-			logger.loader(Utils.getText('listen', 'loadedEnvironmentUser'))
+			Utils.logger.loader(Utils.getText('listen', 'loadedEnvironmentUser'))
 			Utils.logger(Utils.getText('listen', 'successLoadEnvironment'), '[ DATABASE ]');
 			
 		} catch (error) {
 			console.log(error);
-			return logger.loader(Utils.getText('listen', 'failLoadEnvironment', error), 'error');
+			return Utils.logger.loader(Utils.getText('listen', 'failLoadEnvironment', error), 'error');
 		}
 		
 	}());
-	
-	
-	/// COMMANDS AND EVENTS MODULE LATE INITIALIZATION ///
-	
-	// # Commands Late Init
-	global.HADESTIA_BOT_CLIENT.commands.forEach(function (name, module) {
-		try {
-			if (module.lateInit) {
-				console.log('Late Init :' + name);
-				module.lateInit({ api, models, Utils, Users, Banned, Threads });
-			}
-		} catch (error) {
-			throw new Error(JSON.stringify(error));
-		}
-	});
-		
-	// # Events Late Init
-	global.HADESTIA_BOT_CLIENT.events.forEach(function (name, module) {
-		try {
-			if (module.lateInit) {
-				console.log('Late Init :' + name);
-				module.lateInit({ api, models, Utils, Users, Banned, Threads });
-			}
-		} catch (error) {
-			throw new Error(JSON.stringify(error));
-		}
-	});
 	
 	Utils.logger(`${api.getCurrentUserID()} - [ ${global.HADESTIA_BOT_CONFIG.PREFIX} ] • ${(!global.HADESTIA_BOT_CONFIG.BOTNAME) ? 'This bot was forked & modified from original made by CatalizCS and SpermLord' : global.HADESTIA_BOT_CONFIG.BOTNAME}`, '[ BOT INFO ]');
 	
@@ -170,7 +143,7 @@ module.exports = function({ api, models }) {
 	
 	const handleCreateDatabase = require('./handle/handleCreateDatabase')(handleInputs);
 
-	logger.loader(`====== ${Date.now() - global.HADESTIA_BOT_CLIENT.timeStart}ms ======`);
+	Utils.logger.loader(`====== ${Date.now() - global.HADESTIA_BOT_CLIENT.timeStart}ms ======`);
 
 
 	// DEFINE DATLICH PATH
@@ -231,7 +204,7 @@ module.exports = function({ api, models }) {
 
 	const tenMinutes = 10 * 60 * 1000;
 
-	logger.loader(`====== ${Date.now() - global.HADESTIA_BOT_CLIENT.timeStart}ms ======`);
+	Utils.logger.loader(`====== ${Date.now() - global.HADESTIA_BOT_CLIENT.timeStart}ms ======`);
 	
 	const checkAndExecuteEvent = async () => {
 
@@ -323,6 +296,33 @@ module.exports = function({ api, models }) {
 	}
 	
 	setInterval(checkAndExecuteEvent, tenMinutes / 10);
+	
+	/// COMMANDS AND EVENTS MODULE LATE INITIALIZATION ///
+	const { events, commands } = global.HADESTIA_BOT_CLIENT;
+	
+	// # Commands Late Init
+	for (const [key, module] of commands.entries()) {
+		try {
+			if (module.lateInit) {
+				console.log('Late Init :' + name);
+				module.lateInit({ api, models, Utils, Users, Banned, Threads });
+			}
+		} catch (error) {
+			throw new Error(JSON.stringify(error));
+		}
+	}
+		
+	// # Events Late Init
+	for (const [key, module] of events.entries()) {
+		try {
+			if (module.lateInit) {
+				console.log('Late Init :' + name);
+				module.lateInit({ api, models, Utils, Users, Banned, Threads });
+			}
+		} catch (error) {
+			throw new Error(JSON.stringify(error));
+		}
+	});
 
 
 	//////////////////////////////////////////////////
@@ -330,13 +330,19 @@ module.exports = function({ api, models }) {
 	/////////////////////////////////////////////////
 
 	return async (event) => {
-		(event.body !== undefined) ? event.body = (event.body).normalize('NFKD') : '';
+		
+		event.body = (event.body !== undefined) ? (event.body).normalize('NFKD') : '';
 		// type Object if has data else return false
         const bannedUserData = (event.senderID) ? await Banned.getData(event.senderID) : false;
         const bannedGroupData = (event.threadID && event.isGroup) ? await Banned.getData(event.threadID) : false;
         
+        const groupData = await Threads.getData(event.threadID) || false;
+        const userData = await Users.getData(event.senderID) || false;
+        
         const input = {
 			event,
+			userData,
+			groupData,
 			bannedUserData,
 			bannedGroupData
 		}

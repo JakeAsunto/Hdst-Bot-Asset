@@ -4,13 +4,15 @@ module.exports.config = {
 	version: '1.0.0',
 	credits: 'Hadestia',
 	description: 'prevent new members to join',
+	envConfig: {
+		needsDataFetching: true
+	}
 };
 
 module.exports.run = async function ({ event, api, Utils, Threads, Users }) {
 	
-	const threadInfo = await api.getThreadInfo(event.threadID);
-	const threadData = await Threads.getData(event.threadID) || { data: {} };
-	const data = threadData.data;
+	const threadInfo = GroupData.threadInfo;
+	const data = GroupData.data;
 
 	if (event.logMessageData.addedParticipants.some(i => i.userFbId == api.getCurrentUserID())) {
 		return;
@@ -33,7 +35,7 @@ module.exports.run = async function ({ event, api, Utils, Threads, Users }) {
 				user.userFbId,
 				event.threadID,
 				async function (err) {
-					if (err) return api.sendMessage(Utils.textFormat('group', 'groupAntiJoinError'), event.threadID);
+					if (err) return api.sendMessage(Utils.textFormat('group', 'groupAntiJoinError'), event.threadID, ()=>{});
 				}
 			);
 		}

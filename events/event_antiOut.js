@@ -3,13 +3,15 @@ module.exports.config = {
 	eventType: ['log:unsubscribe'],
 	version: '0.0.1',
 	credits: 'Hadestia',
-	description: 'try to add back users from the group'
+	description: 'try to add back users from the group',
+	envConfig: {
+		needsDataFetching: true
+	}
 };
 
-module.exports.run = async function ({ event, api, Utils, Threads, Users }) {
+module.exports.run = async function ({ event, api, GroupData, Utils, Threads, Users }) {
 	
-	const threadData = await Threads.getData(event.threadID);
-	const data = (threadData) ? threadData.data : {};
+	const data = GroupData.data;
 	
 	if (event.logMessageData.leftParticipantFbId == api.getCurrentUserID()) {
 		try {

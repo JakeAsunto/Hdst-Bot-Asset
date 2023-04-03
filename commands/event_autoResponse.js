@@ -8,24 +8,27 @@ module.exports.config = {
     usages: '',
     envConfig: {
     	groupCommandOnly: true,
+    	needsDataFetching: true,
 		handleEvent_allowBannedUsers: true,
 		handleEvent_allowBannedThreads: true,
 		handleEvent_allowDirectMessages: true
 	}
 }
 
-module.exports.handleEvent = async ({ api, event, Users }) => {
+module.exports.handleEvent = async ({ api, event, Utils, Users, Threads }) => {
 	
-	const threadSettings = global.data.threadData.get(event.threadID) || {};
-	if (event.body === undefined || event.body == '') return;
+	const threadData = await Threads.getData(threadID);
 	
+	if (event.isGroup && !threadData) return;
+	
+	const threadSettings = (threadData) ? threadData.data || {};
 	const { body, mentions, threadID, messageID, senderID } = event;
 	
 	const dictionary = require('../../json/autoResponse.json');
 	const senderBody = body.toLowerCase();
 	
 	if (senderBody === 'prefix') {
-		return api.sendMessage((await constructMessage(api, event, 'Hey!, looking for me? This is my prefix\n❱ ${prefix} ❰', Users)), threadID, messageID);
+		return api.sendMessage((await constructMessage(api, event, 'Hey!, looking for me? This is my prefix\n❱ ${prefix} ❰', Users, Threads)), threadID, messageID);
 	}
 	
 	//if private messages
@@ -34,7 +37,7 @@ module.exports.handleEvent = async ({ api, event, Users }) => {
 	if (!threadSettings.auto_response_listener) return;
 	
 	// Ignore messages with bot prefix
-	if (senderBody.startsWith(threadSettings.PREFIX || global.config.PREFIX)) {
+	if (senderBody.startsWith(threadSettings.PREFIX || global.HADESTIA_BOT_CONFIG.PREFIX)) {
 		return;
 	// avoid interaction if user mentioned this bot, (mentioning bot can also be a prefix for command (see handleCommand.js))
 	} else if (senderBody.startsWith('@')) {
@@ -42,10 +45,6 @@ module.exports.handleEvent = async ({ api, event, Users }) => {
 			return;
 		}
 	}
-	/* avoid interaction on other conversation (deprecated)
-	} else if (event.type == 'message_reply') {
-		if (event.messageReply && event.messageReply.senderID !== global.botUserID) return;
-	}*/
 	
 	for (const type in dictionary) {
 		
@@ -56,7 +55,7 @@ module.exports.handleEvent = async ({ api, event, Users }) => {
 			for (const match of typeProperty.matches) {
 				if (senderBody === match) {
 					const responseText = typeProperty.response[Math.floor(Math.random() * typeProperty.response.length)];
-					const toSend = await constructMessage(api, event, responseText, Users);
+					const toSend = await constructMessage(api, event, responseText, Users, Threads);
 					return api.sendMessage(toSend, threadID, messageID);
 				}
 			}
@@ -66,7 +65,7 @@ module.exports.handleEvent = async ({ api, event, Users }) => {
 				for (const match of typeProperty.matches) {
 					if (senderBody.indexOf(match) !== -1) {
 						const responseText = typeProperty.response[Math.floor(Math.random() * typeProperty.response.length)];
-						const toSend = await constructMessage(api, event, responseText, Users);
+						const toSend = await constructMessage(api, event, responseText, Users, Threads);
 						return api.sendMessage(toSend, threadID, messageID);
 					}
 				}
@@ -75,7 +74,7 @@ module.exports.handleEvent = async ({ api, event, Users }) => {
 			for (const match of typeProperty.matches) {
 				if (senderBody.indexOf(match) !== -1) {
 					const responseText = typeProperty.response[Math.floor(Math.random() * typeProperty.response.length)];
-					const toSend = await constructMessage(api, event, responseText, Users);
+					const toSend = await constructMessage(api, event, responseText, Users, Threads);
 					return api.sendMessage(toSend, threadID, messageID);
 				}
 			}
@@ -83,21 +82,18 @@ module.exports.handleEvent = async ({ api, event, Users }) => {
 			for (const match of typeProperty.matches) {
 				if (senderBody.indexOf(match) !== -1) {
 					const responseText = typeProperty.response[Math.floor(Math.random() * typeProperty.response.length)];
-					return global.sendReaction.custom(api, event, responseText);
+					return Utils.sendReaction.custom(api, event, responseText);
 				}
 			}
 		}
 	}
 }
 
-module.exports.run = async function ({ api, event, Threads }) {
-
+module.exports.run = async function ({ api, event, GroupData, Threads, Utils }) {
+	if (!GroupData) return;
+	
 	const { threadID, messageID } = event;
-	
-	if (threadID.length < 16) return 'inaccessible_outside_gc';
-	
-	
-	let data = (await Threads.getData(threadID)).data;
+	let data = GroupData.data;
 	
 	
 	// set initial state when not set
@@ -110,23 +106,24 @@ module.exports.run = async function ({ api, event, Threads }) {
 	const state = data.auto_response_listener;
 	// update data
 	await Threads.setData(threadID, { data });
-	global.data.threadData.set(threadID, data);
 	// send response
 	return api.sendMessage(
-		textFormat('cmd', `eventAutoResponse${(state) ? 'On' : 'Off'}`),
+		Utils.textFormat('cmd', `eventAutoResponse${(state) ? 'On' : 'Off'}`),
 		threadID,
-		global.autoUnsend,
+		Utils.autoUnsend,
 		messageID
 	);
 }
 
-async function constructMessage(api, event, text, Users) {
+async function constructMessage(api, event, text, Users, Threads) {
 	
 	const moment = require('moment-timezone');
 	const hour = moment.tz('Asia/Manila').format('HH');
 	
-	const threadSetting = global.data.threadData.get(event.threadID) || {};
-	const botPrefix = (threadSetting.hasOwnProperty('PREFIX')) ? threadSetting.PREFIX : global.config.PREFIX;
+	const threadData = await Threads.getData(threadID);
+	const threadSetting = threadData.data;
+	
+	const botPrefix = (threadSetting.hasOwnProperty('PREFIX')) ? threadSetting.PREFIX : global.HADESTIA_BOT_CONFIG.PREFIX;
 	// get user name
 	const sender = await Users.getNameUser(event.senderID);
 	const single_name = sender.split(' ');

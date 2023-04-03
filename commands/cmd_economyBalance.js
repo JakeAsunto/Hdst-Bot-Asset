@@ -44,7 +44,7 @@ module.exports.run = async function ({ api, args, event, returns, Utils, Prefix,
 		}
 		
 		// GET CURRENT USER LEADERBOARD POSITION
-		const leaderboards = await leaderboard.sortLeaderboard(ID, economy, '', Users);
+		const leaderboards = await leaderboard.sortLeaderboard(ID, economy, '', Users, Utils);
 		
 		const currency = threadData.data.default_currency || economySystem.config.default_currency;
 	

@@ -5,8 +5,8 @@
         "https://facebook.com/mensaherong.iantot",
         "This repository was linked to bot assets repository of Hadestia that include assets auto updater."
     ],
-    "VERSION": "6.11.22 [Beta]",
-    "CHANGELOGS": "- As usual, Fix minor bugs.\n\n- Make structure more optimize.\n\n- Refactor bot structure, and removes vulnerable codes from the original structure (Mirai).\n\n- Lessen the used of global variable from the original structure.\n\n- Removes most of the command, will \nupdate one by one due to update.\n\n- Make some horizontal lines more thinner.\n\n- Rework `help` command.\n\n- Add preset command categories instead of depending on command configurations.\n\n● Bot version was currently set to `Beta` due to major changes.",
+    "VERSION": "6.11.25 [Beta]",
+    "CHANGELOGS": "- As usual, Fix minor bugs.\n\n● Bot version was currently set to `Beta` due to major changes.",
     "PRIORITY": {
         "fileTree.js": {
             "path": "scripts/"

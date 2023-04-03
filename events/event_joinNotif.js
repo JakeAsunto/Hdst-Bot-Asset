@@ -14,7 +14,7 @@ module.exports.config = {
 	}
 };
 
-module.exports.run = async function({ api, event, Threads, Utils }) {
+module.exports.run = async function({ api, event, Utils }) {
 
 	//const { Readable } = require('stream');
 	const { threadID, logMessageData } = event;
@@ -88,7 +88,7 @@ module.exports.run = async function({ api, event, Threads, Utils }) {
 		} catch (err) {
 			//Utils.logger(err, 'error');
 			console.log(err);
-			global.logModuleErrorToAdmin(err, __filename, event);
+			Utils.logModuleErrorToAdmin(err, __filename, event);
 		}
 	// if single member
 	} else {

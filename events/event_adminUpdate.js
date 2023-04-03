@@ -3,41 +3,37 @@ module.exports.config = {
 	eventType: ['log:thread-admins','log:thread-name', 'log:user-nickname','log:thread-icon','log:thread-color'],
 	version: '1.0.1',
 	credits: 'Mirai Team',
-	description: 'Update team information quickly'
+	description: 'Update team information quickly',
+	envConfig: {
+		needsDataFetching: true
+	}
 };
 
-module.exports.run = async function ({ event, api, Utils, Threads, Users }) {
+module.exports.run = async function ({ event, api, GroupData, Utils, Threads, Users }) {
 	
 	const fs = require('fs');
     const { threadID, logMessageType, logMessageData } = event;
 
-    const threadData = await Threads.getData(threadID);
-    if (!threadData) return;
-    
-    const data = threadData.data;
+    const data = GroupData.data;
     
     if (!data.adminUpdate) return;
 
     try {
     	
-        let dataThread = threadData.threadInfo;
+        let dataThread = GroupData.threadInfo;
         
         switch (logMessageType) {
         	
             case 'log:thread-admins':
             	
-            	let target = { name: 'A member' };
-            	const user = await Users.getData(logMessageData.TARGET_ID);
-				if (user) {
-					target = user;
-				}
-				
+            	const user = await Users.getNameUser(logMessageData.TARGET_ID);
+            
             	if (logMessageData.ADMIN_EVENT == 'add_admin') {
                 	
                     dataThread.adminIDs.push({ id: logMessageData.TARGET_ID })
 						
 					api.sendMessage(
-						Utils.textFormat('group', 'groupGroupUpdatePromote', target.name || logMessageData.TARGET_ID),
+						Utils.textFormat('group', 'groupGroupUpdatePromote', user || logMessageData.TARGET_ID),
 						threadID,
 					);
                     
@@ -46,7 +42,7 @@ module.exports.run = async function ({ event, api, Utils, Threads, Users }) {
                     dataThread.adminIDs = dataThread.adminIDs.filter(item => item.id != logMessageData.TARGET_ID);
                     
 					api.sendMessage(
-						Utils.textFormat('group', 'groupGroupUpdateDemote', target.name || logMessageData.TARGET_ID),
+						Utils.textFormat('group', 'groupGroupUpdateDemote', user || logMessageData.TARGET_ID),
 						threadID,
                     );
                 }
@@ -56,7 +52,7 @@ module.exports.run = async function ({ event, api, Utils, Threads, Users }) {
             
                 dataThread.threadName = event.logMessageData.name || 'No name';
 				api.sendMessage(
-					global.textFormat('group', 'groupGroupUpdateGroupName', dataThread.threadName),
+					Utils.textFormat('group', 'groupGroupUpdateGroupName', dataThread.threadName),
 					threadID
                 );
                 break;

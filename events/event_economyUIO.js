@@ -4,17 +4,17 @@ module.exports.config = {
 	version: '1.0.3',
 	credits: 'Hadestia',
 	description: 'Set up user economy when joined or leave',
-	dependencies: {
-		'fs-extra': ''
+	envConfig: {
+		needsDataFetching: true
 	}
 };
 
-module.exports.run = async function({ api, event, Threads, Utils }) {
+module.exports.run = async function({ api, event, GroupData, Threads, Utils }) {
 	
 	const { threadID } = event;
 	
 	try {
-		const threadData = await Threads.getData(threadID);
+		const threadData = GroupData;
 		let settings = threadData.data;
 		let economy = threadData.economy;
 		let inventory = threadData.inventory;

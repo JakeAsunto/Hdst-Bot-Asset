@@ -1,6 +1,8 @@
 module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
 	
-    return function({ event, bannedUserData, bannedGroupData }) {
+    return function({ event, bannedUserData, bannedGroupData, groupData, userData }) {
+    	
+    	if (!groupData || !userData) return;
     	
     	const dateNow = Date.now();
 
@@ -8,11 +10,10 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
 
         const { cooldowns, commands, eventRegistered } = global.HADESTIA_BOT_CLIENT;
 
-        var { senderID, threadID } = event;
+        let { senderID, threadID } = event;
 
-        var senderID = String(senderID);
-
-        var threadID = String(threadID);
+        senderID = String(senderID);
+        threadID = String(threadID);
 		
         // LEGACY CODE: if (bannedUsers.has(senderID) || bannedThreads.has(threadID) || allowInbox == !![] && senderID == threadID) return;
 

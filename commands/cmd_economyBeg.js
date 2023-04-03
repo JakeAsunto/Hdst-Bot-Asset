@@ -37,7 +37,7 @@ module.exports.run = async function ({ api, args, event, returns, Utils, Prefix,
 			const timeB = new Date(Date.now());
 			const countdown = await Utils.getRemainingTime(Math.abs(timeA - timeB)/1000)
 			return api.sendMessage(
-				`Quit begging, You may ask me money again in ${toString}.`,
+				`Quit begging, You may ask me money again in ${countdown}.`,
 				threadID,
 				Utils.autoUnsend,
 				messageID
