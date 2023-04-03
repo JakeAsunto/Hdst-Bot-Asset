@@ -12,7 +12,8 @@ module.exports.config = {
 	aliases: [ 'beg' ],
 	envConfig: {
 		groupCommandOnly: true,
-		needsDataFetching: true
+		needUserData: true,
+		needGroupData: true
 	}
 }
 

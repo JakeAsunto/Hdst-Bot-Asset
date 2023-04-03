@@ -19,22 +19,27 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
 
         for (const eventReg of eventRegistered) {
         	
-			let pass1 = true; // user pass
-			let pass2 = true; // group pass
-			let pass3 = true; // PM pass
-			
             const command = commands.get(eventReg);
 			const config = command.config.envConfig || {};
-			const allowBannedUser = config.handleEvent_allowBannedUsers || false;
+			const allowBannedUser =  || false;
 			const allowBannedGroup = config.handleEvent_allowBannedThreads || false;
 			const allowDirectMessage = config.handleEvent_allowDirectMessages || false;
+			const needGroupData = config.needGroupData || false;
+			const needUserData = config.needUserData || false;
+		
+			// allow ban User
+			let pass1 = (bannedUserData) ? config.handleEvent_allowBannedUsers || false : true;
+			// allow ban threads
+			let pass2 = (bannedGroupData) ? config.handleEvent_allowBannedThreads || false : true;
+			// allow direct message
+			let pass3 = (senderID == threadID) ? config.handleEvent_allowDirectMessages || false : true;
+			// needs group data or user data
+			let pass4 = (config.needGroupData) ? config.needGroupData && groupData : true;
+			let pass5 = (config.needUserData) ? config.needUserData && userData : true;
 			
-			if (bannedUserData && !allowBannedUser) { pass1 = false; }
-			if (bannedGroupData && !allowBannedGroup) { pass2 = false; }
-			if (senderID == threadID && !allowDirectMessage) { pass3 = false; }
 			// PATCH: 6.10.3 @Hadestia
 			// checks whether command's handleEvent can interact with banned users/groups or even direct messages
-			if (pass1 && pass2 && pass3) {
+			if (pass1 && pass2 && pass3 && pass4 && pass5) {
 				
             	if (!HADESTIA_BOT_CLIENT.cooldowns.has(command.config.name)) {
 					HADESTIA_BOT_CLIENT.cooldowns.set(command.config.name, new Map());

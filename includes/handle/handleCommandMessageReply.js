@@ -1,6 +1,6 @@
 module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
 	
-    return async function({ event }) {
+    return async function({ event, groupData, userData }) {
     	
     	const { body, messageID, senderID, threadID, messageReply } = event;
     
@@ -20,37 +20,38 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
         for (const mrReg of messageReplyRegistered) {
 
             const command = commands.get(mrReg);
+            
+            const config = command.config.envConfig || {};
+            const gDataPass = (config.needGroupData) ? config.needGroupData && groupData : true
+			const uDataPass = (config.needUserData) ? config.needUserData && userData : true
+			
+			if (gDataPass && uDataPass) {
+            	try {
+                	const Obj = {};
 
-            try {
-
-                const Obj = {};
-
-                Obj.api = api;
+                	Obj.api = api;
                 
-                Obj.event = event;
+                	Obj.event = event;
 
-                Obj.models = models;
+               	 Obj.models = models;
                 
-                Obj.Utils = Utils;
+               	 Obj.Utils = Utils;
 
-                Obj.Users = Users;
+               	 Obj.Users = Users;
                 
-                Obj.Banned = Banned;
+              	  Obj.Banned = Banned;
 
-                Obj.Threads = Threads;
+                	Obj.Threads = Threads;
 
-                Obj.getText = Utils.getModuleText(command, event);
+               	 Obj.getText = Utils.getModuleText(command, event);
 
-                if (command) command.handleMessageReply(Obj);
-
-            } catch (error) {
-				console.log(error);
-                Utils.logger(Utils.getText('handleCommandEvent', 'moduleError', command.config.name, error), 'error');
-
-            }
-
+               	 if (command) command.handleMessageReply(Obj);
+               
+         	   } catch (error) {
+					console.log(error);
+               	 Utils.logger(Utils.getText('handleCommandEvent', 'moduleError', command.config.name, error), 'error');
+           	 }
+			}
         }
-
-    };
-
-};
+    }
+}

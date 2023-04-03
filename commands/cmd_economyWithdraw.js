@@ -11,6 +11,8 @@ module.exports.config = {
 	cooldowns: 60,
 	aliases: [ 'with' ],
 	envConfig: {
+		needUserData: true,
+		needGroupData: true,
 		requiredArgument: 1,
 		groupCommandOnly: true
 	}

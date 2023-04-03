@@ -11,6 +11,8 @@ module.exports.config = {
 	aliases: [ 'give' ],
 	cooldowns: 60,
 	envConfig: {
+		needUserData: true,
+		needGroupData: true,
 		requiredArgument: 2,
 		groupCommandOnly: true
 	}

@@ -11,6 +11,8 @@ module.exports.config = {
 	cooldowns: 5,
 	aliases: [ 'bal' ],
 	envConfig: {
+		needUserData: true,
+		needGroupData: true,
 		groupCommandOnly: true
 	}
 }

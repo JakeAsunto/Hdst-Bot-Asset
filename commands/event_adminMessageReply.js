@@ -30,7 +30,7 @@ module.exports.handleMessageReply = async function ({ api, event, Utils, Threads
 			// handle reply from other thread
 			if (!ADMINBOT.includes(threadID)) {
 			
-				const group = (event.isGroup) ? Threads.getInfo(threadID) : {};
+				const group = (event.isGroup) ? await Threads.getInfo(threadID) : {};
 				const sender = (await api.getUserInfo(senderID))[senderID];
 			
 				// contruct message that will send to admin

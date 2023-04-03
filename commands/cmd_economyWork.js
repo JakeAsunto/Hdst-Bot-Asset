@@ -11,6 +11,8 @@ module.exports.config = {
 	cooldowns: 0,
 	aliases: [ 'earn' ],
 	envConfig: {
+		needUserData: true,
+		needGroupData: true,
 		groupCommandOnly: true
 	}
 }

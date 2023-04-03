@@ -12,6 +12,8 @@ module.exports.config = {
 	aliases: [ 'lb' ],
 	envConfig: {
 		requiredArgument: 0,
+		needUserData: true,
+		needGroupData: true,
 		groupCommandOnly: true
 	}
 }
@@ -49,7 +51,7 @@ module.exports.run = async function ({ api, args, event, returns, Utils, Prefix,
 		for (const data of returnArray) {
 			index += 1;
 			const number = await Utils.fancyFont.get(`${index}`, 1);
-			rankingMsg += `${number}. ${((data.name).toLowerCase() == 'facebook user') ? data.name : ((data.name).split(' ')).shift()} • ${currency}${(data.total).toLocaleString('en-US')}\n`;
+			rankingMsg += `${number}. ${(data.name).split(' ').shift()} • ${currency}${(data.total).toLocaleString('en-US')}\n`;
 		}
 		
 		//const fontedThreadName = await Utils.fancyFont.get(threadData.threadName || '', 1);
@@ -83,7 +85,7 @@ module.exports.sortLeaderboard = async function (userID, economy, mode = '', Use
 	
 	for (const id in economy) {
 		if (economy[id]) {
-			const user = Users.getData(id);
+			const user = await Users.getData(id);
 			const name = (user) ? user.name : `@user${id}`;
 			const total = (mode == '-cash') ? economy[id].hand : (mode == '-bank') ? economy[id].bank : (economy[id].bank + economy[id].hand) ;
 			rankingInfo.push({ id, name, total });

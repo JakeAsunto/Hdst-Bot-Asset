@@ -13,6 +13,8 @@ module.exports.config = {
 	cooldowns: 60,
 	aliases: [ 'eco' ],
 	envConfig: {
+		needUserData: true,
+		needGroupData: true,
 		requiredArgument: 2,
 		groupCommandOnly: true
 	}

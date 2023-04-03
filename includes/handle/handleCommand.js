@@ -110,7 +110,7 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
         const cmdEnvConfig = commandEnvConfig[command.config.name] || command.config.envConfig || {};
         
         // if command needs Data fetching and it's not yet initialize
-        if (cmdEnvConfig.needsDataFetching && ((event.isGroup && !groupData) || !userData)) {
+        if ((cmdEnvConfig.needGroupData && !groupData) || && (cmdEnvConfig.needUserData && !userData)) {
         	return api.sendMessage(Utils.textFormat('error', 'errOccured', 'Group/User data was initializing, Pls try again later. :)'), threadID, Utils.autoUnsend, messageID);
         }
         
