@@ -2,7 +2,7 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
 	
     const moment = require("moment");
 
-    return function({ event }) {
+    return async function({ event }) {
 
         const timeStart = Date.now()
 

@@ -8,7 +8,6 @@ module.exports.config = {
     usages: '',
     envConfig: {
     	groupCommandOnly: true,
-    	needsDataFetching: true,
 		handleEvent_allowBannedUsers: true,
 		handleEvent_allowBannedThreads: true,
 		handleEvent_allowDirectMessages: true
@@ -89,7 +88,6 @@ module.exports.handleEvent = async ({ api, event, Utils, Users, Threads }) => {
 }
 
 module.exports.run = async function ({ api, event, Threads, Utils }) {
-	if (!GroupData) return;
 	
 	const { threadID, messageID } = event;
 	const threadData = await Threads.getData(threadID);
