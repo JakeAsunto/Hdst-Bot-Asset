@@ -71,7 +71,7 @@ module.exports = function({ api, models }) {
 			
 			for (const userData of users) {
 				
-				const userID = String(user.userID);
+				const userID = String(userData.userID);
 				const UserData = userData.data;
 				
 				if (!UserData) {
@@ -88,20 +88,6 @@ module.exports = function({ api, models }) {
 						}
 						await Banned.setData(userID, { data });
 					}
-				
-					/*let changesCount = 0;
-					// Check for new Database Config (set to default if has)
-					for (const configName in UserDataConfig) {
-						if (!UserData[configName]) {
-							UserData[configName] = UserDataConfig[configName];
-							changesCount++;
-						}
-					}
-				
-					// Re-save (if only has changes to optimize)
-					if (changesCount > 0) {
-						await Users.setData(userID, { data: UserData });
-					}*/
 				}
 			}
 			
