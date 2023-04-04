@@ -76,19 +76,15 @@ module.exports = function({ Utils, Users, Threads, Banned }) {
             
             return;
 
-        } catch (err) {
-        	
+        } catch (err) {  	
 			console.log(err);
-			return throw err;
-
+			throw err;
         }
-
-    };
-
+    }
 }
 
 
-async function handleGroupData(input = {}, { job, threadID, databaseSystem, economySystem, Utils, Users, Threads, Banned }) {
+async function handleGroupData(init = {}, { job, threadID, databaseSystem, economySystem, Utils, Users, Threads, Banned }) {
 
 	const random = job[Math.floor(Math.random() * job.length)];
     const random1 = job[Math.floor(Math.random() * job.length)];
@@ -174,7 +170,7 @@ async function handleGroupData(input = {}, { job, threadID, databaseSystem, econ
 					
 					const bd = thisUserBannedData.data || {};
 					const banned = {
-						name: singleData.name
+						name: singleData.name,
 						caseID: bd.caseID || -1,
 						reason: bd.reason || databaseSystem.user_data_config.banned.reason,
 						dateIssued: bd.dateIssued || databaseSystem.user_data_config.banned.dateIssued
