@@ -1,14 +1,10 @@
-//Mod by Nhật Tân
-
-// ################ ANALYZED & DOCUMENTED By HADESTIA  ################ //
-
 module.exports = function({ Utils, Users, Threads, Banned }) {
-
+	
 	const databaseSystem = require(`${__dirname}/../../json/databaseConfig.json`); 
 	const economySystem = require(`${__dirname}/../../json/economySystem.json`); 
     const chalk = require("chalk");
-    
-    // nothing special here just a random hex color for console logging
+
+	// nothing special here just a random hex color for console logging
     let job = ["FF9900", "FFFF33", "33FFFF", "FF99FF", "FF3366", "FFFF66", "FF00FF", "66FF99", "00CCFF", "FF0099", "FF0066", "008E97", "F58220", "38B6FF", "7ED957", "97FFFF", "00BFFF", "76EEC6", "4EEE94", "98F5FF", "AFD788", "00B2BF", "9F79EE", "00FA9A"];
     
     return async function({ event }) {
@@ -56,7 +52,7 @@ module.exports = function({ Utils, Users, Threads, Banned }) {
                 
                 USER_ALL_DATA.data = new Object(databaseSystem.user_data_config);
                 
-                // IF USER WAS BANNED
+				// IF USER WAS BANNED
 				if (bannedUserData) {
 					const bd = bannedUserData.data || {};
 					const banned = {
@@ -181,18 +177,17 @@ async function handleGroupData(init = {}, { job, threadID, databaseSystem, econo
 							
 				// SAVE
 				await Users.setData(UID, { name: singleData.name, data: data });
-                Utils.logger(Utils.getText('handleCreateDatabase', 'newUser', chalk.hex("#" + random)(`New user:  `) + chalk.hex("#" + random1)(`${singleData.name}`) + "  ||  " + chalk.hex("#" + random2)(`${UID}`)), '[ USER ]');
+				Utils.logger(Utils.getText('handleCreateDatabase', 'newUser', chalk.hex("#" + random)(`New user:  `) + chalk.hex("#" + random1)(`${singleData.name}`) + "  ||  " + chalk.hex("#" + random2)(`${UID}`)), '[ USER ]');
 			}
 		} catch (e) {
 			console.log(e);
 		}
-    }
-    // SAVE
+	}
+	// SAVE
 	await Threads.setData(threadID, THREAD_ALL_DATA);
-	
 	// it means this was a new thread
 	if (!init.data) {
-    	Utils.logger(Utils.getText('handleCreateDatabase', 'newThread', chalk.hex("#" + random)(`New group: `) + chalk.hex("#" + random1)(`${threadID}`) + "  ||  " + chalk.hex("#" + random2)(`${threadIn4.threadName}`)), '[ THREAD ]');
-    }
+		Utils.logger(Utils.getText('handleCreateDatabase', 'newThread', chalk.hex("#" + random)(`New group: `) + chalk.hex("#" + random1)(`${threadID}`) + "  ||  " + chalk.hex("#" + random2)(`${threadIn4.threadName}`)), '[ THREAD ]');
+	}
 	return;
 }
