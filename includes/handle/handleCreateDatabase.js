@@ -36,102 +36,15 @@ module.exports = function({ Utils, Users, Threads, Banned }) {
 			// ####### IF GROUP CHAT ####### //
 		    
 			// check if this group chat does not exist from the table
-            if (!threadData && event.isGroup == !![]) {
-
-				// get group chat information
-                const threadIn4 = await Threads.getInfo(threadID);
-
-                const setting = {};
-				// set initial data for thread information on DB
-                setting.threadName = threadIn4.threadName
-
-                setting.adminIDs = threadIn4.adminIDs
-
-                setting.nicknames = threadIn4.nicknames;
-
-                const dataThread = setting;
-                
-				// set initial data for thread data on DB
-                const THREAD_ALL_DATA = {};
-                
-                THREAD_ALL_DATA.threadInfo = dataThread;
-
-                THREAD_ALL_DATA.data = new Object(databaseSystem.group_data_config);
-				
-				// IF THREAD WAS BANNED
-				if (bannedGroupData) {
-					const bd = bannedGroupData.data || {};
-					const banned = {
-						caseID: bd.caseID || -1,
-						reason: bd.reason || databaseSystem.group_data_config.banned.reason,
-						dateIssued: bd.dateIssued || databaseSystem.group_data_config.banned.dateIssued
-					}
-					THREAD_ALL_DATA.data.banned = banned;
-					global.HADESTIA_BOT_DATA.bannedThreads.set(threadID, banned);
-				}
-				
-				// default configuration for economy system for this group
-				for (const item in economySystem.config) {
-					THREAD_ALL_DATA.data[item] = economySystem.config[item];
-				}
-			
-                // HADESTIA IMPLEMENTATIONS //
-                
-                THREAD_ALL_DATA.economy = {};
-
-				THREAD_ALL_DATA.inventory = {};
-				
-				THREAD_ALL_DATA.afk = {};
-
-				//console.log(threadIn4);
-				
-                for (singleData of threadIn4.userInfo) {
-					
-					// sets each member a initial data for economy & inventory
-					const userEco = economySystem.userConfig;
-					// update user work cooldown to 1 minute so that data base for this group would be created first
-					userEco.work_cooldown = Date.now() + 60000;
-					THREAD_ALL_DATA.economy[String(singleData.id)] = userEco;
-					THREAD_ALL_DATA.inventory[String(singleData.id)] = {};
-					
-                    try {
-						// update member data on User table if exist
-						const UID = String(singleData.id);
-						const thisGroupUserData = await Users.getData(UID);
-						
-                    	if (thisGroupUserData) {
-                    	
-							await Users.setData(UID, { 'name': singleData.name });
-							
-						} else {
-							const data = new Object(databaseSystem.user_data_config);
-							const thisUserBannedData = await Banned.getData(UID);
-							
-							// IF USER WAS BANNED
-							if (thisUserBannedData) {
-								const bd = thisUserBannedData.data || {};
-								const banned = {
-									caseID: bd.caseID || -1,
-									reason: bd.reason || databaseSystem.user_data_config.banned.reason,
-									dateIssued: bd.dateIssued || databaseSystem.user_data_config.banned.dateIssued
-								}
-								data.banned = banned;
-							}
-							
-							// SAVE
-							await Users.createData(UID, { 'name': singleData.name, 'data': data });
-                            Utils.logger(Utils.getText('handleCreateDatabase', 'newUser', chalk.hex("#" + random)(`New user:  `) + chalk.hex("#" + random1)(`${singleData.name}`) + "  ||  " + chalk.hex("#" + random2)(`${UID}`)), '[ USER ]');
-                            
-						}
-
-                    } catch (e) {
-                        console.log(e);
-                    }
-                }
-                // SAVE
-				await Threads.setData(threadID, THREAD_ALL_DATA);
-                Utils.logger(Utils.getText('handleCreateDatabase', 'newThread', chalk.hex("#" + random)(`New group: `) + chalk.hex("#" + random1)(`${threadID}`) + "  ||  " + chalk.hex("#" + random2)(`${threadIn4.threadName}`)), '[ THREAD ]');
-
+            if (!threadData && event.isGroup) {
+				await handleGroupData(null, { job, threadID, databaseSystem, economySystem, Utils, Users, Threads, Banned });
+            } else {
+            	// Update this thread data every 5 minutes
+				const dateNow = Date.now();
+            	const nextUpdate = (new Date(threadData.updatedAt).getTime()) + (300 * 10000);
+            	if (nextUpdate < dateNow) {
+            		await handleGroupData(threadData, { job, threadID, databaseSystem, economySystem, Utils, Users, Threads, Banned });
+            	}
             }
 
             if (!userData) {
@@ -152,10 +65,11 @@ module.exports = function({ Utils, Users, Threads, Banned }) {
 						dateIssued: bd.dateIssued || databaseSystem.user_data_config.banned.dateIssued
 					}
 					USER_ALL_DATA.data.banned = banned;
+					await Banned.getData(senderID);
 				}
                 
                 // SAVE
-                await Users.createData(senderID, USER_ALL_DATA);
+                await Users.setData(senderID, USER_ALL_DATA);
                 Utils.logger(Utils.getText('handleCreateDatabase', 'newUser', chalk.hex("#" + random)(`New users: `) + chalk.hex("#" + random1)(`${infoUsers.name}`) + " || " + chalk.hex("#" + random2)(`${senderID}`)), '[ USER ]');
 
             }
@@ -163,11 +77,126 @@ module.exports = function({ Utils, Users, Threads, Banned }) {
             return;
 
         } catch (err) {
-
-            return console.log(err);
+        	
+			console.log(err);
+			return throw err;
 
         }
 
     };
 
+}
+
+
+async function handleGroupData(input = {}, { job, threadID, databaseSystem, economySystem, Utils, Users, Threads, Banned }) {
+
+	const random = job[Math.floor(Math.random() * job.length)];
+    const random1 = job[Math.floor(Math.random() * job.length)];
+    const random2 = job[Math.floor(Math.random() * job.length)];
+    
+	// get group chat information
+    const threadIn4 = await Threads.getInfo(threadID);
+
+    const setting = {}
+	// set initial data for thread information on DB
+    setting.threadName = threadIn4.threadName;
+	setting.adminIDs = threadIn4.adminIDs;
+	setting.nicknames = threadIn4.nicknames;
+	
+	// set initial data for thread data on DB
+    const THREAD_ALL_DATA = init;
+    THREAD_ALL_DATA.data = init.data || {};           
+    THREAD_ALL_DATA.threadInfo = setting;
+    THREAD_ALL_DATA.inventory = init.inventory || {};
+    THREAD_ALL_DATA.economy = init.economy || {};
+	THREAD_ALL_DATA.afk = init.afk || {};
+	
+	// default config
+	for (const item in databaseSystem.group_data_config) {
+		if (!THREAD_ALL_DATA.data[item]) {
+			THREAD_ALL_DATA.data[item] = databaseSystem.group_data_config[item];
+		}
+	}
+
+	// default configuration for economy system for this group
+	for (const item in economySystem.config) {
+		if (!THREAD_ALL_DATA.data[item]) {
+			THREAD_ALL_DATA.data[item] = economySystem.config[item];
+		}
+	}
+				
+	// IF THREAD WAS BANNED
+	if (bannedGroupData) {
+		const bd = bannedGroupData.data || {};
+		const banned = {
+			name: threadIn4.threadName,
+			caseID: bd.caseID || -1,
+			reason: bd.reason || databaseSystem.group_data_config.banned.reason,
+			dateIssued: bd.dateIssued || databaseSystem.group_data_config.banned.dateIssued
+		}
+		THREAD_ALL_DATA.data.banned = banned;
+		await Banned.setData(threadID, { data: banned });
+	}
+				
+	for (singleData of threadIn4.userInfo) {
+		// sets each member a initial data for economy & inventory
+		const UID = String(singleData.id);
+		
+		const userEco = THREAD_ALL_DATA.economy[UID] || {};
+		
+		for (const key in economySystem.userConfig) {
+			if (!userEco[key]) {
+				userEco[key] = economySystem.userConfig[key];
+			}
+		}
+		
+		THREAD_ALL_DATA.economy[UID] = userEco;
+
+        try {
+			// update member data on User table if exist
+			const thisGroupUserData = await Users.getData(UID);
+            if (thisGroupUserData) {
+            	
+            	const data = thisGroupUserData.data || {};
+            	for (const key in databaseSystem.user_data_config) {
+            		if (!data[key]) data[key] = databaseSystem.user_data_config[key];
+            	}
+            	
+				await Users.setData(UID, { 'name': singleData.name });
+				
+			} else {
+				
+				const data = new Object(databaseSystem.user_data_config);
+				const thisUserBannedData = await Banned.getData(UID);
+							
+				// IF USER WAS BANNED
+				if (thisUserBannedData) {
+					
+					const bd = thisUserBannedData.data || {};
+					const banned = {
+						name: singleData.name
+						caseID: bd.caseID || -1,
+						reason: bd.reason || databaseSystem.user_data_config.banned.reason,
+						dateIssued: bd.dateIssued || databaseSystem.user_data_config.banned.dateIssued
+					}
+					data.banned = banned;
+					await Banned.setData(UID, { data: banned });
+				}
+							
+				// SAVE
+				await Users.setData(UID, { name: singleData.name, data: data });
+                Utils.logger(Utils.getText('handleCreateDatabase', 'newUser', chalk.hex("#" + random)(`New user:  `) + chalk.hex("#" + random1)(`${singleData.name}`) + "  ||  " + chalk.hex("#" + random2)(`${UID}`)), '[ USER ]');
+			}
+		} catch (e) {
+			console.log(e);
+		}
+    }
+    // SAVE
+	await Threads.setData(threadID, THREAD_ALL_DATA);
+	
+	// it means this was a new thread
+	if (!init.data) {
+    	Utils.logger(Utils.getText('handleCreateDatabase', 'newThread', chalk.hex("#" + random)(`New group: `) + chalk.hex("#" + random1)(`${threadID}`) + "  ||  " + chalk.hex("#" + random2)(`${threadIn4.threadName}`)), '[ THREAD ]');
+    }
+	return;
 }

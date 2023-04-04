@@ -28,11 +28,10 @@ module.exports = function({ api, models }) {
 			let users = await Users.getAll(['userID', 'name', 'data']),
 				threads = await Threads.getAll(['threadID', 'threadInfo', 'data']);
 				
-			for (const thread of threads) {
+			for (const threadData of threads) {
 				
 				
 				const threadID = String(thread.threadID);
-				const threadData = await Threads.getData(threadID);
 				const Info = threadData.threadInfo;
 				const GroupData = threadData.data;
 				
@@ -52,7 +51,7 @@ module.exports = function({ api, models }) {
 						await Banned.setData(threadID, { data });
 					}
 					
-					let changesCount = 0;
+					/*let changesCount = 0;
 					// Check for new Database Config (set to default if has)
 					for (const configName in GroupDataConfig) {
 						if (!GroupData[configName]) {
@@ -64,16 +63,15 @@ module.exports = function({ api, models }) {
 					// Re-save (if only has changes to optimize)
 					if (changesCount > 0) {
 						await Threads.setData(threadID, { data: GroupData });
-					}
+					}*/
 				}
 			}
 			
 			Utils.logger.loader(Utils.getText('listen', 'loadedEnvironmentThread'));
 			
-			for (const user of users) {
+			for (const userData of users) {
 				
-				const userID = String(userData.userID);
-				const userData = await Users.getData(userID);
+				const userID = String(user.userID);
 				const UserData = userData.data;
 				
 				if (!UserData) {
@@ -91,7 +89,7 @@ module.exports = function({ api, models }) {
 						await Banned.setData(userID, { data });
 					}
 				
-					let changesCount = 0;
+					/*let changesCount = 0;
 					// Check for new Database Config (set to default if has)
 					for (const configName in UserDataConfig) {
 						if (!UserData[configName]) {
@@ -103,7 +101,7 @@ module.exports = function({ api, models }) {
 					// Re-save (if only has changes to optimize)
 					if (changesCount > 0) {
 						await Users.setData(userID, { data: UserData });
-					}
+					}*/
 				}
 			}
 			
@@ -341,14 +339,14 @@ module.exports = function({ api, models }) {
 		switch (event.type) {
 			
 			case 'message':
-			
+				
 			case 'message_reply':
 			
 				handleCommandMessageReply(input);
-			
+				
 			case 'message_unsend':
 			
-				handleCreateDatabase(input);
+				await handleCreateDatabase(input);
 				
 				handleCommand(input);
 				
@@ -369,10 +367,11 @@ module.exports = function({ api, models }) {
 				handleReaction(input);
 				
 				break;
-				
+			
 			default:
 			
 				break;
+		
 		}
 	};
 };
