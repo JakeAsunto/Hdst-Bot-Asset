@@ -166,5 +166,5 @@ module.exports.run = async function({ api, event, Threads, Utils }) {
 	
 	await Threads.setData(threadID, { data });
 	
-	return api.sendMessage(Utils.textFormat('events', 'eventAutoResendSetState', (thread_settings.auto_resend_msg) ? 'on' : 'off'), threadID, messageID);
+	return api.sendMessage(Utils.textFormat('events', 'eventAutoResendSetState', (data.auto_resend_msg) ? 'on' : 'off'), threadID, messageID);
 };

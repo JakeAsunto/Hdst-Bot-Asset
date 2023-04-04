@@ -9,6 +9,7 @@ module.exports = function({ api, models }) {
 		Banned = require('./controllers/controller_banned')({ models, api });
 	
 	const Utils = require(`${global.HADESTIA_BOT_CLIENT.mainPath}/scripts/utils.js`)({ api, Users, Banned, Threads });
+	
 	const databaseConfig = require('../json/databaseConfig.json');
 	const GroupDataConfig = databaseConfig.group_data_config;
 	const UserDataConfig = databaseConfig.user_data_config;
@@ -27,18 +28,19 @@ module.exports = function({ api, models }) {
 			let users = await Users.getAll(['userID', 'name', 'data']),
 				threads = await Threads.getAll(['threadID', 'threadInfo', 'data']);
 				
-			for (const threadData of threads) {
+			for (const thread of threads) {
 				
 				
-				const threadID = String(threadData.threadID);
+				const threadID = String(thread.threadID);
+				const threadData = await Threads.getData(threadID);
 				const Info = threadData.threadInfo;
-				const Data = threadData.data;
+				const GroupData = threadData.data;
 				
-				if (!Data || !Info) {
+				if (!GroupData || !Info) {
 					try { await Threads.delData(threadID); } catch (e) {};
 				} else {
 				
-					if (Data.isBanned) {
+					if (GroupData.isBanned) {
 						const banned = Data.banned;
 						const data = {
 							isGroup: true,
@@ -53,24 +55,25 @@ module.exports = function({ api, models }) {
 					let changesCount = 0;
 					// Check for new Database Config (set to default if has)
 					for (const configName in GroupDataConfig) {
-						if (!Data[configName]) {
-							Data[configName] = GroupDataConfig[configName];
+						if (!GroupData[configName]) {
+							GroupData[configName] = GroupDataConfig[configName];
 							changesCount++;
 						}
 					}
 				
 					// Re-save (if only has changes to optimize)
 					if (changesCount > 0) {
-						await Threads.setData(threadID, { data: Data });
+						await Threads.setData(threadID, { data: GroupData });
 					}
 				}
 			}
 			
 			Utils.logger.loader(Utils.getText('listen', 'loadedEnvironmentThread'));
 			
-			for (const userData of users) {
+			for (const user of users) {
 				
 				const userID = String(userData.userID);
+				const userData = await Users.getData(userID);
 				const UserData = userData.data;
 				
 				if (!UserData) {
