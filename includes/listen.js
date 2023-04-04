@@ -30,8 +30,7 @@ module.exports = function({ api, models }) {
 				
 			for (const threadData of threads) {
 				
-				
-				const threadID = String(thread.threadID);
+				const threadID = String(threadData.threadID);
 				const Info = threadData.threadInfo;
 				const GroupData = threadData.data;
 				
