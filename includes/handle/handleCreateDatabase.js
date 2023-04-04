@@ -33,7 +33,7 @@ module.exports = function({ Utils, Users, Threads, Banned }) {
 		    
 			// check if this group chat does not exist from the table
             if (!threadData && event.isGroup) {
-				await handleGroupData(null, { job, threadID, databaseSystem, economySystem, Utils, Users, Threads, Banned });
+				await handleGroupData(null, { job, threadID, bannedGroupData, databaseSystem, economySystem, Utils, Users, Threads, Banned });
             } else {
             	// Update this thread data every 5 minutes
 				const dateNow = Date.now();
@@ -80,7 +80,7 @@ module.exports = function({ Utils, Users, Threads, Banned }) {
 }
 
 
-async function handleGroupData(init = {}, { job, threadID, databaseSystem, economySystem, Utils, Users, Threads, Banned }) {
+async function handleGroupData(init = {}, { job, threadID, bannedGroupData, databaseSystem, economySystem, Utils, Users, Threads, Banned }) {
 
 	const random = job[Math.floor(Math.random() * job.length)];
     const random1 = job[Math.floor(Math.random() * job.length)];
