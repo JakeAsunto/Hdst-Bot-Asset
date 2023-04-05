@@ -23,6 +23,31 @@ module.exports = function ({ api, Users, Banned, Threads }) {
 		api.sendMessage(Utils.textFormat('error', 'errCmdExceptionError', err.message, prefix), event.threadID, ()=>{}, event.messageID);
 	}
 	
+	Utils.hasPermission = async function (senderID, threadID, permission, preferInfo, callback) {
+		
+		const isGroup = senderID !== threadID;
+		let eligible = false;
+		
+		try {
+			const threadInfo = (isGroup) ? (preferInfo) ? preferInfo : await Threads.getInfo(threadID) : {};
+			const is_admin_bot = global.HADESTIA_BOT_CONFIG.ADMINBOT.includes(senderID);
+			const is_admin_group = (isGroup) ? threadInfo.adminIDs.find(el => el.id == senderID) : false;
+			
+			if (permission == 1) {
+				eligible = (is_admin_group) ? true : false;
+			} else if (permission == 2) {
+				eligible = (is_admin_bot) ? true : false;
+			} else if (permission == 3) {
+				eligible = (is_admin_bot || is_admin_group) ? true : false;
+			} else if (permission == 0) {
+				eligible = true;
+			}
+		} catch (err) {
+			(callback) ? callback(err) : console.log(err);
+		}
+		return eligible;
+	}
+	
 	Utils.logModuleErrorToAdmin = async function (err, filename, event) {
 		console.error(filename, err);
 		let name = '<DIRECT MESSAGE>';

@@ -27,14 +27,14 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
 			const config = command.config.envConfig || {};
 			
 			// allow ban User
-			let pass1 = (bannedUserData && config.handleEvent_allowBannedUsers) ? config.handleEvent_allowBannedUsers : false;
+			let pass1 = (!config.handleEvent_allowBannedUsers) ? (bannedUserData) ? false : true : true;
 			// allow ban threads
-			let pass2 = (bannedGroupData && config.handleEvent_allowBannedThreads) ? config.handleEvent_allowBannedThreads : false;
+			let pass2 = (!config.handleEvent_allowBannedThreads) ? (bannedGroupData) ? false : true : true;
 			// allow direct message
-			let pass3 = (senderID == threadID && config.handleEvent_allowDirectMessages) ? config.handleEvent_allowDirectMessages : true;
+			let pass3 = (!config.handleEvent_allowDirectMessages) ? (senderID == threadID) ? false : true : true;
 			// needs group data or user data
-			let pass4 = (config.needGroupData) ? config.needGroupData && groupData : true;
-			let pass5 = (config.needUserData) ? config.needUserData && userData : true;
+			let pass4 = (config.needGroupData) ? (groupData) ? true : false : true;
+			let pass5 = (config.needUserData) ? (userData) ? true : false : true;
 			
 			// PATCH: 6.10.3 @Hadestia
 			// checks whether command's handleEvent can interact with banned users/groups or even direct messages
@@ -76,9 +76,4 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
        	 }
 		}
     }
-}
-
-
-function allowDirectMessage(enable = false, senderID, threadID) {
-	return enable && senderID == threadID;
 }

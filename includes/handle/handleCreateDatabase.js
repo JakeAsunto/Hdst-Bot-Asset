@@ -1,3 +1,5 @@
+const updatedThread = {};
+
 module.exports = function({ Utils, Users, Threads, Banned }) {
 	
 	const databaseSystem = require(`${__dirname}/../../json/databaseConfig.json`); 
@@ -48,8 +50,9 @@ module.exports = function({ Utils, Users, Threads, Banned }) {
             } else {
             	// Update this thread data every 5 minutes
 				const dateNow = Date.now();
-            	const nextUpdate = (new Date(threadData.updatedAt).getTime()) + (300 * 10000);
-            	if (nextUpdate < dateNow) {
+            	const nextUpdate = (new Date(threadData.updatedAt).getTime()) + (300 * 1000);
+            	if (nextUpdate < dateNow && !updatedThread[threadID]) {
+            		updatedThread[threadID] = true;
             		await handleGroupData(threadData, { job, threadID, databaseSystem, economySystem, Utils, Users, Threads, Banned });
             	}
             }
@@ -199,6 +202,10 @@ async function handleGroupData(oldData, { job, threadID, bannedGroupData, databa
 		Utils.logger(Utils.getText('handleCreateDatabase', 'newThread', chalk.hex("#" + random)(`New group: `) + chalk.hex("#" + random1)(`${threadID}`) + "  ||  " + chalk.hex("#" + random2)(`${threadIn4.threadName}`)), '[ THREAD ]');
 	} else {
 		Utils.logger(`Updated GROUP: ${threadIn4.threadName}(${threadID})`, 'database');
+	}
+	
+	if (updatedThread[threadID]) {
+		delete updatedThread[threadID];
 	}
 	return;
 }

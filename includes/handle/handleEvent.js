@@ -14,8 +14,8 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
 
         const { threadID, author } = event;
 
-        const bannedGroupData = await Banned.getData(threadID);
-        const bannedUserData = await Banned.getData(author);
+        const bannedGroupData = await Banned.getData(threadID || '');
+        const bannedUserData = await Banned.getData(author || '');
         const groupData = await Threads.getData(threadID);
         
         // Group Banned? User Banned? Is PM?

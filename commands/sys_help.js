@@ -106,7 +106,7 @@ module.exports.run = async function({ api, event, args, Utils, Prefix }) {
 			}
 			
 			if (categoryCommands.length == 0) {
-				msgBodyList = '`No Available Commands`';
+				msgBodyList = '\n!𝙽𝚘 𝚊𝚟𝚊𝚒𝚕𝚊𝚋𝚕𝚎 𝚌𝚘𝚖𝚖𝚊𝚗𝚍𝚜!\n';
 			}
 			
 			const categoryItem = categoryReference[requestCategory];

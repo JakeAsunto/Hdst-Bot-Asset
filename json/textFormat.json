@@ -16,7 +16,7 @@
     },
     "system": {
         "botUnderMaintenance": "🔴 Sorry but i'm under maintenance. Maybe try again later?",
-        "botPoked": "Hi! that's my prefix, need help?\nyou can run '%1help all' to view list of categories or '%1help' to see list of available commands.",
+        "botPoked": "Hello, need my service?\n\nUse `%1help` to view all categories.\nAnd `%1help all` for all available commands.",
         "botDefaultBio": "𝗳𝗼𝗿𝗺𝗲𝗿𝗹𝘆 𝗛𝗮𝗱𝗲𝘀𝘁𝗶𝗮\n𝙥𝙧𝙚𝙛𝙞𝙭: %1\n━━━━━━━━━━━━\nIan bot no.1",
         "botNicknameSetup": "[%1] ● %2",
         "botInfo": "● 𝗕𝗼𝘁 𝗜𝗻𝗳𝗼𝗿𝗺𝗮𝘁𝗶𝗼𝗻\n━━━━━━━━━━━━━━━━━━━━\n\n● 𝗢𝘄𝗻𝗲𝗿: %1\n%2\n\n✦ 𝗔𝗱𝗺𝗶𝗻𝘀:\n%3",

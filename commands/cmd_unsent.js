@@ -7,14 +7,19 @@ module.exports.config = {
 	commandCategory: 'other',
 	aliases: [ 'unsend', 'remove' ],
 	usages: '<!reply base command!>',
-	cooldowns: 0
+	cooldowns: 0,
+	envConfig: {
+		handleEvent_needPermission: true
+	}
 };
 
 module.exports.handleEvent = function ({ api, event, Utils }) {
 	
-	if (!['unsend', 'unsent', 'remove', 'delete'].includes(event.body)) return;
+	if (!['unsend', 'unsent', 'remove', 'delete'].includes(event.body.toLowerCase())) return;
+	if (Utils.hasPermission(event.senderID, event.threadID, this.config.hasPermssion)) {
+		this.run({ api, event, Utils });
+	}
 	
-	this.run({ api, event, Utils });
 }
 
 module.exports.run = function({ api, event, Utils }) {

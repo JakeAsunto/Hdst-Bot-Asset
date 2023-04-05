@@ -119,7 +119,7 @@ module.exports.run = async function ({ api, args, event, returns, Utils, Users }
 	
 	return api.sendMessage(
 		{
-			body: `${Utils.textFormat('canvas', 'fbcoverFillOutForm')} @${user.name || 'user'}`,
+			body: `${Utils.textFormat('canvas', 'fbcoverFillOutForm')} @${userName || 'user'}`,
 			mentions: [{
 				tag: `@${userName}`,
 				id: senderID
