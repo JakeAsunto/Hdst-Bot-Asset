@@ -8,7 +8,7 @@ module.exports.config = {
     	'moment-timezone': ''
     },
     envConfig: {
-		needsDataFetching: true
+		needGroupData: true
 	}
 };
 

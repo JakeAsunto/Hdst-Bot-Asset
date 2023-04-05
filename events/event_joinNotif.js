@@ -11,6 +11,9 @@ module.exports.config = {
 		'axios': '',
 		'path': '',
 		'jimp': ''
+	},
+	envConfig: {
+		needGroupData: true
 	}
 };
 

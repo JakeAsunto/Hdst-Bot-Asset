@@ -5,7 +5,7 @@ module.exports.config = {
 	credits: 'Hadestia',
 	description: 'try to add back users from the group',
 	envConfig: {
-		needsDataFetching: true
+		needGroupData: true
 	}
 };
 

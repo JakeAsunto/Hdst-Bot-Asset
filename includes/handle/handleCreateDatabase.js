@@ -3,7 +3,7 @@ module.exports = function({ Utils, Users, Threads, Banned }) {
 	const databaseSystem = require(`${__dirname}/../../json/databaseConfig.json`); 
 	const economySystem = require(`${__dirname}/../../json/economySystem.json`); 
     const chalk = require("chalk");
-
+    
 	// nothing special here just a random hex color for console logging
     let job = ["FF9900", "FFFF33", "33FFFF", "FF99FF", "FF3366", "FFFF66", "FF00FF", "66FF99", "00CCFF", "FF0099", "FF0066", "008E97", "F58220", "38B6FF", "7ED957", "97FFFF", "00BFFF", "76EEC6", "4EEE94", "98F5FF", "AFD788", "00B2BF", "9F79EE", "00FA9A"];
     
@@ -30,7 +30,6 @@ module.exports = function({ Utils, Users, Threads, Banned }) {
         try {
 			const inputData = {
 				job,
-				chalk,
 				threadID,
 				senderID,
 				bannedGroupData,
@@ -87,7 +86,9 @@ module.exports = function({ Utils, Users, Threads, Banned }) {
 }
 
 
-async function handleGroupData(oldData, { job, chalk, threadID, bannedGroupData, databaseSystem, economySystem, Utils, Users, Threads, Banned }) {
+async function handleGroupData(oldData, { job, threadID, bannedGroupData, databaseSystem, economySystem, Utils, Users, Threads, Banned }) {
+	
+	const chalk = require('chalk');
 	
 	const init = oldData || {};
 	const random = job[Math.floor(Math.random() * job.length)];

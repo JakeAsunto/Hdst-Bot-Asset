@@ -5,7 +5,7 @@ module.exports.config = {
 	credits: 'Mirai Team',
 	description: 'Update team information quickly',
 	envConfig: {
-		needsDataFetching: true
+		needGroupData: true
 	}
 };
 

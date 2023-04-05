@@ -5,7 +5,7 @@ module.exports.config = {
 	credits: 'Hadestia',
 	description: 'prevent new members to join',
 	envConfig: {
-		needsDataFetching: true
+		needGroupData: true
 	}
 };
 

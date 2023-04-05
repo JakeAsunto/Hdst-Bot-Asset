@@ -5,7 +5,7 @@ module.exports.config = {
 	credits: 'Hadestia',
 	description: 'Set up user economy when joined or leave',
 	envConfig: {
-		needsDataFetching: true
+		needGroupData: true
 	}
 };
 

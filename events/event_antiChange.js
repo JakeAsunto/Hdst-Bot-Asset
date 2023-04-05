@@ -4,6 +4,9 @@ module.exports.config = {
     version: '1.0.0',
     credits: 'Hadestia',
     description: 'Prevent admin changes',
+    envConfig: {
+		needGroupData: true
+	}
 };
 
 module.exports.run = async function ({ event, api, Utils, Threads, Users }) {
