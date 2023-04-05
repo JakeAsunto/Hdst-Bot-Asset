@@ -15,8 +15,6 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
 
         if (handleReply.length !== 0) {
         	
-        	for (const 
-
             const indexOfHandle = handleReply.findIndex(e => e.messageID == messageReply.messageID);
 
             if (indexOfHandle < 0) { return; }
