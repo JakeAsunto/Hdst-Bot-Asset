@@ -29,9 +29,9 @@ module.exports = function ({ api, Users, Banned, Threads }) {
 		let eligible = false;
 		
 		try {
-			const threadInfo = (isGroup) ? (preferInfo) ? preferInfo : await Threads.getInfo(threadID) : {};
+			const threadInfo = (isGroup) ? (preferInfo) ? preferInfo : await Threads.getInfo(threadID) : false;
 			const is_admin_bot = global.HADESTIA_BOT_CONFIG.ADMINBOT.includes(senderID);
-			const is_admin_group = (isGroup) ? threadInfo.adminIDs.find(el => el.id == senderID) : false;
+			const is_admin_group = (isGroup) ? (threadInfo) ? threadInfo.adminIDs.find(el => el.id == senderID) : false : false;
 			
 			if (permission == 1) {
 				eligible = (is_admin_group) ? true : false;

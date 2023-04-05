@@ -145,25 +145,27 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
             return api.sendMessage(Utils.getText('handleCommand', 'threadNotAllowNSFW'), threadID, Utils.autoUnsend, messageID);
 		}
 
-		// var eligible = false;
+		var eligible = false;
 		var cmdPerm = command.config.hasPermssion;
 		var requiredArgs = (command.config.envConfig) ? command.config.envConfig.requiredArgument || 0 : 0;
-		/*try {
-			var is_admin_bot = ADMINBOT.includes(senderID.toString());
-			var is_admin_group = (event.isGroup) ? threadInfo.adminIDs.find(el => el.id == senderID) : false;
+		
+		var is_admin_bot, is_admin_group;
+		try {
+			is_admin_bot = ADMINBOT.includes(senderID.toString());
+			is_admin_group = (event.isGroup) ? threadInfo.adminIDs.find(el => el.id == senderID) : false;
 		} catch (err) {
 			console.log(err);
 			Utils.sendReaction.failed(api, event);
 			Utils.logModuleErrorToAdmin(err, __filename, event);
 			return api.sendMessage(Utils.textFormat('error', 'errCmdExceptionError', err, PREFIX_FINAL), threadID, Utils.autoUnsend, messageID);
-		}*/
+		}
 		
 		// command Under maintenance?
 		if (cmdEnvConfig.disabled && !is_admin_bot) {
 			return api.sendMessage(Utils.textFormat('cmd', 'cmdWasDisabled'), threadID, messageID);
 		}
 		
-		/*if (cmdPerm == 1) {
+		if (cmdPerm == 1) {
 			eligible = (is_admin_group) ? true : false;
 		} else if (cmdPerm == 2) {
 			eligible = (is_admin_bot) ? true : false;
@@ -171,7 +173,7 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
 			eligible = (is_admin_bot || is_admin_group) ? true : false;
 		} else if (cmdPerm == 0) {
 			eligible = true;
-		}*/
+		}
 		
 		if (args.length < requiredArgs) {
 			return api.sendMessage(Utils.textFormat('cmd', 'cmdWrongUsage', `${PREFIX_FINAL}${command.config.name} ${command.config.usages}`), threadID, Utils.autoUnsend, messageID);
@@ -185,7 +187,7 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
 			return api.sendMessage(Utils.textFormat('error', 'errCmdExceptionError', err, PREFIX_FINAL), threadID, Utils.autoUnsend, messageID);
 		}
 		
-        if (!Utils.hasPermission(senderID, threadID, cmdPerm, threadInfo, permCallback)) {
+        if (!eligible) {
         	const permTxt = Utils.textFormat('system', 'perm' + cmdPerm)
 			return api.sendMessage(
 				Utils.textFormat('cmd', 'cmdPermissionNotEnough', permTxt),
