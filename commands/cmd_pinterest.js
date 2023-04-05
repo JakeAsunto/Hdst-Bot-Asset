@@ -4,8 +4,8 @@ module.exports.config = {
     hasPermssion: 0,
     credits: 'Hadestia',
     description: 'Search an image from pinterest.',
-    commandCategory: 'Search',
-    usages: '<subject> - <result amount>',
+    commandCategory: 'media',
+    usages: '<subject> - <amount>',
     cooldowns: 10,
     maxSearchCount: 20,
     dependencies: {
@@ -18,7 +18,7 @@ module.exports.config = {
     }
 };
 
-module.exports.run = async function({ api, event, args, logger, textFormat }) {
+module.exports.run = async function({ api, event, args, Utils, Prefix }) {
 	
 	const { threadID, messageID, senderID } = event;
     const axios = require('axios');
@@ -26,7 +26,7 @@ module.exports.run = async function({ api, event, args, logger, textFormat }) {
     const keySearch = args.join(' ');
 
     if (!keySearch.includes('-')) {
-        return api.sendMessage(textFormat('cmd', 'cmdPinterestInvalidFormat'), threadID, messageID);
+        return api.sendMessage(Utils.textFormat('cmd', 'cmdPinterestInvalidFormat'), threadID, messageID);
     }
     
     const keySearchs = keySearch.substr(0, keySearch.indexOf('-'))
@@ -34,7 +34,7 @@ module.exports.run = async function({ api, event, args, logger, textFormat }) {
     
     // return if number search is more than 30
     if (numberSearch > this.config.maxSearchCount) {
-		return api.sendMessage(textFormat('cmd', 'cmdPinterestSearchExceed', this.config.maxSearchCount), event.threadID, event.messageID);
+		return api.sendMessage(Utils.textFormat('cmd', 'cmdPinterestSearchExceed', this.config.maxSearchCount), event.threadID, event.messageID);
 	}
 	
 	try {
@@ -60,16 +60,16 @@ module.exports.run = async function({ api, event, args, logger, textFormat }) {
 				let path = `${__dirname}/../../cache/${filename}`;
 				let getDown = (await axios.get(`${url}`, { responseType: 'arraybuffer' })).data;
 				
-				logger(`CMD: PINTEREST: Downloaded ${url} for search ${keySearchs}`, 'cache');
+				Utils.logger(`CMD: PINTEREST: Downloaded ${url} for search ${keySearchs}`, 'cache');
 				
 				fs.writeFileSync(path, Buffer.from(getDown, 'utf-8'));
 				imgData.push(fs.createReadStream(path));
 			}
     	}
     
-    	api.sendMessage(
+    	return api.sendMessage(
 			{
-				body: textFormat('cmd', 'cmdPinterestFormat', num, keySearchs),
+				body: Utils.textFormat('cmd', 'cmdPinterestFormat', num, keySearchs),
         		attachment: imgData
 			},
 			threadID,
@@ -77,7 +77,7 @@ module.exports.run = async function({ api, event, args, logger, textFormat }) {
 				if (e) return;
 				global.sendReaction.success(api, event);
 				for (const file of hashMap) {
-					logger(`CMD: PINTEREST: Deleting ${file} for search ${keySearchs}`, 'cache');
+					Utils.logger(`CMD: PINTEREST: Deleting ${file} for search ${keySearchs}`, 'cache');
 					try { fs.unlinkSync(`${__dirname}/../../cache/${file}`); } catch (e) {}
 				}
 			},
@@ -86,9 +86,9 @@ module.exports.run = async function({ api, event, args, logger, textFormat }) {
 	} catch (e) {
 		
 		console.log(e);
-		global.sendReaction.failed(api, event);
-		global.logModuleErrorToAdmin(e, __filename, event);
-        api.sendMessage(textFormat('error', 'errCmdExceptionError', e, global.config.PREFIX), threadID, messageID);
+		Utils.sendReaction.failed(api, event);
+		Utils.logModuleErrorToAdmin(e, __filename, event);
+        api.sendMessage(Utils.textFormat('error', 'errCmdExceptionError', e, Prefix), threadID, messageID);
         
 	}
 };

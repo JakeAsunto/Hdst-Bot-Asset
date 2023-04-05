@@ -1,9 +1,9 @@
 module.exports.config = {
-	name: "log",
-	eventType: ["log:unsubscribe","log:subscribe","log:thread-name"],
-	version: "1.0.2",
-	credits: "Mirai Team", // modified by Hadestia
-	description: "Record bot activity notifications.",
+	name: 'log',
+	eventType: ['log:unsubscribe','log:subscribe','log:thread-name'],
+	version: '1.0.2',
+	credits: 'Mirai Team', // modified by Hadestia
+	description: 'Record bot activity notifications.',
     dependencies: {
     	'moment-timezone': ''
     },
@@ -18,8 +18,8 @@ module.exports.run = async function({ api, event, Utils, Users, Threads, Banned 
 	
     const threadInfo = await api.getThreadInfo(event.threadID);
     
-	const date = moment.tz("Asia/Manila").format("MM/DD/YYYY");
-	const time = moment.tz("Asia/Manila").format("HH:mm:ss");
+	const date = moment.tz('Asia/Manila').format('MM/DD/YYYY');
+	const time = moment.tz('Asia/Manila').format('HH:mm:ss');
 	const res = await api.getUserInfo(event.author);
 	const { threadID, author } = event;
 	
@@ -28,7 +28,7 @@ module.exports.run = async function({ api, event, Utils, Users, Threads, Banned 
 	try { 
    	 switch (event.logMessageType) {
     	
-     	   case "log:thread-name":
+     	   case 'log:thread-name':
 				const threadData = await Threads.getData(event.threadID);
         		const oldInfo = threadData.threadInfo;
 				
@@ -43,19 +43,19 @@ module.exports.run = async function({ api, event, Utils, Users, Threads, Banned 
 				}
    	         break;
         
-  	      case "log:subscribe":
+  	      case 'log:subscribe':
         
    	         if (event.logMessageData.addedParticipants.some(i => i.userFbId == api.getCurrentUserID())) {
-					action = "User added bot to the group";
+					action = 'User added bot to the group';
 				}
  	           break;
         
-  	      case "log:unsubscribe":
+  	      case 'log:unsubscribe':
         
    	         if (event.logMessageData.leftParticipantFbId == api.getCurrentUserID()) {
-					action = "User kicked bot out of the group";
+					action = 'User kicked bot out of the group';
 					// # Moved to event.antiOut
-					//try { await Threads.delData(threadID); } catch (e) { console.log(e) }
+					// try { await Threads.delData(threadID); } catch (e) { console.log(e) }
 				}
     	        break;
         

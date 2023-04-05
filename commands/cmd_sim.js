@@ -4,7 +4,7 @@ module.exports.config = {
     hasPermssion: 0,
     credits: 'ProcodeMew', //change api sim : Hadestia
     description: 'Chat with simisimi or enable or disable auto sim.',
-    commandCategory: 'Chatbot',
+    commandCategory: 'artificial_intelligence',
     usages: '<message | on | off >',
     cooldowns: 5,
     envConfig: {
@@ -15,6 +15,7 @@ module.exports.config = {
     }
 }
 
+const HDST_BOT_SIMISIMI = new Map;
 
 async function simsimi(a, b, c) {
     const axios = require('axios');
@@ -32,32 +33,27 @@ async function simsimi(a, b, c) {
     }
 }
 
-module.exports.onLoad = async function () {
-	
-    global.simsimi || (global.simsimi = new Map);
-    
-};
-
 module.exports.handleEvent = async function ({ api, event }) {
 	
     const { threadID, messageID, senderID, body } = event;
 	const send = (text) => api.sendMessage(text, threadID, messageID);
 	
-    if (global.simsimi.has(threadID)) {
+    if (HDST_BOT_SIMISIMI.has(threadID)) {
     	
-        if (senderID == global.botUserID || body == '' || messageID == global.simsimi.get(threadID)) return;
+        if (senderID == global.botUserID || body == '' || messageID == HDST_BOT_SIMISIMI.get(threadID)) return;
         
         var { data, error } = await simsimi(body, api, event);
         return !0 == error ? void 0 : !1 == data.success ? send(data.error) : send(data.success)
     }
 }
 
-module.exports.run = async function ({ api, event, args, returns, textFormat, Prefix }) {
+module.exports.run = async function ({ api, event, args, returns, Utils, Prefix }) {
 	
     const { threadID, messageID } = event;
 	const f = (text) => api.sendMessage(text, threadID, messageID);
 	
 	try {
+		
 		//const info = await Threads.getData(threadID);
 		//const threadData = (info) ? info.data : {}
     
@@ -65,20 +61,20 @@ module.exports.run = async function ({ api, event, args, returns, textFormat, Pr
     
    	 switch (args[0].toLowerCase()) {
       	  case 'on':
-          	  if (global.simsimi.has(threadID)) {
-					f(textFormat('error', 'errOccured', 'Sim was already been set.'));;
+          	  if (HDST_BOT_SIMISIMI.has(threadID)) {
+					f(Utils.textFormat('error', 'errOccured', 'Sim was already been set.'));;
 				} else {
-					global.simsimi.set(threadID, messageID);
-					f(textFormat('success', 'successfulFormat', 'Sim has been turned on.\n\nNOTE:\nWhile being turned on, bot will respond to any messages in this thread and seems like a spam if this was a group chat.'));
+					HDST_BOT_SIMISIMI.set(threadID, messageID);
+					f(Utils.textFormat('success', 'successfulFormat', 'Sim has been turned on.\n\nNOTE:\nWhile being turned on, bot will respond to any messages in this thread and seems like a spam if this was a group chat.'));
 				}
          	   break;
      	   case 'off':
         
-         	   if (global.simsimi.has(threadID)) {
-					global.simsimi.delete(threadID);
-					f(textFormat('success', 'successfulFormat', 'Sim has been turned off.'));
+         	   if (HDST_BOT_SIMISIMI.has(threadID)) {
+					HDST_BOT_SIMISIMI.delete(threadID);
+					f(Utils.textFormat('success', 'successfulFormat', 'Sim has been turned off.'));
 				} else {
-					f(textFormat('error', 'errOccured', 'Sim is not been set.'));
+					f(Utils.textFormat('error', 'errOccured', 'Sim is not been set.'));
 				}
           	  break;
       	  default:
@@ -89,8 +85,8 @@ module.exports.run = async function ({ api, event, args, returns, textFormat, Pr
     } catch (err) {
     	console.log(err);
     	returns.remove_usercooldown();
-		global.sendReaction.failed(api, event);
-		global.logModuleErrorToAdmin(err, __filename, event);
-		return api.sendMessage(textFormat('error', 'errCmdExceptionError', err, Prefix), threadID, messageID);
+		Utils.sendReaction.failed(api, event);
+		Utils.logModuleErrorToAdmin(err, __filename, event);
+		return api.sendMessage(Utils.textFormat('error', 'errCmdExceptionError', err, Prefix), threadID, messageID);
     }
 };

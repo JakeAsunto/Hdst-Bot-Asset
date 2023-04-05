@@ -3,7 +3,7 @@ module.exports.config = {
 	version: '1.0.0',
 	hasPermssion: 0,
 	cooldowns: 20,
-	commandCategory: 'edited images/meme',
+	commandCategory: 'edited_images',
 	description: 'Generate facebook cover by filling out the form the bot will send to you.',
 	usages: '',
 	dependencies: {
@@ -39,11 +39,11 @@ module.exports.fetchData = function (body) {
 	return { color, top_name, sub_name, email, address, contact_no };
 }
 
-module.exports.handleEvent = async function ({ api, event, returns }) {
+module.exports.handleEvent = async function ({ api, event, returns, Utils, Prefix }) {
+	
+	if (event.body == '') return;
 	
 	const { threadID, messageID, senderID } = event;
-	
-	if (event.body == undefined || event.body == '') return;
 	if (event.body.indexOf('● Facebook Cover Form\n━━━━━━━━━━━━━━━━━━━━') == -1) return;
 
 	//console.log(event.body);
@@ -53,7 +53,7 @@ module.exports.handleEvent = async function ({ api, event, returns }) {
 	const body = event.body;
 	
 	const sendError = (msg) => {
-		api.sendMessage(textFormat('error', 'errOccured', `${msg}. Make sure you didn't change anything on the form and doesn't make any new lines for data.`), threadID, messageID);
+		api.sendMessage(Utils.textFormat('error', 'errOccured', `${msg}. Make sure you didn't change anything on the form and doesn't make any new lines for data.`), threadID, messageID);
 	}
 	
 	const { color, top_name, sub_name, email, address, contact_no } = this.fetchData(body);
@@ -74,7 +74,7 @@ module.exports.handleEvent = async function ({ api, event, returns }) {
 	
 	// process if no violation found
 	try {
-		global.sendReaction.inprocess(api, event);
+		Utils.sendReaction.inprocess(api, event);
 		
 		const link = `${encodeURI(`https://api.reikomods.repl.co/canvas/fbcover?uid=${senderID}&color=${color}&name=${top_name}&subname=${sub_name}&email=${email}&address=${address}&sdt=${contact_no}`)}`;
 		var path = `${__dirname}/../../cache/${(link.split('/')).pop()}.png`;
@@ -91,9 +91,9 @@ module.exports.handleEvent = async function ({ api, event, returns }) {
 			threadID,
 			(e) => {
 				if (e) {
-					global.sendReaction.failed(api, event);
+					Utils.sendReaction.failed(api, event);
 				} else {
-					global.sendReaction.success(api, event);
+					Utils.sendReaction.success(api, event);
 					returns.handleTimestamps();
 				}
 				if (fs.existsSync(path)) { fs.unlinkSync(path); }
@@ -103,93 +103,25 @@ module.exports.handleEvent = async function ({ api, event, returns }) {
 		);
 	} catch (e) {
 		//returns.delete_data();
-		global.sendReaction.failed(api, event);
-		global.logModuleErrorToAdmin(e, __filename, event);
-		api.sendMessage(textFormat('error', 'errCmdExceptionError', e, Prefix), threadID, messageID);
+		Utils.sendReaction.failed(api, event);
+		Utils.logModuleErrorToAdmin(e, __filename, event);
+		api.sendMessage(Utils.textFormat('error', 'errCmdExceptionError', e, Prefix), threadID, messageID);
 		if (fs.existsSync(path)) return fs.unlinkSync(path);
 	}
 }
 
-/* module.exports.handleReply = async function ({ api, event, returns, handleReply, Prefix }) {
-	
-	if (event.senderID !== handleReply.author) {
-		return returns.interaction_failed_other();
-    }
-	
-	const { body, threadID, messageID, senderID } = event;
-	const axios= require('axios');
-	const fs = require('fs-extra');
-	
-	const sendError = (msg) => {
-		api.sendMessage(textFormat('error', 'errOccured', `${msg}. Make sure you didn't change anything on the form and doesn't make any new lines for data.`), threadID, messageID);
-	}
-	
-	const { color, top_name, sub_name, email, address, contact_no } = this.fetchData(body);
-	
-	if (!color) {
-		return sendError(`Color not found pls specified via color name`);
-	} else if (!top_name) {
-		return sendError(`Name not found`);
-	} else if (!sub_name) {
-		return sendError(`Subname not found`);
-	} else if (!email) {
-		return sendError(`Email not found`);
-	} else if (!address) {
-		return sendError(`Address not found`);
-	} else if (!contact_no) {
-		return sendError(`Contact number not found`);
-	}
-	
-	// process if no violation found
-	
-	try {
-		global.sendReaction.inprocess(api, event);
-		
-		const link = `${encodeURI(`https://api.reikomods.repl.co/canvas/fbcover?uid=${senderID}&color=${color}&name=${top_name}&subname=${sub_name}&email=${email}&address=${address}&sdt=${contact_no}`)}`;
-		var path = `${__dirname}/../../cache/${(link.split('/')).pop()}.png`;
-		const generatedIMG = (await axios.get(link, { responseType: 'arraybuffer' } )).data;
-		
-		// save img
-		fs.writeFileSync(path, Buffer.from(generatedIMG, 'utf-8'));
-		
-		api.sendMessage(
-			{
-				body: '',
-				attachment: fs.createReadStream(path)
-			},
-			threadID,
-			(e) => {
-				if (e) {
-					global.sendReaction.failed(api, event);
-				} else {
-					global.sendReaction.success(api, event);
-				}
-				if (fs.existsSync(path)) { fs.unlinkSync(path); }
-				returns.delete_data();
-			},
-			messageID
-		);
-	} catch (e) {
-		returns.delete_data();
-		global.sendReaction.failed(api, event);
-		global.logModuleErrorToAdmin(e, __filename, event);
-		api.sendMessage(textFormat('error', 'errCmdExceptionError', e, Prefix), threadID, messageID);
-		if (fs.existsSync(path)) return fs.unlinkSync(path);
-	}
-} */
-
-module.exports.run = async function ({ api, args, event, returns, textFormat }) {
+module.exports.run = async function ({ api, args, event, returns, Utils, Users }) {
 	
 	const { threadID, messageID, senderID } = event;
 	const replyTimeout = Date.now() + 300000; // 5 minutes timeout
 
-	const user = await api.getUserInfoV2(senderID) || {};
+	const userName = await Users.getNameUser(senderID);
 	
 	return api.sendMessage(
 		{
-			body: `${textFormat('canvas', 'fbcoverFillOutForm')} @${user.name || 'user'}`,
+			body: `${Utils.textFormat('canvas', 'fbcoverFillOutForm')} @${user.name || 'user'}`,
 			mentions: [{
-				tag: `@${user.name || 'user'}`,
+				tag: `@${userName}`,
 				id: senderID
 			}]
 		},
@@ -197,10 +129,10 @@ module.exports.run = async function ({ api, args, event, returns, textFormat }) 
 		async (err, info) => {
 			if (err) {
 				returns.remove_usercooldown();
-				api.sendMessage(textFormat('error', 'errCmdExceptionError', e), threadID, messageID);
-				return global.logModuleErrorToAdmin(err, __filename, event);
+				api.sendMessage(Utils.textFormat('error', 'errCmdExceptionError', e), threadID, messageID);
+				return Utils.logModuleErrorToAdmin(err, __filename, event);
 			}
-			global.autoUnsend(err, info, 180);
+			Utils.autoUnsend(err, info, 180);
 			/*// send a signal to handle Reply
 			return global.client.handleReply.push({
 				name: this.config.name,

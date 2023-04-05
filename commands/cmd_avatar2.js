@@ -3,7 +3,7 @@ module.exports.config = {
 	version: '1.0.0',
 	hasPermssion: 0,
 	cooldowns: 5,
-	commandCategory: 'edited images/meme',
+	commandCategory: 'edited_images',
 	description: 'Generate personalized avatar by giving information needed.',
 	usages: '< avatar ID (1-800) > | < color name > | < name > | < subname > | < signature >\nsample: "avatar2 69 | pink | hadestia | hdstss | hdst"',
 	dependencies: {
@@ -13,12 +13,14 @@ module.exports.config = {
 	credits: 'Hadestia, Joshua Sy for API'
 }
 
-module.exports.run = async function ({ api, args, event }) {
+module.exports.run = async function ({ api, args, event, Utils }) {
 	
 	const { threadID, senderID, messageID } = event;
 	// split each data
-	const division = (args.join(' ')).split(/\s\|\s|\| | \| |\|| \|/g);
-	const send = (msg) => api.sendMessage(msg, threadID, messageID);
+	const division = (args.join(' ')).split(/\|/g);
+	for (const i in division) { division[i] = division[i].trim(); }
+	
+	const send = (msg) => api.sendMessage(Utils.textFormat('error', 'errOccured', msg), threadID, messageID);
 	
 	var avatarID = parseInt(division[0]);
 	var color = division[1] || null;

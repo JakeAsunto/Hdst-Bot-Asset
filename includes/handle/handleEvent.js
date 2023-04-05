@@ -12,14 +12,13 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
 
         const { events } = global.HADESTIA_BOT_CLIENT;
 
-        const { senderID, threadID } = event;
+        const { threadID } = event;
 
-        const bannedUserData = await Banned.getData(senderID);
         const bannedGroupData = await Banned.getData(threadID);
         const groupData = await Threads.getData(threadID);
         
         // Group Banned? User Banned? Is PM?
-        if (bannedUserData || bannedGroupData || !allowInbox && senderID == threadID) return;
+        if (!groupData || bannedUserData || bannedGroupData || !allowInbox && senderID == threadID) return;
 
         for (const [key, value] of events.entries()) {
 			

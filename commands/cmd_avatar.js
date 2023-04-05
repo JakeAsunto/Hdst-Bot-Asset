@@ -3,11 +3,11 @@ module.exports.config = {
 	version: '1.0.0',
 	hasPermssion: 0,
 	cooldowns: 20,
-	commandCategory: 'edited images/meme',
-	description: 'Generate personalized avatar by giving information needed.',
-	usages: '< avatar ID (1-800) > | < color name > | < name > | < signature >\nsample: "$avatar 1 | pink | hadestia | hdst"',
+	commandCategory: 'edited_images',
+	description: 'Generate anime avatar by giving information needed.',
+	usages: '< avatar ID(1-800)> | <color name> | <name> | <signature>\nsample: "$avatar 1 | pink | hadestia | hdst"',
 	envConfig: {
-		requiredArgument: 3,
+		requiredArgument: 6,
 		inProcessReaction: true
 	},
 	dependencies: {
@@ -17,22 +17,24 @@ module.exports.config = {
 	credits: 'Joshua Sy for API'
 }
 
-module.exports.run = async function ({ api, args, event, returns, textFormat, Prefix }) {
+module.exports.run = async function ({ api, args, event, returns, Utils, Prefix }) {
 	
 	const { threadID, messageID, senderID } = event;
 	const axios = require('axios');
 	const fs = require('fs-extra');
 	
-	const division = (args.join(' ')).split(/\s\|\s|\| | \| |\|| \|/g);
+	const division = (args.join(' ')).split(/\|/g);
+	for (const i in division) { division[i] = division[i].trim(); }
+	
 	let id = parseInt(division[0]);
-	const in_synText = textFormat('error', 'errOccured', 'Avatar ID must be a number ranges 1 - 800');
+	const in_synText = Utils.textFormat('error', 'errOccured', 'Avatar ID must be a number ranges 1 - 800');
 
 	if (!id) {
-		global.sendReaction.failed(api, event);
+		Utils.sendReaction.failed(api, event);
 		api.sendMessage(in_synText, threadID, messageID);
 		return returns.remove_usercooldown();
 	} else if (id < 1 || id > 800) {
-		global.sendReaction.failed(api, event);
+		Utils.sendReaction.failed(api, event);
 		api.sendMessage(in_synText, threadID, messageID);
 		return returns.remove_usercooldown();
 	}
@@ -53,11 +55,11 @@ module.exports.run = async function ({ api, args, event, returns, textFormat, Pr
 				fs.unlinkSync(path);
 			}
 			if (e) {
-				global.sendReaction.failed(api, event);
-				global.logModuleErrorToAdmin(e, __filename, event);
-				return api.sendMessage(textFormat('error', 'errCmdExceptionError', e), threadID, messageID);
+				Utils.sendReaction.failed(api, event);
+				Utils.logModuleErrorToAdmin(e, __filename, event);
+				return api.sendMessage(Utils.textFormat('error', 'errCmdExceptionError', e), threadID, messageID);
 			}
-			global.sendReaction.success(api, event);
+			Utils.sendReaction.success(api, event);
 		},
 		messageID
 	);

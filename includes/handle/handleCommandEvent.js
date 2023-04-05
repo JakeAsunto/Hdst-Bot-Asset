@@ -4,7 +4,7 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
     		
     	const dateNow = Date.now();
 
-        const { allowInbox } = global.HADESTIA_BOT_CONFIG;
+        const { allowInbox, PREFIX } = global.HADESTIA_BOT_CONFIG;
 
         const { cooldowns, commands, eventRegistered } = global.HADESTIA_BOT_CLIENT;
 
@@ -18,8 +18,7 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
         const groupData = await Threads.getData(threadID);
         const userData = await Users.getData(senderID);
         
-        if (!groupData) return;
-		
+		const prefix = (groupData) ? groupData.data.PREFIX || PREFIX : PREFIX;
         // LEGACY CODE: if (bannedUsers.has(senderID) || bannedThreads.has(threadID) || allowInbox == !![] && senderID == threadID) return;
 
         for (const eventReg of eventRegistered) {
@@ -62,6 +61,8 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
                 	Obj.Banned = Banned;
 	
                 	Obj.Threads = Threads;
+                
+                	Obj.Prefix = prefix;
                 
                	 Obj.getText = Utils.getModuleText(command, event);
                

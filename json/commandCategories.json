@@ -31,6 +31,10 @@
         "icon": "🎞️",
         "description": "Commands related to media. e.g Music."
     },
+    "edited_images": {
+        "icon": "🎭",
+        "description": "Edited images and memes related commands are dumped here."
+    },
     "gambling": {
         "icon": "🎰",
         "description": "An easy game to earn and loss a lot of money."
