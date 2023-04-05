@@ -90,14 +90,11 @@ module.exports.handleEvent = async function ({ api, event, returns, Utils, Prefi
 			},
 			threadID,
 			(e) => {
-				if (e) {
-					Utils.sendReaction.failed(api, event);
-				} else {
-					Utils.sendReaction.success(api, event);
-					returns.handleTimestamps();
-				}
 				if (fs.existsSync(path)) { fs.unlinkSync(path); }
-				//returns.delete_data();
+				if (e) return Utils.sendReaction.failed(api, event);
+				
+				Utils.sendReaction.success(api, event);
+				returns.handleTimestamps();
 			},
 			messageID
 		);

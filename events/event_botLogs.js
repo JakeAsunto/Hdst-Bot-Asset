@@ -6,10 +6,7 @@ module.exports.config = {
 	description: 'Record bot activity notifications.',
     dependencies: {
     	'moment-timezone': ''
-    },
-    envConfig: {
-		needGroupData: true
-	}
+    }
 };
 
 module.exports.run = async function({ api, event, Utils, Users, Threads, Banned }) {

@@ -149,9 +149,9 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
 		var cmdPerm = command.config.hasPermssion;
 		var requiredArgs = (command.config.envConfig) ? command.config.envConfig.requiredArgument || 0 : 0;
 		
-		var is_admin_bot, is_admin_group;
+		let is_admin_group;
+		let is_admin_bot = ADMINBOT.includes(senderID.toString());
 		try {
-			is_admin_bot = ADMINBOT.includes(senderID.toString());
 			is_admin_group = (event.isGroup) ? threadInfo.adminIDs.find(el => el.id == senderID) : false;
 		} catch (err) {
 			console.log(err);
@@ -212,18 +212,15 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
 			const timeB = new Date(currentDate);
 			
 			const remaining = Utils.getRemainingTime(Math.abs(timeA - timeB)/1000);
-			api.setMessageReaction(Utils.textFormat('reaction', 'userCmdCooldown'), event.messageID, err => (err) ? Utils.logger('unable to setMessageReaction for Cooling down command use user', '[ Reactions ]') : '', !![]);
-			
-			if (day > 0 || hour > 0 || minute > 2) {
-				api.sendMessage(
-					Utils.textFormat('cmd', 'cmdUserCooldown', remaining),
-					threadID, Utils.autoUnsend, messageID
-				);
-			}
+			Utils.sendReaction.cooldown(api, event);
+			api.sendMessage(
+				Utils.textFormat('cmd', 'cmdUserCooldown', remaining),
+				threadID, Utils.autoUnsend, messageID
+			);
 		}
 		
 		// User in cooldown?
-        if (!is_admin_bot && dateNow < (userCooldown - 1000)) {
+        if (!is_admin_bot && dateNow < userCooldown) {
         	return userInCooldown(userCooldown, dateNow);
 		}
 		
@@ -295,7 +292,7 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
 			
 			Obj.alias = commandName; // to determine what alias user used to run this command
 
-			timestamps.set(senderID, dateNow);
+			if (!is_admin_bot) timestamps.set(senderID, dateNow);
 			
             return command.run(Obj);
             

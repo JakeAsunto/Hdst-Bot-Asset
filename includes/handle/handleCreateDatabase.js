@@ -1,5 +1,3 @@
-const updatedThread = {};
-
 module.exports = function({ Utils, Users, Threads, Banned }) {
 	
 	const databaseSystem = require(`${__dirname}/../../json/databaseConfig.json`); 
@@ -44,39 +42,12 @@ module.exports = function({ Utils, Users, Threads, Banned }) {
 			}
 		    
 			// ####### IF GROUP CHAT ####### //
-			// check if this group chat does not exist from the table
             if (!threadData && event.isGroup) {
 				await handleGroupData(null, inputData);
-            } else {
-            	// Update this thread data every 5 minutes
-				const dateNow = Date.now();
-            	const nextUpdate = (new Date(threadData.updatedAt).getTime()) + (300 * 1000);
-            	if (nextUpdate < dateNow && !updatedThread[threadID]) {
-            		updatedThread[threadID] = true;
-            		await handleGroupData(threadData, { job, threadID, databaseSystem, economySystem, Utils, Users, Threads, Banned });
-            	}
             }
-
+			
             if (!userData) {
-
-                const infoUsers = await Users.getInfo(senderID);
-                const USER_ALL_DATA = {};
-                USER_ALL_DATA.name = infoUsers.name;
-                USER_ALL_DATA.data = new Object(databaseSystem.user_data_config);
-				// IF USER WAS BANNED
-				if (bannedUserData) {
-					const bd = bannedUserData.data || {};
-					const banned = {
-						caseID: bd.caseID || -1,
-						reason: bd.reason || databaseSystem.user_data_config.banned.reason,
-						dateIssued: bd.dateIssued || databaseSystem.user_data_config.banned.dateIssued
-					}
-					USER_ALL_DATA.data.banned = banned;
-					await Banned.getData(senderID);
-				}              
-                // SAVE
-                await Users.setData(senderID, USER_ALL_DATA);
-                Utils.logger(Utils.getText('handleCreateDatabase', 'newUser', chalk.hex("#" + random)(`New users: `) + chalk.hex("#" + random1)(`${infoUsers.name}`) + " || " + chalk.hex("#" + random2)(`${senderID}`)), '[ USER ]');
+            	await handleUserData(null, inputData);
             }
             
             return;
@@ -86,6 +57,38 @@ module.exports = function({ Utils, Users, Threads, Banned }) {
 			throw err;
         }
     }
+}
+
+async function handleUserData(oldData, { job, senderID, bannedUserData, databaseSystem, economySystem, Utils, Users, Threads, Banned }) {
+	
+	const chalk = require('chalk');
+	
+	const init = oldData || {};
+	const random = job[Math.floor(Math.random() * job.length)];
+    const random1 = job[Math.floor(Math.random() * job.length)];
+    const random2 = job[Math.floor(Math.random() * job.length)];
+
+	const infoUsers = await Users.getInfo(senderID);
+    const USER_ALL_DATA = {};
+    USER_ALL_DATA.name = infoUsers.name;
+    USER_ALL_DATA.data = new Object(databaseSystem.user_data_config);
+	// IF USER WAS BANNED
+	if (bannedUserData) {
+		const bd = bannedUserData.data || {};
+		const banned = {
+			name: infoUsers.name,
+			caseID: bd.caseID || -1,
+			reason: bd.reason || databaseSystem.user_data_config.banned.reason,
+			dateIssued: bd.dateIssued || databaseSystem.user_data_config.banned.dateIssued
+		}
+		USER_ALL_DATA.data.banned = banned;
+		await Banned.getData(senderID);
+	}
+	// SAVE
+	await Users.setData(senderID, USER_ALL_DATA);
+    Utils.logger(Utils.getText('handleCreateDatabase', 'newUser', chalk.hex("#" + random)(`New users: `) + chalk.hex("#" + random1)(`${infoUsers.name}`) + " || " + chalk.hex("#" + random2)(`${senderID}`)), '[ USER ]');
+    
+    return;
 }
 
 
@@ -202,10 +205,6 @@ async function handleGroupData(oldData, { job, threadID, bannedGroupData, databa
 		Utils.logger(Utils.getText('handleCreateDatabase', 'newThread', chalk.hex("#" + random)(`New group: `) + chalk.hex("#" + random1)(`${threadID}`) + "  ||  " + chalk.hex("#" + random2)(`${threadIn4.threadName}`)), '[ THREAD ]');
 	} else {
 		Utils.logger(`Updated GROUP: ${threadIn4.threadName}(${threadID})`, 'database');
-	}
-	
-	if (updatedThread[threadID]) {
-		delete updatedThread[threadID];
 	}
 	return;
 }

@@ -14,6 +14,8 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
         const botPrefix = (threadSetting.hasOwnProperty('PREFIX')) ? threadSetting.PREFIX : global.HADESTIA_BOT_CONFIG.PREFIX;
 
         if (handleReply.length !== 0) {
+        	
+        	for (const 
 
             const indexOfHandle = handleReply.findIndex(e => e.messageID == messageReply.messageID);
 
@@ -47,7 +49,7 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
                 }
                 // other user interaction failed
                 returns.interaction_failed_other = function () {
-                	api.sendMessage(Utils.textFormat('error', 'errCommandReplyInteractionFailed'), threadID, (err, info) => { Utils.autoUnsend(err, info, 5) }, messageID);
+                	api.sendMessage(Utils.textFormat('error', 'errCommandReplyInteractionFailed'), threadID, (err, info) => { Utils.autoUnsend(err, info, 20) }, messageID);
                 }
                 
                 returns.delete_data = deleteData;
