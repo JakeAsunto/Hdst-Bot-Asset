@@ -3,12 +3,13 @@ module.exports.config = {
     version: '1.0.0',
     hasPermssion: 0,
     credits: 'Mirai Team, beautify by Hadestia',
-    description: 'A hard gambling game to earn more money?.',
+    description: 'A hard gambling game to earn more money?',
     commandCategory: 'gambling',
     usages: '< bet >',
     aliases: [ 'slot' ],
     cooldowns: 5,
     envConfig: {
+		needGroupData: true,
 		groupCommandOnly: true
 	}
 };
@@ -33,7 +34,7 @@ module.exports.config = {
 module.exports.run = async function({ api, event, args, returns, Utils, Prefix, Threads }) {
 	
     const { threadID, messageID, senderID } = event;
-    const Gambling = require(`${global.HADESTIA_BOT_CLIENT.mainPath}/json/Utils.textFormat.json`).gamblingSystem;
+    const Gambling = require(`${global.HADESTIA_BOT_CLIENT.mainPath}/json/textFormat.json`).gamblingSystem;
     const economySystem = require(`${global.HADESTIA_BOT_CLIENT.mainPath}/json/economySystem.json`);
     
     const message = (msg) => { api.sendMessage(msg, threadID, messageID) };

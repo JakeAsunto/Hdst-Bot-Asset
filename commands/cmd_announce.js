@@ -13,7 +13,7 @@ module.exports.config = {
 	}
 }
 
-module.exports.run = async function ({ api, args, event, returns, Utils }) {
+module.exports.run = async function ({ api, args, event, returns, Utils, Threads }) {
 	
 	const { threadID, messageID } = event;
 	const body = args.join(' ');

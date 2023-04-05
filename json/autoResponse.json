@@ -83,16 +83,6 @@
         ],
         "single_message_only": true
     },
-    "pat": {
-        "matches": [
-            "pat"
-        ],
-        "response": [
-            "( ^-^`)",
-            "Nyaaahh..."
-        ],
-        "required_mention": true
-    },
     "naol": {
         "matches": [
             "naol",

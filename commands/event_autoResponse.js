@@ -17,9 +17,8 @@ module.exports.config = {
 module.exports.handleEvent = async ({ api, event, Utils, Users, Threads }) => {
 	
 	const { body, mentions, threadID, messageID, senderID } = event;
-	const threadData = await Threads.getData(threadID);
-	if (event.isGroup && !threadData) return;
 	
+	const threadData = await Threads.getData(threadID);
 	const threadSettings = (threadData) ? threadData.data : {};
 	
 	const dictionary = require('../../json/autoResponse.json');
@@ -59,15 +58,17 @@ module.exports.handleEvent = async ({ api, event, Utils, Users, Threads }) => {
 			}
 			
 		} else if (typeProperty.required_mention && event.type === 'message_reply') {
-			if (event.messageReply.senderID == api.getCurrentUserID()) {
-				for (const match of typeProperty.matches) {
-					if (senderBody.indexOf(match) !== -1) {
-						const responseText = typeProperty.response[Math.floor(Math.random() * typeProperty.response.length)];
-						const toSend = await constructMessage(api, event, responseText, Users, Threads);
-						return api.sendMessage(toSend, threadID, messageID);
+			try { // sometimes it the message was deleted that causing error
+				if (event.messageReply.senderID == api.getCurrentUserID()) {
+					for (const match of typeProperty.matches) {
+						if (senderBody.indexOf(match) !== -1) {
+							const responseText = typeProperty.response[Math.floor(Math.random() * typeProperty.response.length)];
+							const toSend = await constructMessage(api, event, responseText, Users, Threads);
+							return api.sendMessage(toSend, threadID, messageID);
+						}
 					}
 				}
-			}
+			} catch (err) {}
 		} else if (typeProperty.stand_alone) {
 			for (const match of typeProperty.matches) {
 				if (senderBody.indexOf(match) !== -1) {

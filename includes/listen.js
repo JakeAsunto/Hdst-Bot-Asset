@@ -290,7 +290,7 @@ module.exports = function({ api, models }) {
 	for (const [key, module] of commands.entries()) {
 		try {
 			if (module.lateInit) {
-				console.log('Late Init :' + key);
+				Utils.logger(`Command Module Late Init: ${key}`, 'lateInit');
 				module.lateInit({ api, models, Utils, Users, Banned, Threads });
 			}
 		} catch (error) {
@@ -302,7 +302,7 @@ module.exports = function({ api, models }) {
 	for (const [key, module] of events.entries()) {
 		try {
 			if (module.lateInit) {
-				console.log('Late Init :' + key);
+				Utils.logger(`Event Module Late Init: ${key}`, 'lateInit');
 				module.lateInit({ api, models, Utils, Users, Banned, Threads });
 			}
 		} catch (error) {
@@ -331,7 +331,7 @@ module.exports = function({ api, models }) {
 				
 			case 'message_unsend':
 			
-				await handleCreateDatabase(input);
+				handleCreateDatabase(input);
 				
 				handleCommand(input);
 				

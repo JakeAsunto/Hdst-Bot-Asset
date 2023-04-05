@@ -19,6 +19,10 @@ module.exports = (data, option) => {
         case "hl":
             console.log(chalk.bold.hex('#ff00a3').bold('━━━━━ » ') + chalk.hex('#ff00a3')(data));
             break;
+        case "database":
+            console.log(chalk.bold.hex('#9050ff').bold('[ Database ] » ') + chalk.hex('#9050ff')(data));
+		case "lateInit":
+            console.log(chalk.bold.hex('#bcff7a').bold('[ Late-Init ] » ') + chalk.hex('#bcff7a')(data));
         default:			        
             console.log(chalk.bold.hex("#00ffff").bold(`${option} » `) + data);
 			break;

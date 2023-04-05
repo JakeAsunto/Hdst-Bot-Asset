@@ -28,11 +28,11 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
 			const config = command.config.envConfig || {};
 			
 			// allow ban User
-			let pass1 = (bannedUserData) ? config.handleEvent_allowBannedUsers || false : true;
+			let pass1 = (bannedUserData && config.handleEvent_allowBannedUsers) ? config.handleEvent_allowBannedUsers : false;
 			// allow ban threads
-			let pass2 = (bannedGroupData) ? config.handleEvent_allowBannedThreads || false : true;
+			let pass2 = (bannedGroupData && config.handleEvent_allowBannedThreads) ? config.handleEvent_allowBannedThreads : false;
 			// allow direct message
-			let pass3 = (senderID == threadID) ? config.handleEvent_allowDirectMessages || false : true;
+			let pass3 = (senderID == threadID && config.handleEvent_allowDirectMessages) ? config.handleEvent_allowDirectMessages : true;
 			// needs group data or user data
 			let pass4 = (config.needGroupData) ? config.needGroupData && groupData : true;
 			let pass5 = (config.needUserData) ? config.needUserData && userData : true;

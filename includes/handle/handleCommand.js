@@ -187,7 +187,7 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
 		}
 		
 		if (cmdEnvConfig.inProcessReaction) {
-			Utils.sendReaction.inprocess(api, event);
+			await Utils.sendReaction.inprocess(api, event);
 		}
 
         if (!HADESTIA_BOT_CLIENT.cooldowns.has(command.config.name)) {
@@ -238,7 +238,7 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
 			
 			returns.invalid_usage = function () {
 				returns.remove_usercooldown();
-				global.sendReaction.failed(api, event);
+				Utils.sendReaction.failed(api, event);
 				api.sendMessage(
 					Utils.textFormat('cmd', 'cmdWrongUsage', `\n${PREFIX_FINAL}${command.config.name} ${command.config.usages}\nAlternatively you can use "${PREFIX_FINAL}help ${command.config.name}" for more information.`),
 					threadID, Utils.autoUnsend, messageID
@@ -246,7 +246,7 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
 			}
 			
 			returns.inaccessible_outside_gc = function () {
-				global.sendReaction.failed(api, event);
+				Utils.sendReaction.failed(api, event);
 				api.sendMessage(
 					Utils.textFormat('system', 'commandAvailableOnGCOnly'),
 					event.threadID,
