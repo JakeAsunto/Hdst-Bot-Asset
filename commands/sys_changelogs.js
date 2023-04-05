@@ -6,7 +6,10 @@ module.exports.config = {
 	commandCategory: 'system',
 	credits: 'Hadestia',
 	hasPermssion: 0,
-	cooldowns: 30
+	cooldowns: 30,
+	envConfig: {
+		needGroupData: true
+	}
 }
 
 module.exports.lateInit = async function ({ api, Threads, Utils }) {
@@ -56,14 +59,14 @@ module.exports.lateInit = async function ({ api, Threads, Utils }) {
 	await writeFileSync(`${__dirname}/../../cache/keep/!asset-has-update.txt`, 'false', 'utf-8');
 }
 
-module.exports.run = async function ({ api, args, event, Utils, Threads }) {
+module.exports.run = async function ({ api, args, event, returns, Utils, Threads }) {
 	
 	const { threadID, messageID } = event;
 
 	if (args.length > 0) {
 		
 		if (!args[0] == 'set') {
-			return 'invalid_usage';
+			return returns.invalid_usage();
 		}
 		
 		// if has argument and not GC

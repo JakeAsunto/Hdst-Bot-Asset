@@ -115,7 +115,7 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
         const cmdEnvConfig = commandEnvConfig[command.config.name] || command.config.envConfig || {};
         
         // if command needs Data fetching and it's not yet initialize
-        if ((cmdEnvConfig.needGroupData && !groupData) || (cmdEnvConfig.needUserData && !userData)) {
+        if ((event.isGroup && cmdEnvConfig.needGroupData && !groupData) || (cmdEnvConfig.needUserData && !userData)) {
         	return api.sendMessage(Utils.textFormat('error', 'errOccured', 'Group/User data was initializing, Pls try again later. :)'), threadID, Utils.autoUnsend, messageID);
         }
         
@@ -178,7 +178,7 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
 			// setTimeout(() => { api.unsendMessage(info.messageID) }, 10 * 1000);
 		}
 		
-		const permCallback (err) => {
+		const permCallback = (err) => {
 			console.log(err);
 			Utils.sendReaction.failed(api, event);
 			Utils.logModuleErrorToAdmin(err, __filename, event);
