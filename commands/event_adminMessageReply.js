@@ -14,13 +14,11 @@ module.exports.run = function ({ api, args, event }) {}
 module.exports.handleMessageReply = async function ({ api, event, Utils, Threads }) {
 	
 	try {
-		const { ADMINBOT } = global.HADESTIA_BOT_CONFIG;
+		const { ADMINBOT, PREFIX } = global.HADESTIA_BOT_CONFIG;
 		// return if not replies on bot
-		if (event.type === 'message_reply' && !event.body.startsWith(global.HADESTIA_BOT_CONFIG.PREFIX)) {
+		if (event.type === 'message_reply' && !event.body.startsWith(PREFIX)) {
 			
-			if (!event.messageReply) {
-				return ADMINBOT.includes(event.senderID) && Utils.sendReaction.failed(api, event);
-			}
+			if (!event.messageReply) return;
 			
 			const { messageReply, threadID, messageID, senderID, body } = event;
 			
@@ -28,7 +26,6 @@ module.exports.handleMessageReply = async function ({ api, event, Utils, Threads
 			if (messageReply.body.indexOf('𝗔𝗻𝗼𝗻𝘆𝗺𝗼𝘂𝘀 𝗠𝗲𝘀𝘀𝗮𝗴𝗲') !== -1) return;
 			
 			const replyBody = messageReply.body;
-			const { ADMINBOT } = global.HADESTIA_BOT_CONFIG;
 		
 			// handle reply from other thread
 			if (!ADMINBOT.includes(threadID)) {
