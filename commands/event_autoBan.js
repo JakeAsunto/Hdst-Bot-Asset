@@ -1,25 +1,18 @@
-let autobanData;
+let autobanData = require(`${global.HADESTIA_BOT_CLIENT.mainPath}/json/autoResponse.json`);
 
 module.exports.config = {
-	name: 'auto-ban',
+	name: 'event-auto-ban',
 	version: '1.0.0',
 	hasPermssion: 0,
-	description: 'Event Listener to ban other bot',
+	description: 'Event Listener to ban users.',
 	commandCategory: 'hidden',
 	credits: 'Hadestia',
 	usages: ''
 }
 
-module.exports.onLoad = function () {
-	autobanData = require(`${global.client.mainPath}/json/autoResponse.json`);
-}
-
-
-module.exports.handleEvent = async function ({ api, event, Users, Banned }) {
+module.exports.handleEvent = async function ({ api, event, Utils, Users, Banned }) {
 	
 	const { body, threadID, senderID, messageID } = event;
-	
-	if (!body) return;
 	
 	if (autobanData && autobanData.autoban_bot_checker) {
 		for (const item of autobanData.autoban_bot_checker.matches) {
@@ -28,7 +21,7 @@ module.exports.handleEvent = async function ({ api, event, Users, Banned }) {
 				try {
 					const timezone = require('moment-timezone').tz('Asia/Manila').format('MM-DD-YYYY @HH:mm A');
 				
-					const userName = (global.data.userName).get(senderID) || 'Other Bot';
+					const userName = Users.getNameUser(senderID);
 					const randomCaseID = Math.floor(Math.random() * (999999 - 100000 + 1) + 100000);
 					const userData = await Users.getData(senderID);
 					if (!userData) { throw 'User not Initialize'; }
@@ -37,11 +30,10 @@ module.exports.handleEvent = async function ({ api, event, Users, Banned }) {
 					data.banned = data.banned || {};
 				
 					data.isBanned = true;
+					data.banned.name = userName;
 					data.banned.caseID = randomCaseID;
 					data.banned.reason = 'Suspected as other bot.';
 					data.banned.dateIssued = timezone;
-				
-					global.data.bannedUsers.set(senderID, data.banned);
 					
 					const bannedData = data.banned;
 					bannedData.isGroup = false;
@@ -51,7 +43,7 @@ module.exports.handleEvent = async function ({ api, event, Users, Banned }) {
 				
 					return api.sendMessage(
 						{
-							body: global.textFormat('events', 'eventOtherBotDetected', userName),
+							body: Utils.textFormat('events', 'eventOtherBotDetected', userName),
 							mentions: [ { tag: userName, id: senderID }]
 						},
 						threadID,

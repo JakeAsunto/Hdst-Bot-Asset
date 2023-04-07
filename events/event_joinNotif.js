@@ -81,7 +81,7 @@ module.exports.run = async function({ api, event, Utils }) {
 		 
 			api.sendMessage(
 				{
-					body: Utils.textFormat('events', 'eventMembersJoined', await global.fancyFont.get(thread_name, 1), await names.join(', '), await global.fancyFont.get(`${participantIDs.length}`, 1)),
+					body: Utils.textFormat('events', 'eventMembersJoined', await Utils.fancyFont.get(thread_name, 1), await names.join(', '), await Utils.fancyFont.get(`${participantIDs.length}`, 1)),
 					mentions,
 					attachment: fs.createReadStream(final_welcome_members_path)
 				},
@@ -217,11 +217,7 @@ function truncByChar(str, n) {
 function shortenUserName(name, maxchar) {
 	const participant_name = ((name).normalize('NFKD')).split(' ');
 	let shorten_user_name = (participant_name.length > 3) ? `${participant_name[0]} ${(participant_name).pop()}` : name;
-	
-	let first = (shorten_user_name.split(' '))[0];
-	let last = (shorten_user_name.split(' ')).pop();
-	last = (last.length > 8) ? last.slice(0, 8-1) + '...' : last;
-	return (shorten_user_name > maxchar) ? `${first} ${last[0]}.` : shorten_user_name;
+	return (shorten_user_name.length > maxchar) ? shorten_user_name.slice(0, maxchar - 3) + '...' : shorten_user_name;
 }
 
 function getOrdinalPosition(pos) {

@@ -22,7 +22,8 @@ module.exports.run = async function({ api, event, args, Utils, Prefix }) {
 	const { threadID, messageID } = event;
 	
 	// fetch specific command if requested
-	const command = commands.get((commandAliases.get(args[0]) || args[0] || '').toLowerCase());
+	const cmdName = (commandAliases.get(args[0]) || args[0] || '').toLowerCase();
+	const command = commands.get(cmdName);
 	
 	async function autoUnsent(err, info) {
 		if (err) console.log(err);
@@ -41,7 +42,7 @@ module.exports.run = async function({ api, event, args, Utils, Prefix }) {
 		}
 		
 		// User typed "help all"? (Display all commands)
-		const requestPage = (/\d+/g).test(args.join());
+		const requestPage = parseInt(args[0]) || false;
 		if (requestPage || args.join().indexOf('all') !== -1) {
 			
 			const arrayInfo = [];

@@ -5,8 +5,8 @@
         "https://facebook.com/mensaherong.iantot",
         "This repository was linked to bot assets repository of Hadestia that include assets auto updater."
     ],
-    "VERSION": "6.11.53",
-    "CHANGELOGS": "- As usual, Fix fucking errors.\n\n● Bot version was currently set to `Beta` due to major changes.",
+    "VERSION": "6.11.54",
+    "CHANGELOGS": "- Rename command filename according to categories.\n- As usual, Fix fucking errors.\n\n● Bot version was currently set to `Beta` due to major changes.",
     "PRIORITY": {
         "fileTree.js": {
             "path": "scripts/"
@@ -96,56 +96,51 @@
         }
     },
     "COMMANDS": [
-        "sys_pendingMessageReq",
-        "sys_execBash",
-        "sys_botInfo",
-        "sys_botReboot",
-        "sys_changelogs",
-        "sys_checkUpdate",
-        "sys_botShutdown",
-        "sys_textFormat",
-        "sys_setBio",
-        "sys_botReport",
-        "sys_help",
-        "cmd_sim",
-        "cmd_getID",
-        "cmd_baybayin",
-        "cmd_getLink",
-        "cmd_anonMsg",
-        "cmd_stalk",
-        "cmd_unsent",
-        "cmd_openAI",
-        "cmd_dall-E",
-        "cmd_playMusic",
-        "cmd_announce",
-        "cmd_saveLocally",
-        "cmd_getLyrics",
-        "cmd_pinterest",
+        "ai_sim",
+        
+        "economy_balance",
+        "economy_beg",
+        "economy_deposit",
+        "economy_give",
+        "economy_leaderboard",
+        "economy_main",
+        "economy_withdraw",
+        "economy_work",
+        
+        "edited-img_avatar",
+        "edited-img_avatar2",
+        "edited-img_facebookCover",
+        "edited-img_tweet",
+        
+        "education_translate",
+        "education_baybayin",
+        "education_dictionary",
+        
         "event_adminMessageReply",
+        "event_autoBan",
         "event_autoRecycleMessage",
         "event_autoResponse",
-        "event_autoBanBot",
-        "event_autoSeen",
-        "cmd_dictionary",
-        "cmd_group",
-        "cmd_fontStyle",
-        "cmd_avatar",
-        "cmd_facebookCover",
-        "cmd_artAIEdit",
-        "cmd_economyWork",
-        "cmd_economyBeg",
-        "cmd_economyBalance",
-        "cmd_economyDeposit",
-        "cmd_economyWithdraw",
-        "cmd_economyLeaderboard",
-        "cmd_economyMain",
-        "cmd_config",
-        "cmd_translate",
+        
         "gambling_slotMachine",
-        "cmd_roll",
-        "cmd_toss",
-        "cmd_avatar2",
-        "sys_banned"
+        
+        "media_pinterest",
+        "media_playMusic",
+        
+        "other_fontStyle",
+        "other_unsent",
+        
+        "ownership_announce",
+        "ownership_stalk",
+        
+        "random_roll",
+        "random_toss",
+        
+        "system_botReport",
+        "system_botReboot",
+        "system_changelogs",
+        "system_checkUpdate",
+        "system_help",
+        "system_shell"
     ],
     "EVENTS": [
         "event_adminUpdate",

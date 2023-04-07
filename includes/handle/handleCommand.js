@@ -11,7 +11,6 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
 		const { allowInbox, adminOnly, isMaintenance, allowCommandSimilarity, PREFIX, ADMINBOT, DeveloperMode } = global.HADESTIA_BOT_CONFIG;
 		const { commands, cooldowns, commandAliases, commandEnvConfig } = global.HADESTIA_BOT_CLIENT;
 		const { allThreadID } = global.HADESTIA_BOT_DATA;
-        const dateNow = Date.now()
         
         let { body, mentions, senderID, threadID, messageID } = event;
         senderID = String(senderID);
@@ -220,8 +219,17 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
 		}
 		
 		// User in cooldown?
-        if (!is_admin_bot && dateNow < userCooldown) {
-        	return userInCooldown(userCooldown, dateNow);
+        if (!is_admin_bot && Date.now() < userCooldown) {
+        	const timeA = new Date(userCooldown);
+			const timeB = new Date(Date.now());
+			const remaining = Utils.getRemainingTime(Math.abs(timeA - timeB)/1000);
+			if (remaining !== '') {
+				Utils.sendReaction.cooldown(api, event);
+				return api.sendMessage(
+					Utils.textFormat('cmd', 'cmdUserCooldown', remaining),
+					threadID, Utils.autoUnsend, messageID
+				);
+			}
 		}
 		
         const logMessageError = (err) => {
@@ -233,7 +241,7 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
         	if (DeveloperMode) {
 				const now = Date.now();
 				const time2 = moment.tz('Asia/Manila').format('HH:MM:ss MM/DD/YYYY');
-                Utils.logger(Utils.getText('handleCommand', 'executeCommand', time2, commandName, senderID, threadID, args.join(' '), (now - dateNow)), '[ DEV MODE ]');
+                Utils.logger(Utils.getText('handleCommand', 'executeCommand', time2, commandName, senderID, threadID, args.join(' '), (now - Date.now())), '[ DEV MODE ]');
 			}
 			
 			const returns = {};
@@ -292,7 +300,7 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
 			
 			Obj.alias = commandName; // to determine what alias user used to run this command
 
-			if (!is_admin_bot) timestamps.set(senderID, dateNow);
+			if (!is_admin_bot) timestamps.set(senderID, Date.now());
 			
             return command.run(Obj);
             

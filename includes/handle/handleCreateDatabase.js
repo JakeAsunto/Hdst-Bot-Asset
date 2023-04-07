@@ -9,10 +9,7 @@ module.exports = function({ Utils, Users, Threads, Banned }) {
     
     return async function({ event }) {
     	
-    	const random = job[Math.floor(Math.random() * job.length)];
-        const random1 = job[Math.floor(Math.random() * job.length)];
-        const random2 = job[Math.floor(Math.random() * job.length)];
-
+		const { updatedThreadDatabase } = global.HADESTIA_BOT_DATA;
 		// check if automatic DB creation was set
         if (!global.HADESTIA_BOT_CONFIG.autoCreateDB) { return; }
         
@@ -44,10 +41,22 @@ module.exports = function({ Utils, Users, Threads, Banned }) {
 			// ####### IF GROUP CHAT ####### //
             if (!threadData && event.isGroup) {
 				await handleGroupData(null, inputData);
+            } else {
+            	// make sure it applies all new content if ever had
+				const lastUpdate = (new Date(threadData.updatedAt)).getTime();
+				const nextUpdate = lastUpdate + (300 * 1000);
+				if (nextUpdate <= Date.now() && !updatedThreadDatabase.has(threadID)) {
+					global.HADESTIA_BOT_DATA.updatedThreadDatabase.set(threadID, true);
+            		const result = await handleGroupData(threadData, inputData);
+            		(result) ? await global.HADESTIA_BOT_DATA.updatedThreadDatabase.delete(threadID) : '';
+            	}
             }
 			
             if (!userData) {
             	await handleUserData(null, inputData);
+            } else {
+            	// same as what i did above
+				await handleUserData(userData, inputData); 
             }
             
             return;
@@ -69,9 +78,19 @@ async function handleUserData(oldData, { job, senderID, bannedUserData, database
     const random2 = job[Math.floor(Math.random() * job.length)];
 
 	const infoUsers = await Users.getInfo(senderID);
+    
+    const data = {};
+    
     const USER_ALL_DATA = {};
     USER_ALL_DATA.name = infoUsers.name;
-    USER_ALL_DATA.data = new Object(databaseSystem.user_data_config);
+    
+    for (const key in databaseSystem.user_data_config) {
+    	if (typeof(data[key]) == 'undefined') {
+			data[key] = databaseSystem.user_data_config[key];
+		}
+    }
+    USER_ALL_DATA.data = data;
+    
 	// IF USER WAS BANNED
 	if (bannedUserData) {
 		const bd = bannedUserData.data || {};
@@ -120,14 +139,14 @@ async function handleGroupData(oldData, { job, threadID, bannedGroupData, databa
 	
 	// default config
 	for (const item in databaseSystem.group_data_config) {
-		if (!THREAD_ALL_DATA.data[item]) {
+		if (typeof(THREAD_ALL_DATA.data[item]) == 'undefined') {
 			THREAD_ALL_DATA.data[item] = databaseSystem.group_data_config[item];
 		}
 	}
 
 	// default configuration for economy system for this group
 	for (const item in economySystem.config) {
-		if (!THREAD_ALL_DATA.data[item]) {
+		if (typeof(THREAD_ALL_DATA.data[item]) == 'undefined') {
 			THREAD_ALL_DATA.data[item] = economySystem.config[item];
 		}
 	}
@@ -152,7 +171,7 @@ async function handleGroupData(oldData, { job, threadID, bannedGroupData, databa
 		const userEco = THREAD_ALL_DATA.economy[UID] || {};
 		
 		for (const key in economySystem.userConfig) {
-			if (!userEco[key]) {
+			if (typeof(userEco[key]) == 'undefined') {
 				userEco[key] = economySystem.userConfig[key];
 			}
 		}
@@ -166,7 +185,7 @@ async function handleGroupData(oldData, { job, threadID, bannedGroupData, databa
             	
             	const data = thisGroupUserData.data || {};
             	for (const key in databaseSystem.user_data_config) {
-            		if (!data[key]) data[key] = databaseSystem.user_data_config[key];
+            		if (typeof(data[key]) == 'undefined') data[key] = databaseSystem.user_data_config[key];
             	}
             	
 				await Users.setData(UID, { 'name': singleData.name });
@@ -203,8 +222,10 @@ async function handleGroupData(oldData, { job, threadID, bannedGroupData, databa
 	// it means this was a new thread
 	if (!oldData) {
 		Utils.logger(Utils.getText('handleCreateDatabase', 'newThread', chalk.hex("#" + random)(`New group: `) + chalk.hex("#" + random1)(`${threadID}`) + "  ||  " + chalk.hex("#" + random2)(`${threadIn4.threadName}`)), '[ THREAD ]');
+		return true;
 	} else {
 		Utils.logger(`Updated GROUP: ${threadIn4.threadName}(${threadID})`, 'database');
+		return true;
 	}
-	return;
+	return false;
 }

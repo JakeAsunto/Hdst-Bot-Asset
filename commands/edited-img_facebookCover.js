@@ -39,7 +39,7 @@ module.exports.fetchData = function (body) {
 	return { color, top_name, sub_name, email, address, contact_no };
 }
 
-module.exports.handleEvent = async function ({ api, event, returns, Utils, Prefix }) {
+module.exports.handleEvent = async function ({ api, event, Utils, Prefix }) {
 	
 	if (event.body == '') return;
 	
@@ -91,10 +91,12 @@ module.exports.handleEvent = async function ({ api, event, returns, Utils, Prefi
 			threadID,
 			(e) => {
 				if (fs.existsSync(path)) { fs.unlinkSync(path); }
-				if (e) return Utils.sendReaction.failed(api, event);
+				
+				if (e) {
+					return Utils.sendReaction.failed(api, event);
+				}
 				
 				Utils.sendReaction.success(api, event);
-				returns.handleTimestamps();
 			},
 			messageID
 		);

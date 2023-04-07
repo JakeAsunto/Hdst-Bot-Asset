@@ -3,7 +3,7 @@ module.exports.config = {
 	version: '1.0.0',
 	credits: 'Hadestia',
 	hasPermssion: 2,
-	commandCategory: 'system',
+	commandCategory: 'ownership',
 	cooldowns: 0,
 	description: 'announce a message to a all groups or on a specified one.',
 	usages: '[all/group ID] | <author> | <message>',

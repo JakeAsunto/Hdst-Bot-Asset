@@ -4,17 +4,18 @@ module.exports.config = {
 	credits: 'Hadestia',
 	cooldowns: 0,
 	hasPermssion: 2,
-	commandCategory: 'system',
-	description: 'Handle banned database.',
+	commandCategory: 'ownership',
+	description: 'Give a punishment to a Group(s) or User(s). Basically banned them.',
 	usages: '[ ban-(user/group) | unban-(user/group) | check | list ] [ id | this-group | @mention ] | [ ... ]',
 	envConfig: {
 		requiredArgument: 1
 	}
 }
 
-const databaseConfig = require(`${global.client.mainPath}/json/databaseConfig.json`);
+const databaseConfig = require(`${global.HADESTIA_BOT_CLIENT.mainPath}/json/databaseConfig.json`);
+const textFormat = require(`${global.HADESTIA_BOT_CLIENT.mainPath}/utils/textFormat.js`);
 
-module.exports.run = async function ({ api, args, event, textFormat, Users, Banned, Threads }) {
+module.exports.run = async function ({ api, args, event, Utils, Users, Banned, Threads }) {
 	
 	const timezone = require('moment-timezone').tz('Asia/Manila').format('MM-DD-YYYY @HH:mm A');
 	const { threadID, messageID, mentions } = event;
@@ -32,6 +33,7 @@ module.exports.run = async function ({ api, args, event, textFormat, Users, Bann
 		return send(composeError('Invalid command type.'));
 	}
 	
+	const successProcess = [];
 	
 	switch (command) {
 		////////// BAN USER //////////
@@ -42,7 +44,6 @@ module.exports.run = async function ({ api, args, event, textFormat, Users, Bann
 				break;
 			}
 			const splitInput = args.join(' ').split('|');
-			const successProcess = []; //, failProcess = [];
 			const reason = (splitInput.pop()).trim();
 			let isError = false;
 			// if mention
@@ -106,7 +107,6 @@ module.exports.run = async function ({ api, args, event, textFormat, Users, Bann
 		////////// BAN GROUP //////////
 		case 'ban-group': {
 			// return if no reason detected
-			const successProcess = []; //, failProcess = [];
 			if (!(args.join(' ')).match(/\|/g)) {
 				send(composeError('Reason cannot found.'));
 				break;
@@ -150,7 +150,6 @@ module.exports.run = async function ({ api, args, event, textFormat, Users, Bann
 		
 		////////// UNBAN USER //////////
 		case 'unban-user': {
-			const successProcess = [];
 			const splitInput = args.join(' ').split('|');
 			let isError = false;
 			
@@ -213,7 +212,6 @@ module.exports.run = async function ({ api, args, event, textFormat, Users, Bann
 		
 		////////// UNBAN GROUP //////////
 		case 'unban-group': {
-			const successProcess = [];
 			const splitInput = args.join(' ').split('|');
 			let isError = false;
 			
@@ -253,7 +251,7 @@ module.exports.run = async function ({ api, args, event, textFormat, Users, Bann
 		case 'check': {
 			//const splitInput = args.join(' ').split('|');
 			if (args.length == 0) {
-				send(composeError('Invalid target, target cannot be emptied'));
+				send(composeError('Invalid target, target cannot be emptied.'));
 				break;
 			}
 			// if mention type
@@ -286,7 +284,7 @@ module.exports.run = async function ({ api, args, event, textFormat, Users, Bann
 }
 
 function composeError (msg) {
-	return global.textFormat('error', 'errOccured', msg);
+	return textFormat('error', 'errOccured', msg);
 }
 
 function createCaseNum () {
@@ -311,7 +309,6 @@ async function setBan(ID, name, reason, isGroup, Banned, Users, Threads) {
 		
 			await Threads.setData(ID, { data });
 			await Banned.setData(ID, { data: bannedData });
-			global.data.bannedThreads.set(ID, data.banned);
 		} else {
 			let user = await Users.getData(ID);
 			const data = user.data;
@@ -327,7 +324,6 @@ async function setBan(ID, name, reason, isGroup, Banned, Users, Threads) {
 		
 			await Users.setData(ID, { data });
 			await Banned.setData(ID, { data: bannedData });
-			global.data.bannedUsers.set(ID, data.banned);
 		}
 		return;
 	} catch (e) {
@@ -345,7 +341,6 @@ async function deleteBan (ID, isGroup, Banned, Users, Threads) {
 			
 			await Threads.setData(ID, { data });
 			await Banned.delData(ID);
-			global.data.bannedThreads.delete(ID);
 		} else {
 			let user = await Users.getData(ID);
 			const data = user.data;
@@ -354,7 +349,6 @@ async function deleteBan (ID, isGroup, Banned, Users, Threads) {
 			
 			await Users.setData(ID, { data });
 			await Banned.delData(ID);
-			global.data.bannedUsers.delete(ID, data.banned);
 		}
 		return;
 	} catch (e) {

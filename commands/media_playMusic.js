@@ -14,9 +14,9 @@ module.exports.config = {
 		'request': ''
 	},
 	envConfig: {
+		disabled: true,
 		requiredArgument: 1
 	}
-	//disabled: true
 }
 
 module.exports.handleReply = async function ({ api, event, returns, handleReply, Utils }) {

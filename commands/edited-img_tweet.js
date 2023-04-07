@@ -4,7 +4,7 @@ module.exports.config = {
 	hasPermssion: 0,
 	credits: 'Joshua Sy',
 	description: 'tweet',
-	commandCategory: 'edited images/meme',
+	commandCategory: 'edited_images',
 	usages: '<text>',
 	cooldowns: 10,
 	dependencies: {
@@ -57,7 +57,7 @@ module.exports.wrapText = (ctx, text, maxWidth) => {
 	
 } 
 
-module.exports.run = async function({ api, event, args, client, __GLOBAL, Users }) {
+module.exports.run = async function({ api, event, args, Users, Utils }) {
 	
 	let {threadID, senderID, messageID} = event;
 	const res = await api.getUserInfoV2(senderID); 
@@ -65,7 +65,7 @@ module.exports.run = async function({ api, event, args, client, __GLOBAL, Users 
 	const fs = require('fs-extra');
 	const axios = require('axios')
 	
-	global.sendReaction.inprocess(api, event);
+	Utils.sendReaction.inprocess(api, event);
 	
 	let avatar = __dirname + '/cache/avt.png';
 	let pathImg = __dirname + '/cache/porn.png';
@@ -119,9 +119,9 @@ module.exports.run = async function({ api, event, args, client, __GLOBAL, Users 
 		(e) => {
 			fs.unlinkSync(pathImg);
 			if (!e) {
-				return global.sendReaction.success(api, event);
+				return Utils.sendReaction.success(api, event);
 			}
-			return global.sendReaction.failed(api, event);
+			return Utils.sendReaction.failed(api, event);
 		},
 		messageID
 	);

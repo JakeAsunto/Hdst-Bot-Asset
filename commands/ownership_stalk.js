@@ -1,9 +1,9 @@
 module.exports.config = {
 	name: 'stalk',
 	version: '1.0.8',
-	hasPermssion: 0,
+	hasPermssion: 2,
 	credits: 'Hadestia',
-	commandCategory: 'utilities',
+	commandCategory: 'ownership',
 	description: 'get user info of yourself or using uid / by mentioning / or replied message',
 	usages: '[ name | username | uid | @reply | @mention ]',
 	cooldowns: 300,
@@ -12,7 +12,7 @@ module.exports.config = {
 	}
 };
 
-module.exports.run = async function ({ api, event, args, utils, returns, textFormat, Prefix }) {
+module.exports.run = async function ({ api, event, args, utils, returns, Utils, Prefix }) {
 	
 	const axios = require('axios');
 	const fs = require('fs-extra');
@@ -25,14 +25,14 @@ module.exports.run = async function ({ api, event, args, utils, returns, textFor
 		if (search[0]) {
 			if (str.indexOf('mark zuckerberg') !== -1) {
 				returns.remove_usercooldown();
-				global.sendReaction.failed(api, event);
-				api.sendMessage(textFormat('error', 'errOccured', 'I can\'t do that.'), threadID, messageID);
+				Utils.sendReaction.failed(api, event);
+				api.sendMessage(Utils.textFormat('error', 'errOccured', 'I can\'t do that.'), threadID, messageID);
 			}
 			return search[0].userID;
 		} else {
 			returns.remove_usercooldown();
-			global.sendReaction.failed(api, event);
-			api.sendMessage(textFormat('error', 'errOccured', 'I couldn\'t find that person.'), threadID, messageID);
+			Utils.sendReaction.failed(api, event);
+			api.sendMessage(Utils.textFormat('error', 'errOccured', 'I couldn\'t find that person.'), threadID, messageID);
 			return false;
 		}
 	}
@@ -58,7 +58,7 @@ module.exports.run = async function ({ api, event, args, utils, returns, textFor
 				if (parseInt(init)) {
 					if (init.length > 15) {
 						returns.remove_usercooldown();
-						return global.sendReaction.failed(api, event); 
+						return Utils.sendReaction.failed(api, event); 
 					}
 				} else if (init.indexOf('facebook.com') !== -1) {
 					const split = init.split('facebook.com/');
@@ -88,7 +88,7 @@ module.exports.run = async function ({ api, event, args, utils, returns, textFor
 		}
 		
 		const res = await api.getUserInfoV2(id);
-		const n_a = textFormat('error', 'errNoData');
+		const n_a = Utils.textFormat('error', 'errNoData');
 		const khong = 'Kh\u00F4ng';
 		
 		var gender = (!res.gender) ? n_a : ((res.gender).startsWith(khong)) ? n_a : (res.gender == 'male') ? 'Male' : (res.gender == 'female') ? 'Female' : res.gender;
@@ -108,7 +108,7 @@ module.exports.run = async function ({ api, event, args, utils, returns, textFor
 		
 		return api.sendMessage(
 			{
-				body: textFormat(
+				body: Utils.textFormat(
 					'cmd', 'cmdStalkFormat',
 					res.name,
 					usern,
@@ -126,18 +126,18 @@ module.exports.run = async function ({ api, event, args, utils, returns, textFor
 			},
 			threadID,
 			(e, info) => {
-				global.sendReaction.success(api, event);
+				Utils.sendReaction.success(api, event);
 				try { fs.unlinkSync(path) } catch (e) {}
-				global.autoUnsend(e, info, 300);
+				Utils.autoUnsend(e, info, 300);
 			},
 			messageID
 		);
 		
 	} catch (err) {
 		returns.remove_usercooldown();
-		global.sendReaction.failed(api, event);
-		global.logModuleErrorToAdmin(err, __filename, event);
-		api.sendMessage(textFormat('error', 'errCmdExceptionError', err, Prefix), threadID, messageID);
+		Utils.sendReaction.failed(api, event);
+		Utils.logModuleErrorToAdmin(err, __filename, event);
+		api.sendMessage(Utils.textFormat('error', 'errCmdExceptionError', err, Prefix), threadID, messageID);
 		return console.log(err);
 	}
 };

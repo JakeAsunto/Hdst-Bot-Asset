@@ -70,7 +70,11 @@ global.HADESTIA_BOT_CLIENT = new Object({
 
 // former: GLOBAL.DATA
 global.HADESTIA_BOT_DATA = new Object({
-	language: new Object()
+	
+	language: new Object(),
+	
+	updatedThreadDatabase: new Map()
+	
 });
 
 //========= Find and get variable from Config =========//
