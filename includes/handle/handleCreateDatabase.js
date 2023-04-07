@@ -39,24 +39,12 @@ module.exports = function({ Utils, Users, Threads, Banned }) {
 			}
 		    
 			// ####### IF GROUP CHAT ####### //
-            if (!threadData && event.isGroup) {
+			if (event.isGroup && !threadData) {
 				await handleGroupData(null, inputData);
-            } else {
-            	// make sure it applies all new content if ever had
-				const lastUpdate = (new Date(threadData.updatedAt)).getTime();
-				const nextUpdate = lastUpdate + (300 * 1000);
-				if (nextUpdate <= Date.now() && !updatedThreadDatabase.has(threadID)) {
-					global.HADESTIA_BOT_DATA.updatedThreadDatabase.set(threadID, true);
-            		const result = await handleGroupData(threadData, inputData);
-            		(result) ? await global.HADESTIA_BOT_DATA.updatedThreadDatabase.delete(threadID) : '';
-            	}
             }
 			
             if (!userData) {
             	await handleUserData(null, inputData);
-            } else {
-            	// same as what i did above
-				await handleUserData(userData, inputData); 
             }
             
             return;
