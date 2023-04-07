@@ -5,7 +5,7 @@
         "https://facebook.com/mensaherong.iantot",
         "This repository was linked to bot assets repository of Hadestia that include assets auto updater."
     ],
-    "VERSION": "6.11.54",
+    "VERSION": "6.11.55",
     "CHANGELOGS": "- Rename command filename according to categories.\n- As usual, Fix fucking errors.\n\n● Bot version was currently set to `Beta` due to major changes.",
     "PRIORITY": {
         "fileTree.js": {
@@ -97,7 +97,6 @@
     },
     "COMMANDS": [
         "ai_sim",
-        
         "economy_balance",
         "economy_beg",
         "economy_deposit",
@@ -106,35 +105,27 @@
         "economy_main",
         "economy_withdraw",
         "economy_work",
-        
         "edited-img_avatar",
         "edited-img_avatar2",
         "edited-img_facebookCover",
         "edited-img_tweet",
-        
         "education_translate",
         "education_baybayin",
         "education_dictionary",
-        
         "event_adminMessageReply",
         "event_autoBan",
         "event_autoRecycleMessage",
         "event_autoResponse",
-        
         "gambling_slotMachine",
-        
         "media_pinterest",
         "media_playMusic",
-        
         "other_fontStyle",
         "other_unsent",
-        
         "ownership_announce",
+        "ownership_banned",
         "ownership_stalk",
-        
         "random_roll",
         "random_toss",
-        
         "system_botReport",
         "system_botReboot",
         "system_changelogs",
