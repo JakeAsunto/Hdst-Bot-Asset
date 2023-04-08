@@ -5,8 +5,8 @@
         "https://facebook.com/mensaherong.iantot",
         "This repository was linked to bot assets repository of Hadestia that include assets auto updater."
     ],
-    "VERSION": "6.11.55",
-    "CHANGELOGS": "- Rename command filename according to categories.\n- As usual, Fix fucking errors.\n\n● Bot version was currently set to `Beta` due to major changes.",
+    "VERSION": "6.11.56",
+    "CHANGELOGS": "- Add support for user link when retrieving user id\n- As usual, Fix fucking errors.\n\n● Bot version was currently set to `Beta` due to major changes.",
     "PRIORITY": {
         "fileTree.js": {
             "path": "scripts/"
@@ -117,6 +117,7 @@
         "event_autoRecycleMessage",
         "event_autoResponse",
         "gambling_slotMachine",
+        "information_getID",
         "media_pinterest",
         "media_playMusic",
         "other_fontStyle",

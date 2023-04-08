@@ -9,7 +9,7 @@
     },
     "information": {
         "icon": "📔",
-        "description": "Commands for retrieving information about the bot or the group."
+        "description": "Commands for retrieving information about the bot, user or the group."
     },
     "ownership": {
         "icon": "👤",
