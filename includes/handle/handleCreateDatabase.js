@@ -65,7 +65,7 @@ async function handleUserData(oldData, { job, senderID, bannedUserData, database
     const random1 = job[Math.floor(Math.random() * job.length)];
     const random2 = job[Math.floor(Math.random() * job.length)];
 
-	const infoUsers = await Users.getInfo(senderID);
+	const userName = await Users.getNameUser(senderID);
     
     const data = {};
     
@@ -83,13 +83,13 @@ async function handleUserData(oldData, { job, senderID, bannedUserData, database
 	if (bannedUserData) {
 		const bd = bannedUserData.data || {};
 		const banned = {
-			name: infoUsers.name,
+			name: userName,
 			caseID: bd.caseID || -1,
 			reason: bd.reason || databaseSystem.user_data_config.banned.reason,
 			dateIssued: bd.dateIssued || databaseSystem.user_data_config.banned.dateIssued
 		}
 		USER_ALL_DATA.data.banned = banned;
-		await Banned.getData(senderID);
+		await Banned.setData(senderID, { data: banned });
 	}
 	// SAVE
 	await Users.setData(senderID, USER_ALL_DATA);

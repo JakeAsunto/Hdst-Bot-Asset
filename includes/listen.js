@@ -77,10 +77,11 @@ module.exports = function({ api, models }) {
 					try { await Users.delData(userID); } catch (e) {}
 				} else {
 					if (UserData.isBanned) {
+						const name = await Users.getNameUser(userID);
 						const banned = UserData.banned;
 						const data = {
 							isGroup: false,
-							name: userData.name,
+							name: name,
 							caseID: userData.data.banned.caseID || -1,
 							reason: userData.data.banned.reason || '<reason not set>',
 							dateIssued: userData.data.banned.dateIssued || '<unknown date>'

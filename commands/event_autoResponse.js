@@ -31,7 +31,8 @@ module.exports.handleEvent = async ({ api, event, Utils, Users, Threads }) => {
 	//if private messages
 	threadSettings.auto_response_listener = (senderID == threadID) ? true : threadSettings.auto_response_listener;
 	
-	if (!threadSettings.auto_response_listener) return;
+	const { ADMINBOT } = global.HADESTIA_BOT_CONFIG;
+	if (!threadSettings.auto_response_listener || ADMINBOT[0] == senderID) return;
 	
 	// Ignore messages with bot prefix
 	if (senderBody.startsWith(threadSettings.PREFIX || global.HADESTIA_BOT_CONFIG.PREFIX)) {

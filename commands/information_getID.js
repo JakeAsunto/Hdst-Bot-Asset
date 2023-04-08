@@ -7,7 +7,7 @@ module.exports.config = {
 	commandCategory: 'information',
 	cooldowns: 5,
 	credits: 'Hadestia',
-	aliases: [ 'id', 'uid', 'tid', 'thread', 'group' ]
+	aliases: [ 'id', 'uid', 'tid', 'group-id' ]
 }
 
 module.exports.run = async function({ api, args, event, alias, returns, Utils, Prefix }) {

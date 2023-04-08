@@ -1,5 +1,3 @@
-let autobanData = require(`${global.HADESTIA_BOT_CLIENT.mainPath}/json/autoResponse.json`);
-
 module.exports.config = {
 	name: 'event-auto-ban',
 	version: '1.0.0',
@@ -9,6 +7,8 @@ module.exports.config = {
 	credits: 'Hadestia',
 	usages: ''
 }
+
+const autobanData = require(`${global.HADESTIA_BOT_CLIENT.mainPath}/json/autoResponse.json`);
 
 module.exports.handleEvent = async function ({ api, event, Utils, Users, Banned }) {
 	
@@ -25,21 +25,21 @@ module.exports.handleEvent = async function ({ api, event, Utils, Users, Banned 
 					const randomCaseID = Math.floor(Math.random() * (999999 - 100000 + 1) + 100000);
 					const userData = await Users.getData(senderID);
 					if (!userData) { throw 'User not Initialize'; }
-					const data = userData.data;
-				
-					data.banned = data.banned || {};
-				
-					data.isBanned = true;
-					data.banned.name = userName;
-					data.banned.caseID = randomCaseID;
-					data.banned.reason = 'Suspected as other bot.';
-					data.banned.dateIssued = timezone;
 					
-					const bannedData = data.banned;
-					bannedData.isGroup = false;
+					const data = userData.data;
+					const banned = {};
+					
+					data.isBanned = true;
+					banned.isGroup = false;
+					banned.name = userName;
+					banned.caseID = randomCaseID;
+					banned.reason = 'Suspected as other bot.';
+					banned.dateIssued = timezone;
+					
+					data.banned = banned;
 					
 					await Users.setData(senderID, { data });
-					await Banned.setData(senderID, { data: bannedData });
+					await Banned.setData(senderID, { data: banned });
 				
 					return api.sendMessage(
 						{
