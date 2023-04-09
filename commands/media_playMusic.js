@@ -15,7 +15,8 @@ module.exports.config = {
 	},
 	envConfig: {
 		disabled: true,
-		requiredArgument: 1
+		requiredArgument: 1,
+		maxDownloadSize: 8388608 // 8mb
 	}
 }
 
@@ -31,35 +32,32 @@ module.exports.handleReply = async function ({ api, event, returns, handleReply,
     selection = Math.abs(parseInt(selection[0]));
     
     try {
-    	
     	const directory = `${__dirname}/../../cache/`;
         const path = `${directory}musicRequest-of-${senderID}.mp3`;
-        var data = await downloadMusicFromYoutube('https://www.youtube.com/watch?v=' + handleReply.results[selection - 1], path);
-        
-        if (statSync(path).size > 6291456) {
-        	try { unlinkSync(path); } catch (_) {}
+        await downloadMusic('https://www.youtube.com/watch?v=' + handleReply.results[selection - 1], path).then((data) => {
+        	api.sendMessage(
+				{ 
+					body: Utils.textFormat('cmd', 'cmdPlayMusicSuccess', data.title),
+					attachment: createReadStream(path)
+				},
+				threadID,
+				(e) => {
+					if (!e) {
+						Utils.sendReaction.success(api, { messageID: handleReply.requestMsgID });
+						Utils.sendReaction.success(api, event);
+					}
+					try { return unlinkSync(path) } catch (e) {}
+				},
+				handleReply.requestMsgID
+			);
+			returns.delete_data();
+    	}).catch((err) => {
+    		handleDownloadError(err, api, threadID, messageID, Utils);
+    		Utils.sendReaction.failed(api, { messageID: handleReply.requestMsgID });
 			Utils.sendReaction.failed(api, event);
-			api.sendMessage(Utils.textFormat('cmd', 'cmdPlayMusicFileWasBig', 6), threadID, messageID);
-			return returns.delete_data();
-		}
-        
-        api.sendMessage(
-			{ 
-				body: Utils.textFormat('cmd', 'cmdPlayMusicSuccess', data.title),
-				attachment: createReadStream(path)
-			},
-			threadID,
-			(e) => { if (!e) {
-				// set reaction for the request
-				Utils.sendReaction.success(api, { messageID: handleReply.requestMsgID });
-				// Also for the selection
-				Utils.sendReaction.success(api, event);
-			} try { return unlinkSync(path) } catch {} },
-			handleReply.requestMsgID
-		);
-		return returns.delete_data();
-    }
-    catch (e) {
+    		return returns.delete_data();
+    	});
+    } catch (e) {
 		console.log(e);
     	Utils.sendReaction.failed(api, { messageID: handleReply.requestMsgID });
 		Utils.logModuleErrorToAdmin(e, __filename, event);
@@ -67,7 +65,7 @@ module.exports.handleReply = async function ({ api, event, returns, handleReply,
     }
 }
 
-module.exports.run = async function ({ api, args, event, Utils, Prefix }) {
+module.exports.run = async function ({ api, args, event, returns, Utils, Prefix }) {
 	
 	const { threadID, messageID, senderID } = event;
 	const axios = require("axios");
@@ -81,25 +79,26 @@ module.exports.run = async function ({ api, args, event, Utils, Prefix }) {
 	if (song.indexOf('https://') !== -1) {
 		try {
 			const path = `${directory}musicRequest-of-${senderID}.mp3`;
-			const data = await downloadMusicFromYoutube(song, path);
-			// if request was larger than 8mb
-			if (fs.statSync(path).size > 8388608) {
+			await downloadMusic(song, path).then((data) => {
+				return api.sendMessage(
+					{ 
+						body: Utils.textFormat('cmd', 'cmdPlayMusicSuccess', data.title),
+						attachment: fs.createReadStream(path)
+					},
+					threadID,
+					(e) => {
+						if (!e) {
+							Utils.sendReaction.success(api, event);
+							return fs.unlinkSync(path);
+						}
+					},
+					messageID
+				);
+			}).catch((err) => {
+				handleDownloadError(err, api, threadID, messageID, Utils);
 				Utils.sendReaction.failed(api, event);
-				return api.sendMessage(Utils.textFormat('cmd', 'cmdPlayMusicFileWasBig', 8), threadID, () => fs.unlinkSync(path), messageID);
-			}
-					
-			return api.sendMessage(
-				{ 
-					body: Utils.textFormat('cmd', 'cmdPlayMusicSuccess', data.title),
-					attachment: fs.createReadStream(path)
-				},
-				threadID,
-				(e) => { if (!i) {
-					Utils.sendReaction.success(api, event);
-					return fs.unlinkSync(path);
-				} },
-				messageID
-			);
+				returns.remove_usercooldown();
+			});
 					
 		} catch (err_link_req) {
 			console.log(err_link_req);
@@ -151,35 +150,73 @@ module.exports.run = async function ({ api, args, event, Utils, Prefix }) {
 	}
 }
 
-async function downloadMusicFromYoutube(link, path) {
+function handleDownloadError(err, api, threadID, messageID, Utils) {
+	
+	const send = (e) => {
+		api.sendMessage(Utils.textFormat('error', 'errOccured', e), threadID, messageID);
+	}
+	
+	if (err == 'oversize-file') {
+		return send(Utils.textFormat('cmd', 'cmdPlayMusicFileWasBig', 8));
+	} else if (err == 'no-url') {
+		return send('No URL found on the request.');
+	} else if (err == 'invalid-url') {
+		return send('Invalid YouTube link URL.');
+	}
+}
+
+async function downloadMusic(link, path) {
 
 	const fs = require('fs-extra');
 	const ytdl = require('ytdl-core');
-	const { resolve } = require('path');
 	
-	if (!link) return 'No link given';
-	
-	const returnPromise = new Promise(function (resolve, reject) {
+	return new Promise(function (resolve, reject) {
+		if (!link) {
+			return reject('no-url');
+		}
+		
+		if (!ytdl.validateURL(link)) {
+			return reject('invalid-url');
+		}
+		
 		try {
-			ytdl( link, { filter: format => format.quality == 'tiny' && format.audioBitrate == 48 && format.hasAudio == true }).pipe(fs.createWriteStream(path))
-				.on("close", async () => {
+			const res = ytdl(
+				link,
+				{
+					filter: function (format) {
+						return format.quality == 18 && format.audioBitrate == 48
+					}
+				}
+			).pipe(
+				fs.createWriteStream(path)
+			);
 			
-           		 const data = await ytdl.getInfo(link);
-            
-					let result = {
-              		  title: data.videoDetails.title,
-               		 dur: Number(data.videoDetails.lengthSeconds),
-              		  viewCount: data.videoDetails.viewCount,
-              		  likes: data.videoDetails.likes,
-              		  author: data.videoDetails.author.name
-          		  }
-            
-            		resolve(result);
-      	 	 });
+			res.on('close', async function () {
+				const data = await ytdl.getInfo(link);
+				let result = {
+					title: data.videoDetails.title,
+					dur: Number(data.videoDetails.lengthSeconds),
+					viewCount: data.videoDetails.viewCount,
+					likes: data.videoDetails.likes,
+					author: data.videoDetails.author.name
+				}
+            	resolve(result);
+			});
+			
+			res.on('progress', async function (length, downloaded, totalLength) {
+				if (totalLength > this.config.envConfig.maxDownloadSize) {
+					await res.destroy();
+					try { fs.unlinkSync(path); } catch (e) {};
+					reject('oversize-file');
+				}
+			});
+			
+			res.on('error', function (err) {
+				reject(err);
+			});
+			
 		} catch(err) {
 			reject(err);
 		}
 	});
-        
-  return returnPromise;
 }

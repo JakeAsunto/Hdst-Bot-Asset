@@ -27,8 +27,7 @@ module.exports.run = async function ({ api, args, event, Utils }) {
 	}
 	
 	const command = args.join(' ');
-	
-	//global.sendReaction.loading
+
 	await exec(
 		command,
 		(err, stdout, stderr) => {
