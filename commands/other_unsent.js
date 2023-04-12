@@ -13,10 +13,12 @@ module.exports.config = {
 	}
 };
 
-module.exports.handleEvent = function ({ api, event, Utils }) {
+module.exports.handleEvent = async function ({ api, event, Utils }) {
 	
 	if (!['unsend', 'unsent', 'remove', 'delete'].includes(event.body.toLowerCase())) return;
-	if (Utils.hasPermission(event.senderID, event.threadID, this.config.hasPermssion)) {
+	
+	const eligible = await Utils.hasPermission(event.senderID, event.threadID, this.config.hasPermssion);
+	if (eligible) {
 		this.run({ api, event, Utils });
 	}
 	

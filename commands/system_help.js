@@ -117,9 +117,31 @@ module.exports.run = async function({ api, event, args, Utils, Prefix }) {
 				threadID, autoUnsent, messageID
 			);
 		} else {
+			
+			if (command) {
+				const permssion = Utils.textFormat('system', `perm${command.config.hasPermssion || 0}`);
+				const commandUsage = `${Prefix}${command.config.name} ${command.config.usages || ''}`;
+				const cooldown = (command.config.cooldowns && command.config.cooldowns > 1) ? `${command.config.cooldowns} seconds` : 'no cooldown';
+				const commandReplyUsage = (command.config.replyUsages) ? `\n● reply usage:\n${command.config.replyUsages}` : '';
+				const commandName = await Utils.fancyFont.get(command.config.name, 1);
 	
+				const messageBody = Utils.textFormat(
+					'cmd', 'cmdShowInfo',
+					`${Prefix}${commandName}`,
+					command.config.description,
+					commandUsage,
+					commandReplyUsage,
+					command.config.commandCategory,
+					cooldown,
+					permssion,
+					(command.config.aliases) ? `\n[ ${command.config.aliases.join(', ')} ]` : 'none',
+					command.config.credits || 'ctto'
+				);
+				return api.sendMessage( messageBody, threadID, autoUnsent, messageID);
+			}
+			
 			// User just typed "help" only?
-			if (!command) {
+			if (args.length == 0) {
 				// Display all CATEGORIES and category description
 				let msgBody = '';
 		
@@ -137,26 +159,8 @@ module.exports.run = async function({ api, event, args, Utils, Prefix }) {
 				);
 			}
 			
-			const permssion = Utils.textFormat('system', `perm${command.config.hasPermssion || 0}`);
-			const commandUsage = `${Prefix}${command.config.name} ${command.config.usages || ''}`;
-			const cooldown = (command.config.cooldowns && command.config.cooldowns > 1) ? `${command.config.cooldowns} seconds` : 'no cooldown';
-			const commandReplyUsage = (command.config.replyUsages) ? `\n● reply usage:\n${command.config.replyUsages}` : '';
-			const commandName = await Utils.fancyFont.get(command.config.name, 1);
-	
-			const messageBody = Utils.textFormat(
-				'cmd', 'cmdShowInfo',
-				`${Prefix}${commandName}`,
-				command.config.description,
-				commandUsage,
-				commandReplyUsage,
-				command.config.commandCategory,
-				cooldown,
-				permssion,
-				(command.config.aliases) ? `\n[ ${command.config.aliases.join(', ')} ]` : 'none',
-				command.config.credits || 'ctto'
-			);
-		
-			return api.sendMessage( messageBody, threadID, autoUnsent, messageID);
+			// react red
+			return Utils.sendReaction.failed(api, event);
 		}
 	} catch (err) {
 		Utils.sendRequestError(err, event, Prefix);

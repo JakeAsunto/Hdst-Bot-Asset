@@ -23,7 +23,6 @@ module.exports = function({ Utils, Users, Threads, Banned }) {
 		
         try {
 			const inputData = {
-				job,
 				threadID,
 				senderID,
 				bannedGroupData,
@@ -95,7 +94,7 @@ module.exports.handleUserData = async function (oldData, { log, senderID, banned
     	Utils.logger(Utils.getText('handleCreateDatabase', 'newUser', chalk.hex("#" + random)(`New users: `) + chalk.hex("#" + random1)(`${userName}`) + " || " + chalk.hex("#" + random2)(`${senderID}`)), '[ USER ]');
     } else {
     	if (log) {
-    		Utils.logger(`Updated USER: ${userName}(${senderID}), 'database');
+    		Utils.logger(`Updated USER: ${userName}(${senderID})`, 'database');
     	}
     }
     return;
@@ -107,7 +106,7 @@ module.exports.handleGroupData = async function (oldData, { log, threadID, banne
 	const chalk = require('chalk');
 	let job = ["FF9900", "FFFF33", "33FFFF", "FF99FF", "FF3366", "FFFF66", "FF00FF", "66FF99", "00CCFF", "FF0099", "FF0066", "008E97", "F58220", "38B6FF", "7ED957", "97FFFF", "00BFFF", "76EEC6", "4EEE94", "98F5FF", "AFD788", "00B2BF", "9F79EE", "00FA9A"];
 	
-	const init = oldData || {};
+	let changesCount = 0;
 	const random = job[Math.floor(Math.random() * job.length)];
     const random1 = job[Math.floor(Math.random() * job.length)];
     const random2 = job[Math.floor(Math.random() * job.length)];
@@ -122,6 +121,7 @@ module.exports.handleGroupData = async function (oldData, { log, threadID, banne
 	setting.nicknames = threadIn4.nicknames;
 	
 	// set initial data for thread data on DB
+	const init = oldData || {};
     const THREAD_ALL_DATA = init;
     THREAD_ALL_DATA.data = init.data || {};           
     THREAD_ALL_DATA.threadInfo = setting;
@@ -133,6 +133,7 @@ module.exports.handleGroupData = async function (oldData, { log, threadID, banne
 	for (const item in databaseSystem.group_data_config) {
 		if (typeof(THREAD_ALL_DATA.data[item]) == 'undefined') {
 			THREAD_ALL_DATA.data[item] = databaseSystem.group_data_config[item];
+			changesCount++;
 		}
 	}
 
@@ -140,6 +141,7 @@ module.exports.handleGroupData = async function (oldData, { log, threadID, banne
 	for (const item in economySystem.config) {
 		if (typeof(THREAD_ALL_DATA.data[item]) == 'undefined') {
 			THREAD_ALL_DATA.data[item] = economySystem.config[item];
+			changesCount++;
 		}
 	}
 				
@@ -165,6 +167,7 @@ module.exports.handleGroupData = async function (oldData, { log, threadID, banne
 		for (const key in economySystem.userConfig) {
 			if (typeof(userEco[key]) == 'undefined') {
 				userEco[key] = economySystem.userConfig[key];
+				changesCount++;
 			}
 		}
 		
@@ -210,14 +213,23 @@ module.exports.handleGroupData = async function (oldData, { log, threadID, banne
 		}
 	}
 	// SAVE
-	await Threads.setData(threadID, THREAD_ALL_DATA);
+	await Threads.setData(
+		threadID,
+		{
+			threadInfo: setting,
+			data: THREAD_ALL_DATA.data,
+			inventory: THREAD_ALL_DATA.inventory,
+			economy: THREAD_ALL_DATA.economy,
+			afk: THREAD_ALL_DATA.afk
+		}
+	);
 	// it means this was a new thread
 	if (!oldData) {
 		Utils.logger(Utils.getText('handleCreateDatabase', 'newThread', chalk.hex("#" + random)(`New group: `) + chalk.hex("#" + random1)(`${threadID}`) + "  ||  " + chalk.hex("#" + random2)(`${threadIn4.threadName}`)), '[ THREAD ]');
 		return true;
 	} else {
 		if (log) {
-			Utils.logger(`Updated GROUP: ${threadIn4.threadName}(${threadID})`, 'database');
+			Utils.logger(`Updated GROUP: ${threadIn4.threadName}(${threadID}).\nTotal Changes: ${changesCount}\n\n`, 'database');
 		}
 		return true;
 	}

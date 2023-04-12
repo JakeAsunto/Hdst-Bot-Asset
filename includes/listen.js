@@ -14,42 +14,16 @@ module.exports = function({ api, models }) {
 	const databaseSystem = require('../json/databaseConfig.json');
 	const economySystem = require('../json/economySystem.json'); 
 
-	///////////////////////////////////////////////
-	//========= Require all handle need =========//
-	//////////////////////////////////////////////
-	
-	const handleInputs = {
-		api,
-		models,
-		Utils,
-		Users,
-		Banned,
-		Threads
-	};
-
-	const handleCommand = require('./handle/handleCommand')(handleInputs);
-	
-	const handleCommandEvent = require('./handle/handleCommandEvent')(handleInputs);
-	
-	const handleCommandMessageReply = require('./handle/handleCommandMessageReply')(handleInputs);
-	
-	const handleReply = require('./handle/handleReply')(handleInputs);
-	
-	const handleReaction = require('./handle/handleReaction')(handleInputs);
-	
-	const handleEvent = require('./handle/handleEvent')(handleInputs);
-	
-	const handleCreateDatabase = require('./handle/handleCreateDatabase')(handleInputs);
-	
 	///////// DO RE-CHECKING DATABASE
 
 	(async function() {
 		api.markAsReadAll((err) => {
 			if (err) return console.error('Error [Mark as Read All]: ' + err)
 		});
-
+		
 		try {
 			
+			const handleCreateDatabase = require('./handle/handleCreateDatabase');
 			Utils.logger(Utils.getText('listen', 'startLoadEnvironment'), '[ DATABASE ]');
 			
 			let users = await Users.getAll(['userID', 'name', 'data']),
@@ -84,6 +58,7 @@ module.exports = function({ api, models }) {
 					await handleCreateDatabase.handleGroupData(
 						GroupData,
 						{
+							log: true,
 							threadID,
 							bannedGroupData,
 							databaseSystem,
@@ -151,6 +126,33 @@ module.exports = function({ api, models }) {
 	}());
 	
 	Utils.logger(`${api.getCurrentUserID()} - [ ${global.HADESTIA_BOT_CONFIG.PREFIX} ] • ${(!global.HADESTIA_BOT_CONFIG.BOTNAME) ? 'This bot was forked & modified from original made by CatalizCS and SpermLord' : global.HADESTIA_BOT_CONFIG.BOTNAME}`, '[ BOT INFO ]');
+	
+	///////////////////////////////////////////////
+	//========= Require all handle need =========//
+	//////////////////////////////////////////////
+	
+	const handleInputs = {
+		api,
+		models,
+		Utils,
+		Users,
+		Banned,
+		Threads
+	};
+
+	const handleCommand = require('./handle/handleCommand')(handleInputs);
+	
+	const handleCommandEvent = require('./handle/handleCommandEvent')(handleInputs);
+	
+	const handleCommandMessageReply = require('./handle/handleCommandMessageReply')(handleInputs);
+	
+	const handleReply = require('./handle/handleReply')(handleInputs);
+	
+	const handleReaction = require('./handle/handleReaction')(handleInputs);
+	
+	const handleEvent = require('./handle/handleEvent')(handleInputs);
+	
+	const handleCreateDatabase = require('./handle/handleCreateDatabase')(handleInputs);
 	
 	Utils.logger.loader(`====== ${Date.now() - global.HADESTIA_BOT_CLIENT.timeStart}ms ======`);
 

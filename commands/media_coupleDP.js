@@ -20,6 +20,7 @@ module.exports.run = async function ({ api, event, Utils }) {
 	const axios = require('axios');
 	const fs = require('fs-extra');
 	
+	Utils.sendReaction.inprocess(api, event);
 	await axios.get('https://tanjiro-api.onrender.com/cdp?&api_key=tanjiro').then(async (res) => {
 		
 		const attch = [];
@@ -28,13 +29,13 @@ module.exports.run = async function ({ api, event, Utils }) {
 		const femalePath = `${Utils.rootPath}/cache/req-cdp${senderID}_female.png`;
 		
 		await Utils.downloadFile(male, malePath).then(() => {
-			attch.push(fs.createReadStream(malePath);
+			attch.push(fs.createReadStream(malePath));
 		}).catch((err) => {
 			return api.sendMessage(Utils.textFormat('error', 'errProcessUnable'), threadID, messageID);
 		});
 		
 		await Utils.downloadFile(female, femalePath).then(() => {
-			attch.push(fs.createReadStream(femalePath);
+			attch.push(fs.createReadStream(femalePath));
 		}).catch((err) => {
 			return api.sendMessage(Utils.textFormat('error', 'errProcessUnable'), threadID, messageID);
 		});
@@ -46,7 +47,12 @@ module.exports.run = async function ({ api, event, Utils }) {
 					attachment: attch
 				},
 				threadID,
-				() => {
+				(e) => {
+					if (e) {
+						Utils.sendReaction.failed(api, event);
+					} else {
+						Utils.sendReaction.success(api, event);
+					}
 					try {
 						fs.unlinkSync(malePath);
 						fs.unlinkSync(femalePath);

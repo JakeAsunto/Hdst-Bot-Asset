@@ -21,12 +21,13 @@ module.exports.run = async function ({ api, event, Utils, Users, Threads }) {
 		let pick;
 		do {
 			pick = users[Math.floor(Math.random() * users.length)];
-		} while (pick && pick.id == global.botUserID);
+		} while (pick.id == global.botUserID);
 	
+		const name = `@${pick.name}`;
 		api.sendMessage(
 			{
-				body: Utils.textFormat('cmd', 'cmdNameWheelResult', `@${pick.name}`),
-				mentions: [{ tag: `@${pick.name}`, id: pick.id }]
+				body: Utils.textFormat('cmd', 'cmdNameWheelResult', name),
+				mentions: [{ tag: name, id: pick.id }]
 			},
 			event.threadID,
 			event.messageID
