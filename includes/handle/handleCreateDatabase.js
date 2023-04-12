@@ -4,9 +4,6 @@ module.exports = function({ Utils, Users, Threads, Banned }) {
 	const economySystem = require(`${__dirname}/../../json/economySystem.json`); 
     const chalk = require("chalk");
     
-	// nothing special here just a random hex color for console logging
-    let job = ["FF9900", "FFFF33", "33FFFF", "FF99FF", "FF3366", "FFFF66", "FF00FF", "66FF99", "00CCFF", "FF0099", "FF0066", "008E97", "F58220", "38B6FF", "7ED957", "97FFFF", "00BFFF", "76EEC6", "4EEE94", "98F5FF", "AFD788", "00B2BF", "9F79EE", "00FA9A"];
-    
     return async function({ event }) {
     	
 		const { updatedThreadDatabase } = global.HADESTIA_BOT_DATA;
@@ -40,11 +37,11 @@ module.exports = function({ Utils, Users, Threads, Banned }) {
 		    
 			// ####### IF GROUP CHAT ####### //
 			if (event.isGroup && !threadData) {
-				await handleGroupData(null, inputData);
+				await this.handleGroupData(null, inputData);
             }
 			
             if (!userData) {
-            	await handleUserData(null, inputData);
+            	await this.handleUserData(null, inputData);
             }
             
             return;
@@ -56,9 +53,10 @@ module.exports = function({ Utils, Users, Threads, Banned }) {
     }
 }
 
-async function handleUserData(oldData, { job, senderID, bannedUserData, databaseSystem, economySystem, Utils, Users, Threads, Banned }) {
+module.exports.handleUserData = async function (oldData, { log, senderID, bannedUserData, databaseSystem, economySystem, Utils, Users, Threads, Banned }) {
 	
 	const chalk = require('chalk');
+	let job = ["FF9900", "FFFF33", "33FFFF", "FF99FF", "FF3366", "FFFF66", "FF00FF", "66FF99", "00CCFF", "FF0099", "FF0066", "008E97", "F58220", "38B6FF", "7ED957", "97FFFF", "00BFFF", "76EEC6", "4EEE94", "98F5FF", "AFD788", "00B2BF", "9F79EE", "00FA9A"];
 	
 	const init = oldData || {};
 	const random = job[Math.floor(Math.random() * job.length)];
@@ -70,7 +68,7 @@ async function handleUserData(oldData, { job, senderID, bannedUserData, database
     const data = {};
     
     const USER_ALL_DATA = {};
-    USER_ALL_DATA.name = infoUsers.name;
+    USER_ALL_DATA.name = userName;
     
     for (const key in databaseSystem.user_data_config) {
     	if (typeof(data[key]) == 'undefined') {
@@ -93,15 +91,21 @@ async function handleUserData(oldData, { job, senderID, bannedUserData, database
 	}
 	// SAVE
 	await Users.setData(senderID, USER_ALL_DATA);
-    Utils.logger(Utils.getText('handleCreateDatabase', 'newUser', chalk.hex("#" + random)(`New users: `) + chalk.hex("#" + random1)(`${infoUsers.name}`) + " || " + chalk.hex("#" + random2)(`${senderID}`)), '[ USER ]');
-    
+	if (!oldData) {
+    	Utils.logger(Utils.getText('handleCreateDatabase', 'newUser', chalk.hex("#" + random)(`New users: `) + chalk.hex("#" + random1)(`${userName}`) + " || " + chalk.hex("#" + random2)(`${senderID}`)), '[ USER ]');
+    } else {
+    	if (log) {
+    		Utils.logger(`Updated USER: ${userName}(${senderID}), 'database');
+    	}
+    }
     return;
 }
 
 
-async function handleGroupData(oldData, { job, threadID, bannedGroupData, databaseSystem, economySystem, Utils, Users, Threads, Banned }) {
+module.exports.handleGroupData = async function (oldData, { log, threadID, bannedGroupData, databaseSystem, economySystem, Utils, Users, Threads, Banned }) {
 	
 	const chalk = require('chalk');
+	let job = ["FF9900", "FFFF33", "33FFFF", "FF99FF", "FF3366", "FFFF66", "FF00FF", "66FF99", "00CCFF", "FF0099", "FF0066", "008E97", "F58220", "38B6FF", "7ED957", "97FFFF", "00BFFF", "76EEC6", "4EEE94", "98F5FF", "AFD788", "00B2BF", "9F79EE", "00FA9A"];
 	
 	const init = oldData || {};
 	const random = job[Math.floor(Math.random() * job.length)];
@@ -212,7 +216,9 @@ async function handleGroupData(oldData, { job, threadID, bannedGroupData, databa
 		Utils.logger(Utils.getText('handleCreateDatabase', 'newThread', chalk.hex("#" + random)(`New group: `) + chalk.hex("#" + random1)(`${threadID}`) + "  ||  " + chalk.hex("#" + random2)(`${threadIn4.threadName}`)), '[ THREAD ]');
 		return true;
 	} else {
-		Utils.logger(`Updated GROUP: ${threadIn4.threadName}(${threadID})`, 'database');
+		if (log) {
+			Utils.logger(`Updated GROUP: ${threadIn4.threadName}(${threadID})`, 'database');
+		}
 		return true;
 	}
 	return false;

@@ -1,5 +1,5 @@
 module.exports.config = {
-	name: 'stalk',
+	name: 'user-info',
 	version: '1.0.8',
 	hasPermssion: 2,
 	credits: 'Hadestia',
@@ -7,6 +7,7 @@ module.exports.config = {
 	description: 'get user info of yourself or using uid / by mentioning / or replied message',
 	usages: '[ name | username | uid | @reply | @mention ]',
 	cooldowns: 300,
+	aliases: [ 'stalk' ],
 	envConfig: {
 		inProcessReaction: true
 	}

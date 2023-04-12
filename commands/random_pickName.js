@@ -18,11 +18,10 @@ module.exports.run = async function ({ api, event, Utils, Users, Threads }) {
 		const threadInfo = await Threads.getInfo(event.threadID); 
 	
 		const users = threadInfo.userInfo;
-		let pick = { id: '4' };
-		
+		let pick;
 		do {
 			pick = users[Math.floor(Math.random() * users.length)];
-		} while (pick.id == global.botUserID)
+		} while (pick && pick.id == global.botUserID);
 	
 		api.sendMessage(
 			{

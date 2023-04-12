@@ -122,6 +122,7 @@ module.exports = function ({ api, Users, Banned, Threads }) {
 				toString: dDisplay + hDisplay + mDisplay + sDisplay
 			};
 		}*/
+		
 		const allTime = [
 			{ val: d, name: 'day' },
 			{ val: h, name: 'hour' },

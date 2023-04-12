@@ -8,7 +8,7 @@ module.exports = function ({ models, api }) {
 		}
 		catch (error) { 
 			console.log(error);
-			throw new Error(error);
+			return false;
 		};
 	}
 

@@ -9,100 +9,11 @@ module.exports = function({ api, models }) {
 		Banned = require('./controllers/controller_banned')({ models, api });
 	
 	const Utils = require(`${global.HADESTIA_BOT_CLIENT.mainPath}/scripts/utils.js`)({ api, Users, Banned, Threads });
+	Utils.rootPath = global.HADESTIA_BOT_CLIENT.mainPath;
 	
-	const databaseConfig = require('../json/databaseConfig.json');
-	const GroupDataConfig = databaseConfig.group_data_config;
-	const UserDataConfig = databaseConfig.user_data_config;
-	
-	///////// DO RE-CHECKING DATABASE
+	const databaseSystem = require('../json/databaseConfig.json');
+	const economySystem = require('../json/economySystem.json'); 
 
-	(async function() {
-		api.markAsReadAll((err) => {
-			if (err) return console.error('Error [Mark as Read All]: ' + err)
-		});
-
-		try {
-			
-			Utils.logger(Utils.getText('listen', 'startLoadEnvironment'), '[ DATABASE ]');
-			
-			let users = await Users.getAll(['userID', 'name', 'data']),
-				threads = await Threads.getAll(['threadID', 'threadInfo', 'data']);
-				
-			for (const threadData of threads) {
-				
-				const threadID = String(threadData.threadID);
-				const Info = threadData.threadInfo;
-				const GroupData = threadData.data;
-				
-				if (!GroupData || !Info) {
-					try { await Threads.delData(threadID); } catch (e) {};
-				} else {
-				
-					if (GroupData.isBanned) {
-						const banned = Data.banned;
-						const data = {
-							isGroup: true,
-							name: Info.threadName,
-							caseID: banned.caseID || -1,
-							reason: banned.reason || '<reason not set>',
-							dateIssued: banned.dateIssued || '<unknown date>'
-						}
-						await Banned.setData(threadID, { data });
-					}
-					
-					/*let changesCount = 0;
-					// Check for new Database Config (set to default if has)
-					for (const configName in GroupDataConfig) {
-						if (!GroupData[configName]) {
-							GroupData[configName] = GroupDataConfig[configName];
-							changesCount++;
-						}
-					}
-				
-					// Re-save (if only has changes to optimize)
-					if (changesCount > 0) {
-						await Threads.setData(threadID, { data: GroupData });
-					}*/
-				}
-			}
-			
-			Utils.logger.loader(Utils.getText('listen', 'loadedEnvironmentThread'));
-			
-			for (const userData of users) {
-				
-				const userID = String(userData.userID);
-				const UserData = userData.data;
-				
-				if (!UserData) {
-					try { await Users.delData(userID); } catch (e) {}
-				} else {
-					if (UserData.isBanned) {
-						const name = await Users.getNameUser(userID);
-						const banned = UserData.banned;
-						const data = {
-							isGroup: false,
-							name: name,
-							caseID: userData.data.banned.caseID || -1,
-							reason: userData.data.banned.reason || '<reason not set>',
-							dateIssued: userData.data.banned.dateIssued || '<unknown date>'
-						}
-						await Banned.setData(userID, { data });
-					}
-				}
-			}
-			
-			Utils.logger.loader(Utils.getText('listen', 'loadedEnvironmentUser'))
-			Utils.logger(Utils.getText('listen', 'successLoadEnvironment'), '[ DATABASE ]');
-			
-		} catch (error) {
-			console.log(error);
-			return Utils.logger.loader(Utils.getText('listen', 'failLoadEnvironment', error), 'error');
-		}
-		
-	}());
-	
-	Utils.logger(`${api.getCurrentUserID()} - [ ${global.HADESTIA_BOT_CONFIG.PREFIX} ] • ${(!global.HADESTIA_BOT_CONFIG.BOTNAME) ? 'This bot was forked & modified from original made by CatalizCS and SpermLord' : global.HADESTIA_BOT_CONFIG.BOTNAME}`, '[ BOT INFO ]');
-	
 	///////////////////////////////////////////////
 	//========= Require all handle need =========//
 	//////////////////////////////////////////////
@@ -129,7 +40,118 @@ module.exports = function({ api, models }) {
 	const handleEvent = require('./handle/handleEvent')(handleInputs);
 	
 	const handleCreateDatabase = require('./handle/handleCreateDatabase')(handleInputs);
+	
+	///////// DO RE-CHECKING DATABASE
 
+	(async function() {
+		api.markAsReadAll((err) => {
+			if (err) return console.error('Error [Mark as Read All]: ' + err)
+		});
+
+		try {
+			
+			Utils.logger(Utils.getText('listen', 'startLoadEnvironment'), '[ DATABASE ]');
+			
+			let users = await Users.getAll(['userID', 'name', 'data']),
+				threads = await Threads.getAll(['threadID', 'threadInfo', 'data']);
+				
+			for (const threadData of threads) {
+				
+				const threadID = String(threadData.threadID);
+				const Info = threadData.threadInfo;
+				const GroupData = threadData.data;
+				
+				if (!GroupData || !Info) {
+					try { await Threads.delData(threadID); } catch (e) {};
+				} else {
+					
+					let bannedGroupData
+					if (GroupData.isBanned) {
+						const banned = Data.banned;
+						const data = {
+							isGroup: true,
+							name: Info.threadName,
+							caseID: banned.caseID || -1,
+							reason: banned.reason || '<reason not set>',
+							dateIssued: banned.dateIssued || '<unknown date>'
+						}
+						bannedGroupData = data;
+						await Banned.setData(threadID, { data });
+					} else {
+						bannedGroupData = false;
+					}
+					
+					await handleCreateDatabase.handleGroupData(
+						GroupData,
+						{
+							threadID,
+							bannedGroupData,
+							databaseSystem,
+							economySystem,
+							Utils,
+							Users,
+							Threads,
+							Banned
+						}
+					);
+				}
+			}
+			
+			Utils.logger.loader(Utils.getText('listen', 'loadedEnvironmentThread'));
+			
+			for (const userData of users) {
+				
+				const userID = String(userData.userID);
+				const UserData = userData.data;
+				
+				if (!UserData) {
+					try { await Users.delData(userID); } catch (e) {}
+				} else {
+					
+					let bannedUserData;
+					if (UserData.isBanned) {
+						const name = await Users.getNameUser(userID);
+						const banned = UserData.banned;
+						const data = {
+							isGroup: false,
+							name: name,
+							caseID: userData.data.banned.caseID || -1,
+							reason: userData.data.banned.reason || '<reason not set>',
+							dateIssued: userData.data.banned.dateIssued || '<unknown date>'
+						}
+						bannedUserData = data;
+						await Banned.setData(userID, { data });
+					} else {
+						bannedUserData = false;
+					}
+					await handleCreateDatabase.handleUserData(
+						UserData,
+						{
+							senderID: userID,
+							bannedUserData,
+							databaseSystem,
+							economySystem,
+							Utils,
+							Users,
+							Threads,
+							Banned
+						}
+					);
+				}
+			}
+			
+			Utils.logger.loader(Utils.getText('listen', 'loadedEnvironmentUser'))
+			Utils.logger(Utils.getText('listen', 'successLoadEnvironment'), '[ DATABASE ]');
+			
+		} catch (error) {
+			console.log(error);
+			return Utils.logger.loader(Utils.getText('listen', 'failLoadEnvironment', error), 'error');
+		}
+		
+	}());
+	
+	Utils.logger(`${api.getCurrentUserID()} - [ ${global.HADESTIA_BOT_CONFIG.PREFIX} ] • ${(!global.HADESTIA_BOT_CONFIG.BOTNAME) ? 'This bot was forked & modified from original made by CatalizCS and SpermLord' : global.HADESTIA_BOT_CONFIG.BOTNAME}`, '[ BOT INFO ]');
+	
 	Utils.logger.loader(`====== ${Date.now() - global.HADESTIA_BOT_CLIENT.timeStart}ms ======`);
 
 
