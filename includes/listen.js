@@ -38,8 +38,6 @@ module.exports = function({ api, models }) {
 				if (!GroupData || !Info) {
 					try { await Threads.delData(threadID); } catch (e) {};
 				} else {
-					
-					let bannedGroupData
 					if (GroupData.isBanned) {
 						const banned = Data.banned;
 						const data = {
@@ -49,26 +47,8 @@ module.exports = function({ api, models }) {
 							reason: banned.reason || '<reason not set>',
 							dateIssued: banned.dateIssued || '<unknown date>'
 						}
-						bannedGroupData = data;
 						await Banned.setData(threadID, { data });
-					} else {
-						bannedGroupData = false;
 					}
-					
-					await handleCreateDatabase.handleGroupData(
-						GroupData,
-						{
-							log: true,
-							threadID,
-							bannedGroupData,
-							databaseSystem,
-							economySystem,
-							Utils,
-							Users,
-							Threads,
-							Banned
-						}
-					);
 				}
 			}
 			
@@ -82,8 +62,6 @@ module.exports = function({ api, models }) {
 				if (!UserData) {
 					try { await Users.delData(userID); } catch (e) {}
 				} else {
-					
-					let bannedUserData;
 					if (UserData.isBanned) {
 						const name = await Users.getNameUser(userID);
 						const banned = UserData.banned;
@@ -94,24 +72,8 @@ module.exports = function({ api, models }) {
 							reason: userData.data.banned.reason || '<reason not set>',
 							dateIssued: userData.data.banned.dateIssued || '<unknown date>'
 						}
-						bannedUserData = data;
 						await Banned.setData(userID, { data });
-					} else {
-						bannedUserData = false;
 					}
-					await handleCreateDatabase.handleUserData(
-						UserData,
-						{
-							senderID: userID,
-							bannedUserData,
-							databaseSystem,
-							economySystem,
-							Utils,
-							Users,
-							Threads,
-							Banned
-						}
-					);
 				}
 			}
 			

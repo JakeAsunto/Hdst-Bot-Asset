@@ -52,30 +52,25 @@ module.exports = function({ Utils, Users, Threads, Banned }) {
     }
 }
 
-module.exports.handleUserData = async function (oldData, { log, senderID, bannedUserData, databaseSystem, economySystem, Utils, Users, Threads, Banned }) {
+module.exports.handleUserData = async function (init = {}, { log, senderID, bannedUserData, databaseSystem, economySystem, Utils, Users, Threads, Banned }) {
 	
 	const chalk = require('chalk');
 	let job = ["FF9900", "FFFF33", "33FFFF", "FF99FF", "FF3366", "FFFF66", "FF00FF", "66FF99", "00CCFF", "FF0099", "FF0066", "008E97", "F58220", "38B6FF", "7ED957", "97FFFF", "00BFFF", "76EEC6", "4EEE94", "98F5FF", "AFD788", "00B2BF", "9F79EE", "00FA9A"];
-	
-	const init = oldData || {};
+
 	const random = job[Math.floor(Math.random() * job.length)];
     const random1 = job[Math.floor(Math.random() * job.length)];
     const random2 = job[Math.floor(Math.random() * job.length)];
 
 	const userName = await Users.getNameUser(senderID);
     
-    const data = {};
-    
-    const USER_ALL_DATA = {};
-    USER_ALL_DATA.name = userName;
+    const data = init.data || {};
     
     for (const key in databaseSystem.user_data_config) {
-    	if (typeof(data[key]) == 'undefined') {
+    	const res = data[key] || 'none';
+    	if (res === 'none') {
 			data[key] = databaseSystem.user_data_config[key];
 		}
     }
-    USER_ALL_DATA.data = data;
-    
 	// IF USER WAS BANNED
 	if (bannedUserData) {
 		const bd = bannedUserData.data || {};
@@ -85,12 +80,12 @@ module.exports.handleUserData = async function (oldData, { log, senderID, banned
 			reason: bd.reason || databaseSystem.user_data_config.banned.reason,
 			dateIssued: bd.dateIssued || databaseSystem.user_data_config.banned.dateIssued
 		}
-		USER_ALL_DATA.data.banned = banned;
+		data.banned = banned;
 		await Banned.setData(senderID, { data: banned });
 	}
 	// SAVE
-	await Users.setData(senderID, USER_ALL_DATA);
-	if (!oldData) {
+	await Users.setData(senderID, { name: userName, data });
+	if (!init) {
     	Utils.logger(Utils.getText('handleCreateDatabase', 'newUser', chalk.hex("#" + random)(`New users: `) + chalk.hex("#" + random1)(`${userName}`) + " || " + chalk.hex("#" + random2)(`${senderID}`)), '[ USER ]');
     } else {
     	if (log) {
@@ -101,9 +96,10 @@ module.exports.handleUserData = async function (oldData, { log, senderID, banned
 }
 
 
-module.exports.handleGroupData = async function (oldData, { log, threadID, bannedGroupData, databaseSystem, economySystem, Utils, Users, Threads, Banned }) {
+module.exports.handleGroupData = async function (init = {}, { log, threadID, bannedGroupData, databaseSystem, economySystem, Utils, Users, Threads, Banned }) {
 	
 	const chalk = require('chalk');
+	const notFound = ['undefined', 'null'];
 	let job = ["FF9900", "FFFF33", "33FFFF", "FF99FF", "FF3366", "FFFF66", "FF00FF", "66FF99", "00CCFF", "FF0099", "FF0066", "008E97", "F58220", "38B6FF", "7ED957", "97FFFF", "00BFFF", "76EEC6", "4EEE94", "98F5FF", "AFD788", "00B2BF", "9F79EE", "00FA9A"];
 	
 	let changesCount = 0;
@@ -121,26 +117,26 @@ module.exports.handleGroupData = async function (oldData, { log, threadID, banne
 	setting.nicknames = threadIn4.nicknames;
 	
 	// set initial data for thread data on DB
-	const init = oldData || {};
-    const THREAD_ALL_DATA = init;
-    THREAD_ALL_DATA.data = init.data || {};           
-    THREAD_ALL_DATA.threadInfo = setting;
-    THREAD_ALL_DATA.inventory = init.inventory || {};
-    THREAD_ALL_DATA.economy = init.economy || {};
-	THREAD_ALL_DATA.afk = init.afk || {};
+    const data = init.data || {};           
+    const threadInfo = setting;
+    const inventory = init.inventory || {};
+    const economy = init.economy || {};
+	const afk = init.afk || {};
 	
 	// default config
 	for (const item in databaseSystem.group_data_config) {
-		if (typeof(THREAD_ALL_DATA.data[item]) == 'undefined') {
-			THREAD_ALL_DATA.data[item] = databaseSystem.group_data_config[item];
+		const res = data[item] || 'none';
+		if (res === 'none') {
+			data[item] = databaseSystem.group_data_config[item];
 			changesCount++;
 		}
 	}
 
 	// default configuration for economy system for this group
 	for (const item in economySystem.config) {
-		if (typeof(THREAD_ALL_DATA.data[item]) == 'undefined') {
-			THREAD_ALL_DATA.data[item] = economySystem.config[item];
+		const res = data[item] || 'none';
+		if (res === 'none') {
+			data[item] = economySystem.config[item];
 			changesCount++;
 		}
 	}
@@ -154,7 +150,7 @@ module.exports.handleGroupData = async function (oldData, { log, threadID, banne
 			reason: bd.reason || databaseSystem.group_data_config.banned.reason,
 			dateIssued: bd.dateIssued || databaseSystem.group_data_config.banned.dateIssued
 		}
-		THREAD_ALL_DATA.data.banned = banned;
+		data.banned = banned;
 		await Banned.setData(threadID, { data: banned });
 	}
 				
@@ -162,28 +158,32 @@ module.exports.handleGroupData = async function (oldData, { log, threadID, banne
 		// sets each member a initial data for economy & inventory
 		const UID = String(singleData.id);
 		
-		const userEco = THREAD_ALL_DATA.economy[UID] || {};
+		const userEco = economy[UID] || {};
 		
 		for (const key in economySystem.userConfig) {
-			if (typeof(userEco[key]) == 'undefined') {
+			const res = userEco[key] || 'none';
+			if (res === 'none') {
 				userEco[key] = economySystem.userConfig[key];
 				changesCount++;
 			}
 		}
 		
-		THREAD_ALL_DATA.economy[UID] = userEco;
+		economy[UID] = userEco;
 
         try {
 			// update member data on User table if exist
 			const thisGroupUserData = await Users.getData(UID);
             if (thisGroupUserData) {
             	
-            	const data = thisGroupUserData.data || {};
+            	const dataUser = thisGroupUserData.data || {};
             	for (const key in databaseSystem.user_data_config) {
-            		if (typeof(data[key]) == 'undefined') data[key] = databaseSystem.user_data_config[key];
+            		const res = dataUser[key] || 'none';
+            		if (res === 'none') {
+						dataUser[key] = databaseSystem.user_data_config[key];
+					}
             	}
             	
-				await Users.setData(UID, { 'name': singleData.name });
+				await Users.setData(UID, { 'name': singleData.name, data: dataUser });
 				
 			} else {
 				
@@ -214,21 +214,14 @@ module.exports.handleGroupData = async function (oldData, { log, threadID, banne
 	}
 	// SAVE
 	await Threads.setData(
-		threadID,
-		{
-			threadInfo: setting,
-			data: THREAD_ALL_DATA.data,
-			inventory: THREAD_ALL_DATA.inventory,
-			economy: THREAD_ALL_DATA.economy,
-			afk: THREAD_ALL_DATA.afk
-		}
+		threadID, { threadInfo, data, economy, inventory, afk }
 	);
 	// it means this was a new thread
-	if (!oldData) {
+	if (!init) {
 		Utils.logger(Utils.getText('handleCreateDatabase', 'newThread', chalk.hex("#" + random)(`New group: `) + chalk.hex("#" + random1)(`${threadID}`) + "  ||  " + chalk.hex("#" + random2)(`${threadIn4.threadName}`)), '[ THREAD ]');
 		return true;
 	} else {
-		if (log) {
+		if (changesCount > 0) {
 			Utils.logger(`Updated GROUP: ${threadIn4.threadName}(${threadID}).\nTotal Changes: ${changesCount}\n\n`, 'database');
 		}
 		return true;

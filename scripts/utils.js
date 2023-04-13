@@ -140,5 +140,50 @@ module.exports = function ({ api, Users, Banned, Threads }) {
 		return result.join(' and ');
 	}
 	
+	/*Utils.newCache = function (path) {
+		const fs = require('fs-extra');
+		const pathType = typeof(path);
+		const returns = {};
+		
+		// Utility Functions
+		function unlink (pathName) {
+			return () => {
+				try { fs.unlinkSync(pathName); } catch (e) {};
+			}
+		}
+		
+		function unlinkAll (pathName) {
+			
+		}
+		
+		function writeFile (pathName) {
+			return (data, encoding) => {
+				const buffer = Buffer.isBuffer(data) ? data : Buffer.from(data, encoding || 'utf-8');
+				fs.writeFileSync(pathName, data);
+			}
+		}
+		
+		if (pathType == 'object' && Array.isArray(path)) {
+			const 
+			for (const pathName of path) {
+				
+					{
+						pathName: pathName,
+						writeFile: writeFile(pathName),
+						unlink: unlink(pathName)
+					}
+				);
+			}
+			
+			return returns;
+		} else if (pathType == 'string') {
+			return {
+				pathName: path,
+				writeFile: writeFile(path),
+				unlink: unlink(pathName)
+			}
+		}
+	}*/
+	
 	return Utils;
 }
