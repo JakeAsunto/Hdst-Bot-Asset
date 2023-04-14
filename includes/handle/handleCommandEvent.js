@@ -24,14 +24,14 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
         for (const eventReg of eventRegistered) {
         	
             const command = commands.get(eventReg);
-			const config = command.config.envConfig || {};
+			const config = (command.config.envConfig) ? command.config.envConfig : {};
 			
 			// allow ban User
-			let pass1 = (!config.handleEvent_allowBannedUsers) ? (bannedUserData) ? false : true : true;
+			let pass1 = (bannedUserData) ? (config.handleEvent_allowBannedUsers) ? true : false : true;
 			// allow ban threads
-			let pass2 = (!config.handleEvent_allowBannedThreads) ? (bannedGroupData) ? false : true : true;
+			let pass2 = (bannedGroupData) ? (config.handleEvent_allowBannedThreads) ? true : false : true;
 			// allow direct message
-			let pass3 = (!config.handleEvent_allowDirectMessages) ? (senderID == threadID) ? false : true : true;
+			let pass3 = (senderID == threadID) ? (config.handleEvent_allowDirectMessages) ? true : false : true;
 			// needs group data or user data
 			let pass4 = (config.needGroupData) ? (groupData) ? true : false : true;
 			let pass5 = (config.needUserData) ? (userData) ? true : false : true;

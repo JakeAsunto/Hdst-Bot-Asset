@@ -40,7 +40,7 @@ module.exports = function({ Utils, Users, Threads, Banned }) {
             	await handleUserData(inputData);
             }
             
-            return;
+            return true;
 
         } catch (err) {  	
 			console.log(err);
@@ -59,7 +59,7 @@ async function handleUserData({ UserData, userID, databaseSystem, economySystem,
     const random2 = job[Math.floor(Math.random() * job.length)];
 
 	let changesCount = 0;
-	const userName = await Users.getNameUser(senderID);
+	const userName = await Users.getNameUser(userID);
     const credentials = (UserData) ? UserData : {};
     const data = (credentials.data) ? credentials.data : {};
     
@@ -70,7 +70,7 @@ async function handleUserData({ UserData, userID, databaseSystem, economySystem,
 		}
     }
 	// IF USER WAS BANNED
-	const bannedUserData = await Banned.getData(senderID);
+	const bannedUserData = await Banned.getData(userID);
 	if (bannedUserData) {
 		const bd = bannedUserData.data || {};
 		const banned = {
@@ -81,15 +81,15 @@ async function handleUserData({ UserData, userID, databaseSystem, economySystem,
 		}
 		changesCount++;
 		data.banned = banned;
-		await Banned.setData(senderID, { data: banned });
+		await Banned.setData(userID, { data: banned });
 	}
 	// SAVE
-	await Users.setData(senderID, { name: userName, data });
+	await Users.setData(userID, { name: userName, data });
 	if (!UserData) {
-    	Utils.logger(Utils.getText('handleCreateDatabase', 'newUser', chalk.hex("#" + random)(`New users: `) + chalk.hex("#" + random1)(`${userName}`) + " || " + chalk.hex("#" + random2)(`${senderID}`)), '[ USER ]');
+    	Utils.logger(Utils.getText('handleCreateDatabase', 'newUser', chalk.hex("#" + random)(`New users: `) + chalk.hex("#" + random1)(`${userName}`) + " || " + chalk.hex("#" + random2)(`${userID}`)), '[ USER ]');
     } else {
     	if (changesCount > 0) {
-    		Utils.logger(`Updated USER: ${userName}(${senderID})`, 'database');
+    		Utils.logger(`Updated USER: ${userName}(${userID})`, 'database');
     	}
     }
     return;
@@ -229,4 +229,4 @@ async function handleGroupData({ GroupData, log, threadID, databaseSystem, econo
 }
 
 module.exports.handleUserData = handleUserData;
-module.exports.handleGroupData = handleGrouoData;
+module.exports.handleGroupData = handleGroupData;

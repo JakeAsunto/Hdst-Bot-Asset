@@ -7,9 +7,12 @@ module.exports = function ({ models, api }) {
 
 	async function getNameUser(id) {
 		try {
-			const nameUser = (await getData(id)).name;
-			if (nameUser) return nameUser;
-			else return `@user${id}`;
+			const user = await getData(id);
+			if (user) {
+				return user.name || `@user${id}`;
+			} else {
+				return `@user${id}`;
+			}
 		}
 		catch (e) { return `@user${id}` }
 	}

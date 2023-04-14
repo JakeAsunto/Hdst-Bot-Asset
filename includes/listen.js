@@ -318,7 +318,7 @@ module.exports = function({ api, models }) {
 				
 			case 'message_unsend':
 			
-				handleCreateDatabase(input);
+				await handleCreateDatabase(input);
 				
 				handleCommand(input);
 				

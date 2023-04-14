@@ -5,16 +5,25 @@ module.exports.config = {
 	description: 'Event Listener to ban users.',
 	commandCategory: 'hidden',
 	credits: 'Hadestia',
-	usages: ''
+	usages: '',
+	envConfig: {
+		handleEvent_allowBannedUsers: false,
+		handleEvent_allowDirectMessages: true
+	}
 }
-
-const autobanData = require(`${global.HADESTIA_BOT_CLIENT.mainPath}/json/autoResponse.json`);
 
 module.exports.handleEvent = async function ({ api, event, Utils, Users, Banned }) {
 	
 	const { body, threadID, senderID, messageID } = event;
+	const { ADMINBOT } = global.HADESTIA_BOT_CONFIG;
 	
-	if (autobanData && autobanData.autoban_bot_checker) {
+	const autobanData = require(`${Utils.rootPath}/json/autoResponse.json`);
+
+	if (ADMINBOT.includes(senderID)) {
+		return Utils.sendReaction.custom(api, event, '😏');
+	}
+	
+	if (autobanData.autoban_bot_checker) {
 		for (const item of autobanData.autoban_bot_checker.matches) {
 			if ((body.toLowerCase()).indexOf(item) !== -1) {
 				
@@ -38,17 +47,22 @@ module.exports.handleEvent = async function ({ api, event, Utils, Users, Banned 
 					
 					data.banned = banned;
 					
-					await Users.setData(senderID, { data });
-					await Banned.setData(senderID, { data: banned });
-				
-					return api.sendMessage(
+					api.sendMessage(
 						{
 							body: Utils.textFormat('events', 'eventOtherBotDetected', userName),
 							mentions: [ { tag: userName, id: senderID }]
 						},
 						threadID,
+						(e) => {
+							console.log(e)
+						},
 						messageID
-					)
+					);
+					
+					await Users.setData(senderID, { data });
+					await Banned.setData(senderID, { data: banned });
+				
+					return;
 				} catch (err) {
 					console.log('AUTO BAN BOT', err);
 				}
