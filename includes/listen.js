@@ -23,7 +23,7 @@ module.exports = function({ api, models }) {
 		
 		try {
 			
-			const handleCreateDatabase = require('./handle/handleCreateDatabase');
+			//const handleCreateDatabase = require('./handle/handleCreateDatabase');
 			Utils.logger(Utils.getText('listen', 'startLoadEnvironment'), '[ DATABASE ]');
 			
 			let users = await Users.getAll(['userID', 'name', 'data']),

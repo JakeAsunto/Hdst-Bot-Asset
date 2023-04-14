@@ -85,14 +85,14 @@ module.exports.handleReply = async function ({ api, event, returns, handleReply,
 		try { fs.unlinkSync(pathName); } catch (e) {};
 	}
 	
-    let timeleft = 5;
+    /*let timeleft = 5;
     var downloadTimer = setInterval(function(){
 		if(timeleft <= 0){
 			clearInterval(downloadTimer);
 			api.sendMessage(Utils.textFormat('error', 'errOccured', 'File was too big.'), threadID, messageID);
 		}
         timeleft -= 1;
-    }, 1000); 
+    }, 1000);*/
     
     const youtube = handleReply.youtube;
     
