@@ -403,7 +403,7 @@ async function onBot({ models: botModel }) {
         listenerData.api = loginApiData;
         listenerData.models = botModel;
 
-        const listener = require('./includes/listen')(listenerData);
+        const listener = await require('./includes/listen')(listenerData);
 
         function listenerCallback(error, message) {
             if (error) return logger(getText('mirai', 'handleListenError', JSON.stringify(error)), 'error');
