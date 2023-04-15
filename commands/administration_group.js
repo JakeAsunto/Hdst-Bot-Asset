@@ -2,9 +2,9 @@ module.exports.config = {
 	name: 'group-set',
 	version: '2.0.0',
 	hasPermssion: 3,
-	commandCategory: 'group',
+	commandCategory: 'administration',
 	description: 'Sets specific type for a group/thread',
-	usages: '[ preffix | name | admin | auto-response | auto-resend | anti-change | anti-join | anti-out ] [ ... ]',
+	usages: '< prefix | name | admin | bot-updates | auto-response | auto-resend | anti-change | anti-join | anti-out > [ ... ]',
 	credits: 'Hadestia',
 	cooldowns: 10,
 	aliases: [ 'group' ],
@@ -16,6 +16,7 @@ module.exports.config = {
 }
 
 const validTypes = [
+	'bot-updates',
 	'auto-response',
 	'auto-resend',
 	'anti-change',
@@ -123,6 +124,14 @@ module.exports.run = async function ({ api, args, alias, event, returns, Utils, 
 			(GROUP_DATA.auto_resend_msg) ?
 				api.sendMessage(Utils.textFormat('success', 'successfulFormat', 'Auto resend unsent messages mode was turned on.'), threadID, Utils.autoUnsend, messageID) :
 				api.sendMessage(Utils.textFormat('error', 'errOccured', 'Auto resend unsent messages mode was turned off.'), threadID, Utils.autoUnsend, messageID);
+			break;
+		
+		case 'bot-updates':
+			GROUP_DATA.receive_update = !GROUP_DATA.receive_update;
+			api.sendMessage(
+				Utils.textFormat('system', `botUpdate${(GROUP_DATA.receive_update == true) ? 'On' : 'Off'}`),
+				threadID, Utils.autoUnsend, messageID
+			);
 			break;
 			
 		default:

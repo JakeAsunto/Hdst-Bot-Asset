@@ -6,6 +6,10 @@ module.exports.config = {
 	description: 'Record bot activity notifications.',
     dependencies: {
     	'moment-timezone': ''
+    },
+    envConfig: {
+    	needGroupData: true,
+    	allowBannedThread: true,
     }
 };
 
@@ -51,8 +55,6 @@ module.exports.run = async function({ api, event, Utils, Users, Threads, Banned 
         
    	         if (event.logMessageData.leftParticipantFbId == api.getCurrentUserID()) {
 					action = 'User kicked bot out of the group';
-					// # Moved to event.antiOut
-					// try { await Threads.delData(threadID); } catch (e) { console.log(e) }
 				}
     	        break;
         

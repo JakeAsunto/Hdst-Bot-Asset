@@ -18,16 +18,18 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
         const bannedUserData = await Banned.getData(author || '');
         const groupData = await Threads.getData(threadID);
         
-        // Group Banned? User Banned? Is PM?
-        if (bannedUserData || bannedGroupData || !allowInbox && author == threadID) return;
+        // Is PM?
+        if (author == threadID) return;
 
         for (const [key, value] of events.entries()) {
 			
 			const evn = value.config.eventType
 			const envConfig = value.config.envConfig || {};
 			const groupDataPass = (envConfig.needGroupData) ? groupData && true : true;
+			const allowBannedUser = (envConfig.allowBannedUser) ? bannedUserData && true : false;
+			const allowBannedThread = (envConfig.allowBannedThread) ? bannedGroupData && true : false;
 			
-            if (evn.indexOf(event.logMessageType) !== -1 && groupDataPass) {
+            if (evn.indexOf(event.logMessageType) !== -1 && groupDataPass && allowBannedUser && allowBannedThread) {
 
                 const eventRun = events.get(key);
 

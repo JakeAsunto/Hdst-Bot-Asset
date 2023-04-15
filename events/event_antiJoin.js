@@ -5,7 +5,9 @@ module.exports.config = {
 	credits: 'Hadestia',
 	description: 'prevent new members to join',
 	envConfig: {
-		needGroupData: true
+		needGroupData: true,
+		allowBannedUser: true,
+		allowBannedGroup: true
 	}
 };
 
@@ -27,7 +29,7 @@ module.exports.run = async function ({ event, api, Utils, Threads, Users }) {
 			);
 		}
 		
-		const memJoin = event.logMessageData.addedParticipants;
+		const memJoin = event.logMessageData.addedParticipants || [];
 		
 		for (let user of memJoin) {
 			

@@ -82,7 +82,6 @@ module.exports.run = async function({ api, event, args, Utils, Prefix }) {
 		// Request via Command Category
 		const initRequest = (args.join('_').trim())
 		const requestCategory = initRequest.toLowerCase();
-		console.log(`"${requestCategory}"`);
 		if (categoryReference[requestCategory]) {
 			const categoryCommands = [];
 			for (const cmd of commands.values()) {

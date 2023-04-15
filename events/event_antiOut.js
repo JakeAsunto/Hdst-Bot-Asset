@@ -5,7 +5,8 @@ module.exports.config = {
 	credits: 'Hadestia',
 	description: 'try to add back users from the group',
 	envConfig: {
-		needGroupData: true
+		needGroupData: true,
+		allowBannedUser: true,
 	}
 };
 
