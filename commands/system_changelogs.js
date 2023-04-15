@@ -33,7 +33,7 @@ module.exports.lateInit = async function ({ api, Threads, Utils }) {
 				
 				if (data.receive_update) {
 					api.sendMessage(
-						`Bot has been updated to version: ${assets.VERSION}\nrun "${threadPrefix}changelog" to see full details.\n\nYou can also use "${threadPrefix}changelog set" to turn on/off this update notification.`,
+						`Bot has been updated to version: ${assets.VERSION}\nrun "${threadPrefix}changelog" to see full details.\n\nYou can also use "${threadPrefix}group bot-updates" to turn on/off this notification.`,
 						threadID,
 						async (err) => {
 							// if this fails that means its an old thread data

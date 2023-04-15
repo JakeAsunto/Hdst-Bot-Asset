@@ -38,6 +38,7 @@ module.exports = async function({ api, models }) {
 				if (!GroupData || !Info) {
 					try { await Threads.delData(threadID); } catch (e) {};
 				} else {
+					
 					if (GroupData.isBanned) {
 						const banned = Data.banned;
 						const data = {
@@ -51,24 +52,29 @@ module.exports = async function({ api, models }) {
 					}
 					
 					// auto leave inactive(amag) groups
-					if (Info) {
-						if (Info.timestamp) {
-							const dateNow = Date.now();
-							const diff = Math.abs(dateNow - Info.timestamp);
-							if (diff >= 432000000) {
-								const howLong = Utils.getRemainingTime(diff/1000);
-								api.sendMessage(
-									Utils.textFormat('events', 'eventInactiveGroupNotice', howLong),
-									threadID,
-									async (e) => {
-										if (!e) {
-											api.removeUserFromGroup(api.getCurrentUserID(), threadID, (e)=>{});
-										}
-										api.deleteThread(threadID, (e)=>{});
-										await Threads.delData(threadID);
+					if (Info.timestamp) {
+						const dateNow = Date.now();
+						const diff = Math.abs(dateNow - Info.timestamp);
+						if (diff >= 432000000) {
+							const howLong = Utils.getRemainingTime(diff/1000);
+							api.sendMessage(
+								Utils.textFormat('events', 'eventInactiveGroupNotice', howLong),
+								threadID,
+								async (e) => {
+									if (!e) {
+										api.removeUserFromGroup(api.getCurrentUserID(), threadID, (e)=>{});
 									}
-								);
-							}
+									api.deleteThread(threadID, (e)=>{});
+									await Threads.delData(threadID);
+								}
+							);
+						} else {
+							// update group info
+							const threadInfo = {};
+							threadInfo.threadName = Info.threadName;
+							threadInfo.adminIDs = Info.adminIDs;
+							threadInfo.nicknames = Info.nicknames;
+							await Threads.setData(threadID, { threadInfo });
 						}
 					}
 				}
