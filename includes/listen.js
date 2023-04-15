@@ -1,4 +1,4 @@
-module.exports = function({ api, models }) {
+module.exports = async function({ api, models }) {
 	
 	const fs = require('fs');
 	const moment = require('moment-timezone');
@@ -16,7 +16,7 @@ module.exports = function({ api, models }) {
 
 	///////// DO RE-CHECKING DATABASE
 
-	(async function() {
+	await (async function() {
 		api.markAsReadAll((err) => {
 			if (err) return console.error('Error [Mark as Read All]: ' + err)
 		});
@@ -32,7 +32,7 @@ module.exports = function({ api, models }) {
 			for (const threadData of threads) {
 				
 				const threadID = String(threadData.threadID);
-				const Info = threadData.threadInfo;
+				const Info = await Threads.getInfo(threadID);
 				const GroupData = threadData.data;
 				
 				if (!GroupData || !Info) {
@@ -48,6 +48,28 @@ module.exports = function({ api, models }) {
 							dateIssued: banned.dateIssued || '<unknown date>'
 						}
 						await Banned.setData(threadID, { data });
+					}
+					
+					// auto leave inactive(amag) groups
+					if (Info) {
+						if (Info.timestamp) {
+							const dateNow = Date.now();
+							const diff = Math.abs(dateNow - Info.timestamp);
+							if (diff >= 432000000) {
+								const howLong = Utils.getRemainingTime(diff/1000);
+								api.sendMessage(
+									Utils.textFormat('events', 'eventInactiveGroupNotice', howLong),
+									threadID,
+									async (e) => {
+										if (!e) {
+											api.removeUserFromGroup(api.getCurrentUserID(), threadID, (e)=>{});
+										}
+										api.deleteThread(threadID, (e)=>{});
+										await Threads.delData(threadID);
+									}
+								);
+							}
+						}
 					}
 				}
 			}
@@ -79,7 +101,7 @@ module.exports = function({ api, models }) {
 			
 			Utils.logger.loader(Utils.getText('listen', 'loadedEnvironmentUser'))
 			Utils.logger(Utils.getText('listen', 'successLoadEnvironment'), '[ DATABASE ]');
-			
+			return;
 		} catch (error) {
 			console.log(error);
 			return Utils.logger.loader(Utils.getText('listen', 'failLoadEnvironment', error), 'error');

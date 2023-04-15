@@ -6,6 +6,7 @@ module.exports.config = {
 	hasPermssion: 0,
 	usages: '',
 	cooldowns: 0,
+	aliases: [ 'pick' ],
 	credits: 'Hadestia',
 	envConfig: {
 		groupCommandOnly: true

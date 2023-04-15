@@ -1,7 +1,7 @@
 {
     "administration": {
         "icon": "🔐",
-        "description": "Commands for group administration."
+        "description": "Group commands and group administration."
     },
     "artificial_intelligence": {
         "icon": "🤖",

@@ -8,7 +8,7 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
 
         const { cooldowns, commands, eventRegistered } = global.HADESTIA_BOT_CLIENT;
 
-        let { senderID, threadID } = event;
+        let { senderID, threadID, isGroup } = event;
         
         senderID = String(senderID);
         threadID = String(threadID);
@@ -27,14 +27,14 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
 			const config = (command.config.envConfig) ? command.config.envConfig : {};
 			
 			// allow ban User
-			let pass1 = (bannedUserData) ? (config.handleEvent_allowBannedUsers) ? true : false : true;
+			let pass1 = (bannedUserData) ? (config.handleEvent_allowBannedUsers || false) : true;
 			// allow ban threads
-			let pass2 = (bannedGroupData) ? (config.handleEvent_allowBannedThreads) ? true : false : true;
+			let pass2 = (bannedGroupData) ? (config.handleEvent_allowBannedThreads || false) : true;
 			// allow direct message
-			let pass3 = (senderID == threadID) ? (config.handleEvent_allowDirectMessages) ? true : false : true;
+			let pass3 = (!isGroup) ? (config.handleEvent_allowDirectMessages || false) : true;
 			// needs group data or user data
-			let pass4 = (config.needGroupData) ? (groupData) ? true : false : true;
-			let pass5 = (config.needUserData) ? (userData) ? true : false : true;
+			let pass4 = (config.needGroupData && config.needGroupData == true) ? (groupData) ? true : false : true;
+			let pass5 = (config.needUserData && config.needUserData == true) ? (userData) ? true : false : true;
 			
 			// PATCH: 6.10.3 @Hadestia
 			// checks whether command's handleEvent can interact with banned users/groups or even direct messages

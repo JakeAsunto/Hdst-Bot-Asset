@@ -7,7 +7,6 @@ module.exports.config = {
 	credits: 'Hadestia',
 	usages: '',
 	envConfig: {
-		handleEvent_allowBannedUsers: false,
 		handleEvent_allowDirectMessages: true
 	}
 }
@@ -30,12 +29,12 @@ module.exports.handleEvent = async function ({ api, event, Utils, Users, Banned 
 				try {
 					const timezone = require('moment-timezone').tz('Asia/Manila').format('MM-DD-YYYY @HH:mm A');
 				
-					const userName = Users.getNameUser(senderID);
 					const randomCaseID = Math.floor(Math.random() * (999999 - 100000 + 1) + 100000);
 					const userData = await Users.getData(senderID);
 					if (!userData) { throw 'User not Initialize'; }
 					
 					const data = userData.data;
+					const userName = data.name || `@user${senderID}`;
 					const banned = {};
 					
 					data.isBanned = true;

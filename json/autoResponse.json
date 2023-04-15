@@ -98,21 +98,6 @@
         ],
         "stand_alone": true
     },
-    "otherbot": {
-        "matches": [
-            "command not found",
-            "intereact with me using sim command",
-            "you have no permission to use command \""
-        ],
-        "response": [
-            "You are kinda sus, I'll keep my eyes on you.ᕙ(͡°‿ ͡°)",
-            "Lah may ibang bot ayaw nyo naba saken.",
-            "Umay may ibang bot.",
-            "Hayst dapat di nyo nako sinali rito may iba pala kayong bot.",
-            "Umay Pinag palit ako sa ibang bot"
-        ],
-        "stand_alone": true
-    },
     "tulugan": {
         "matches": [
             "goodnight",

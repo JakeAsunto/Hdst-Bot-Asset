@@ -20,7 +20,7 @@ module.exports.config = {
 module.exports.run = async function ({ api, args, event, returns, Utils, Prefix, Users, Threads }) {
 
 	const economySystem = require(`${global.HADESTIA_BOT_CLIENT.mainPath}/json/economySystem.json`);
-	const leaderboard = require('./economy_l=eaderboard.js');
+	const leaderboard = require('./economy_leaderboard.js');
 	
 	const { threadID, messageID, senderID } = event;
 	
