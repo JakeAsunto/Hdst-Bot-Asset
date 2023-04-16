@@ -2,14 +2,16 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
 	
     return async function({ event }) {
     	
+    	if (event.type == 'message_reply') return;
+    	
     	const { body, messageID, senderID, threadID, messageReply } = event;
-    
+    	
     	const { commands, handleReply, messageReplyRegistered } = global.HADESTIA_BOT_CLIENT;
-    
+    	
     	const { allowInbox } = global.HADESTIA_BOT_CONFIG;
     	
     	const bannedUserData = await Banned.getData(senderID);
-    
+    	
         const bannedGroupData = await Banned.getData(threadID);
         
         const groupData = await Threads.getData(threadID);

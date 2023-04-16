@@ -26,7 +26,7 @@ module.exports = async function ({ api, Users, Banned, Threads }) {
 	Utils.logger = logger;
 	
 	
-	Utils.sendRequestError = function (err, event, prefix) {
+	Utils.sendRequestError = async function (err, event, prefix) {
 		api.sendMessage(Utils.textFormat('error', 'errCmdExceptionError', err.message, prefix), event.threadID, ()=>{}, event.messageID);
 	}
 	
@@ -36,21 +36,31 @@ module.exports = async function ({ api, Users, Banned, Threads }) {
 		let eligible = false;
 		
 		try {
-			const threadInfo = (isGroup) ? (preferInfo) ? preferInfo : await Threads.getInfo(threadID) : false;
-			const is_admin_bot = global.HADESTIA_BOT_CONFIG.ADMINBOT.includes(senderID);
+			preferInfo = preferInfo || await Threads.getInfo(threadID);
+			const { ADMINBOT } = global.HADESTIA_BOT_CONFIG;
+			const threadInfo = (isGroup) ? (preferInfo) ? preferInfo : false : false;
 			const is_admin_group = (isGroup) ? (threadInfo) ? threadInfo.adminIDs.find(el => el.id == senderID) : false : false;
-			
+			const is_admin_bot = ADMINBOT.includes(senderID);
+
 			if (permission == 1) {
-				eligible = (is_admin_group) ? true : false;
+				// only group admin
+				eligible = is_admin_group;
 			} else if (permission == 2) {
-				eligible = (is_admin_bot) ? true : false;
+				// only bot admin
+				eligible = is_admin_bot;
 			} else if (permission == 3) {
-				eligible = (is_admin_bot || is_admin_group) ? true : false;
+				// group & bot admin
+				eligible = is_admin_bot || is_admin_group;
 			} else if (permission == 0) {
+				// any one
 				eligible = true;
+			} else if (permission == -1) { 
+				// owner only
+				eligible = ADMINBOT[0] == senderID;
 			}
 		} catch (err) {
 			(callback) ? callback(err) : console.log(err);
+			return false;
 		}
 		return eligible;
 	}

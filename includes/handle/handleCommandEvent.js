@@ -19,12 +19,11 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
         const userData = await Users.getData(senderID);
         
 		const prefix = (groupData) ? groupData.data.PREFIX || PREFIX : PREFIX;
-        // LEGACY CODE: if (bannedUsers.has(senderID) || bannedThreads.has(threadID) || allowInbox == !![] && senderID == threadID) return;
 
         for (const eventReg of eventRegistered) {
         	
             const command = commands.get(eventReg);
-			const config = (command.config.envConfig) ? command.config.envConfig : {};
+			const config = command.config.envConfig || {};
 			
 			// allow ban User
 			let pass1 = (bannedUserData) ? (config.handleEvent_allowBannedUsers || false) : true;
@@ -33,8 +32,8 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
 			// allow direct message
 			let pass3 = (!isGroup) ? (config.handleEvent_allowDirectMessages || false) : true;
 			// needs group data or user data
-			let pass4 = (config.needGroupData && config.needGroupData == true) ? (groupData) ? true : false : true;
-			let pass5 = (config.needUserData && config.needUserData == true) ? (userData) ? true : false : true;
+			let pass4 = (config.needGroupData && config.needGroupData == true) ? groupData && true : true;
+			let pass5 = (config.needUserData && config.needUserData == true) ? userData && true : true;
 			
 			// PATCH: 6.10.3 @Hadestia
 			// checks whether command's handleEvent can interact with banned users/groups or even direct messages

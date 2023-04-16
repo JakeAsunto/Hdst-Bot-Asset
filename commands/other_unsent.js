@@ -7,17 +7,15 @@ module.exports.config = {
 	commandCategory: 'other',
 	aliases: [ 'unsend', 'remove' ],
 	usages: '<!reply base command!>',
-	cooldowns: 0,
-	envConfig: {
-		handleEvent_needPermission: true
-	}
+	cooldowns: 0
 };
 
-module.exports.handleEvent = async function ({ api, event, Utils }) {
+module.exports.handleMessageReply = async function ({ api, event, Utils }) {
 	
 	if (!['unsend', 'unsent', 'remove', 'delete'].includes(event.body.toLowerCase())) return;
 	
 	const eligible = await Utils.hasPermission(event.senderID, event.threadID, this.config.hasPermssion);
+	console.log(eligible);
 	if (eligible) {
 		this.run({ api, event, Utils });
 	}
@@ -39,4 +37,5 @@ module.exports.run = function({ api, event, Utils }) {
 	
 	Utils.sendReaction.success(api, event);
 	return api.unsendMessage(event.messageReply.messageID);
+	
 }

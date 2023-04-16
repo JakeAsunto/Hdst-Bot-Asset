@@ -16,7 +16,7 @@ module.exports.handleMessageReply = async function ({ api, event, Utils, Threads
 	try {
 		const { ADMINBOT, PREFIX } = global.HADESTIA_BOT_CONFIG;
 		// return if not replies on bot
-		if (event.type === 'message_reply' && !event.body.startsWith(PREFIX)) {
+		if (!event.body.startsWith(PREFIX)) {
 			
 			if (!event.messageReply) return;
 			
