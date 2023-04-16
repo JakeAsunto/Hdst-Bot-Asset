@@ -61,7 +61,7 @@ async function handleUserData({ UserData, userID, databaseSystem, economySystem,
 	let changesCount = 0;
 	const userName = await Users.getNameUser(userID);
     const credentials = (UserData) ? UserData : {};
-    const data = (credentials.data) ? credentials.data : {};
+    const data = new Object(credentials.data || {});
     
     for (const key in databaseSystem.user_data_config) {
     	if (!data.hasOwnProperty(key)) {
@@ -114,10 +114,10 @@ async function handleGroupData({ GroupData, log, threadID, databaseSystem, econo
 	threadInfo.nicknames = threadIn4.nicknames;
 	
 	const credentials = (GroupData) ? GroupData : {};
-    const inventory = (credentials.inventory) ? credentials.inventory : {};
-    const economy = (credentials.economy) ? credentials.economy : {};
-    const data = (credentials.data) ? credentials.data : {};
-	const afk = (credentials.afk) ? credentials.afk : {};
+    const inventory = new Object(credentials.inventory || {});
+    const economy = new Object(credentials.economy || {});
+    const data = new Object(credentials.data || {});
+	const afk = new Object(credentials.afk || {});
 	
 	// default config
 	for (const item in databaseSystem.group_data_config) {

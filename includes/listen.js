@@ -13,9 +13,10 @@ module.exports = async function({ api, models }) {
 	
 	const databaseSystem = require('../json/databaseConfig.json');
 	const economySystem = require('../json/economySystem.json'); 
-
+	const handleDB = require('./handle/handleCreateDatabase');
+	
 	///////// DO RE-CHECKING DATABASE
-
+	
 	await (async function() {
 		api.markAsReadAll((err) => {
 			if (err) return console.error('Error [Mark as Read All]: ' + err)
@@ -69,12 +70,7 @@ module.exports = async function({ api, models }) {
 								}
 							);
 						} else {
-							// update group info
-							const threadInfo = {};
-							threadInfo.threadName = Info.threadName;
-							threadInfo.adminIDs = Info.adminIDs;
-							threadInfo.nicknames = Info.nicknames;
-							await Threads.setData(threadID, { threadInfo });
+							await handleDB.handleGroupData({ GroupData, threadID, databaseSystem, economySystem, Utils, Users, Threads, Banned });
 						}
 					}
 				}
@@ -102,6 +98,7 @@ module.exports = async function({ api, models }) {
 						}
 						await Banned.setData(userID, { data });
 					}
+					await handleDB.handleGroupData({ UserData, userID, databaseSystem, economySystem, Utils, Users, Threads, Banned });
 				}
 			}
 			
@@ -142,7 +139,7 @@ module.exports = async function({ api, models }) {
 	
 	const handleEvent = require('./handle/handleEvent')(handleInputs);
 	
-	const handleCreateDatabase = require('./handle/handleCreateDatabase')(handleInputs);
+	const handleCreateDatabase = handleDB(handleInputs);
 	
 	Utils.logger.loader(`====== ${Date.now() - global.HADESTIA_BOT_CLIENT.timeStart}ms ======`);
 
