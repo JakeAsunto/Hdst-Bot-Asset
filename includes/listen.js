@@ -10,7 +10,6 @@ module.exports = async function({ api, models }) {
 	
 	const iutil = require(`${global.HADESTIA_BOT_CLIENT.mainPath}/scripts/utils.js`);
 	const Utils = await iutil({ api, Users, Banned, Threads });
-	Utils.rootPath = global.HADESTIA_BOT_CLIENT.mainPath;
 	
 	const databaseSystem = require('../json/databaseConfig.json');
 	const economySystem = require('../json/economySystem.json'); 

@@ -1,20 +1,16 @@
 module.exports = function ({ models, api }) {
 	const Users = models.use('Users');
-
+	const axios = require('axios');
+	
 	async function getInfo(id) {
 		return (await api.getUserInfo(id))[id];
 	}
 
 	async function getNameUser(id) {
 		try {
-			let initName = `@user${id}`;
-			const user = await getData(id);
-			if (user) {
-				return user.name || initName;
-			} else {
-				var name = (await getInfo(id)).name;
-				return name || initName;
-			}
+			const info = (await getInfo(id))[id] || {};
+			const data = await getData(id) || {};
+			return info.name || data.name || `@user${id}`;
 		}
 		catch (e) { return `@user${id}` }
 	}
