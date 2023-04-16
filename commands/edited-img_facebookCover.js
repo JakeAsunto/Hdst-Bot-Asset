@@ -77,7 +77,7 @@ module.exports.handleEvent = async function ({ api, event, Utils, Prefix }) {
 		Utils.sendReaction.inprocess(api, event);
 		
 		const link = `${encodeURI(`https://api.reikomods.repl.co/canvas/fbcover?uid=${senderID}&color=${color}&name=${top_name}&subname=${sub_name}&email=${email}&address=${address}&sdt=${contact_no}`)}`;
-		var path = `${__dirname}/../../cache/${(link.split('/')).pop()}.png`;
+		var path = `${Utils.ROOT_PATH}/cache/${(link.split('/')).pop()}.png`;
 		const generatedIMG = (await axios.get(link, { responseType: 'arraybuffer' } )).data;
 		
 		// save img

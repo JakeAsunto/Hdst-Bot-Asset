@@ -8,7 +8,8 @@ module.exports = async function({ api, models }) {
 		Threads = require('./controllers/controller_threads')({ models, api }),
 		Banned = require('./controllers/controller_banned')({ models, api });
 	
-	const Utils = require(`${global.HADESTIA_BOT_CLIENT.mainPath}/scripts/utils.js`)({ api, Users, Banned, Threads });
+	const iutil = require(`${global.HADESTIA_BOT_CLIENT.mainPath}/scripts/utils.js`);
+	const Utils = await iutil({ api, Users, Banned, Threads });
 	Utils.rootPath = global.HADESTIA_BOT_CLIENT.mainPath;
 	
 	const databaseSystem = require('../json/databaseConfig.json');

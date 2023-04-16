@@ -67,8 +67,8 @@ module.exports.run = async function({ api, event, args, Users, Utils }) {
 	
 	Utils.sendReaction.inprocess(api, event);
 	
-	let avatar = __dirname + '/cache/avt.png';
-	let pathImg = __dirname + '/cache/porn.png';
+	let avatar = `${Utils.ROOT_PATH}/cache/tweet-avt${senderID}.png`;
+	let pathImg = `${Utils.ROOT_PATH}/cache/tweet-${senderID}.png';
 	var text = args.join(' ');
 	
 	let getAvatar = (await axios.get(`https://graph.facebook.com/${senderID}/picture?width=1290&height=1290&access_token=${process.env.FB_ACCESS_TOKEN}`, { responseType: 'arraybuffer' })).data;

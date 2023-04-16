@@ -40,7 +40,7 @@ module.exports.run = async function ({ api, args, event, returns, Utils, Prefix 
 	}
 	
 	const link = encodeURI(`https://api.reikomods.repl.co/canvas/avtwibu?id=${id - 1}&color=${division[1]}&name=${division[2]}&subname=${division[3]}`);
-	const path = `${__dirname}/../../cache/${(link.split('/')).pop()}.png`;
+	const path = `${Utils.ROOT_PATH}/cache/${(link.split('/')).pop()}.png`;
 	const avatar = (await axios.get(link, { responseType: 'arraybuffer' })).data;
 	
 	fs.writeFileSync(path, Buffer.from(avatar, 'utf-8'));

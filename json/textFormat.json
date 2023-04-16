@@ -12,7 +12,8 @@
         "errCommandReplyInteractionTimeout": "🔴 Interaction timeout.",
         "errCmdReplyInvalidSyntax": "🔴 Invalid reply syntax,\nTry checking command usages by running '%1help %2'.",
         "errUnableToTrackRecipientIDs": "🔴 Unable to track recipient ID from the replied message, this should not be happening.\nUse \"%1bot-report issue <your message>\" to directly report this incident to admins.",
-        "errCmdExceptionError": "🔴 %1\n\nIf this might happen again kindly use '%2bot-report' to report this issue, use '%2help bot-report' for syntax info."
+        "errCmdExceptionError": "🔴 %1\n\nIf this might happen again kindly use '%2bot-report' to report this issue, use '%2help bot-report' for syntax info.",
+        "errWarning": "⚠️ 𝗪𝗮𝗿𝗻𝗶𝗻𝗴\n────────────────────\n%1"
     },
     "system": {
         "botUnderMaintenance": "🔴 Sorry but i'm under maintenance. Maybe try again later?",

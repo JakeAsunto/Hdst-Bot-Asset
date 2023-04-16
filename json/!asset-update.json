@@ -5,7 +5,7 @@
         "https://facebook.com/mensaherong.iantot",
         "This repository was linked to bot assets repository of Hadestia that include assets auto updater."
     ],
-    "VERSION": "6.11.68",
+    "VERSION": "6.11.70",
     "CHANGELOGS": "- As usual, Fix fucking errors.\n\n● Bot version was currently set to `Beta` due to major changes.",
     "PRIORITY": {
         "fileTree.js": {
@@ -124,10 +124,12 @@
         "media_playMusic",
         "other_fontStyle",
         "other_findLyrics",
+        "other_getLink",
         "other_unsent",
         "ownership_announce",
         "ownership_banned",
         "ownership_pendingReqMsg",
+        "ownership_setBotBio",
         "ownership_stalk",
         "random_pickName",
         "random_roll",

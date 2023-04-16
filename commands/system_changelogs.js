@@ -15,8 +15,8 @@ module.exports.config = {
 module.exports.lateInit = async function ({ api, Threads, Utils }) {
 	
 	const { readFileSync, writeFileSync } = require('fs-extra');
-    const isUpdated = readFileSync(`${__dirname}/../../cache/keep/!asset-has-update.txt`, { encoding: 'utf-8' });
-	const assets = require(`${__dirname}/../../json/!asset-update.json`);
+    const isUpdated = readFileSync(`${Utils.ROOT_PATH}/cache/keep/!asset-has-update.txt`, { encoding: 'utf-8' });
+	const assets = require(`${Utils.ROOT_PATH}/json/!asset-update.json`);
 	const { ADMINBOT, PREFIX } = global.HADESTIA_BOT_CONFIG;
 	
 	global.BOT_VERSION = assets.VERSION;
@@ -56,7 +56,7 @@ module.exports.lateInit = async function ({ api, Threads, Utils }) {
 		}
 	}
 	
-	await writeFileSync(`${__dirname}/../../cache/keep/!asset-has-update.txt`, 'false', 'utf-8');
+	await writeFileSync(`${Utils.ROOT_PATH}/cache/keep/!asset-has-update.txt`, 'false', 'utf-8');
 }
 
 module.exports.run = async function ({ api, args, event, returns, Utils, Threads }) {

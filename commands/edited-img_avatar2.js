@@ -55,7 +55,7 @@ module.exports.run = async function ({ api, args, event, Utils }) {
 		const axios = require('axios');
 		// avatar id
 		
-		const path = `./cache/avatar2-req-${senderID}.png`;
+		const path = `${Utils.ROOT_PATH}/cache/avatar2-req-${senderID}.png`;
 		await axios.get(`https://api.reikomods.repl.co/canvas/avatar?id=${avatarID - 1}&name=${name}&signature=${signature}&subname=${subname}&color=${color}`, { responseType: 'arraybuffer' }).then((res) => {
 			const data = res.data;
 			

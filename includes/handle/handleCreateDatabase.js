@@ -1,7 +1,7 @@
 module.exports = function({ Utils, Users, Threads, Banned }) {
 	
-	const databaseSystem = require(`${__dirname}/../../json/databaseConfig.json`); 
-	const economySystem = require(`${__dirname}/../../json/economySystem.json`); 
+	const databaseSystem = require(`${Utils.ROOT_PATH}/json/databaseConfig.json`); 
+	const economySystem = require(`${Utils.ROOT_PATH}/json/economySystem.json`); 
 	
     return async function({ event }) {
     	

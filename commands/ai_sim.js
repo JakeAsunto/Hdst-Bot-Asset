@@ -22,13 +22,13 @@ async function simsimi(a, b, c) {
 	const uri = (a) => encodeURIComponent(a);
     try {
     	
-        var { data: j } = await axios.get(`https://api.simsimi.net/v2/?text=${uri(a)}&lc=en&cf=false&name=Mei&key=C.IQHPE1cSfZFev-EhpwRbndXxcD9YGdTlbGReM`);
+        var { data } = await axios.get(`https://api.simsimi.net/v2/?text=${g(a)}&lc=en&cf=false&name=Mei&key=C.IQHPE1cSfZFev-EhpwRbndXxcD9YGdTlbGReM`);
         //var { data } = await axios.get(`https://api.reikomods.repl.co/others/sim?ask=${uri(a)}`);
         return { error: !1, data: data };
         
     } catch (p) {
     	
-        return { error: !0, data: p }
+        return { error: !0, data: {} }
         
     }
 }

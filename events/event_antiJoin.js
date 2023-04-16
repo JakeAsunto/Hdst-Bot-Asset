@@ -17,9 +17,8 @@ module.exports.run = async function ({ event, api, Utils, Threads, Users }) {
 	const threadInfo = await Threads.getInfo(event.threadID);
 	const data = threadData.data;
 
-	if (event.logMessageData.addedParticipants.some(i => i.userFbId == api.getCurrentUserID())) {
-		return;
-	} else if (data.antijoin) {
+	const isThisBot = event.logMessageData.addedParticipants.some(i => i.userFbId !== api.getCurrentUserID());
+	if (data.antijoin && !isThisBot) {
 		
 		if (threadInfo) {
 			const bot_is_admin = threadInfo.adminIDs.find(e => e.id == api.getCurrentUserID());
@@ -31,9 +30,10 @@ module.exports.run = async function ({ event, api, Utils, Threads, Users }) {
 			}
 		
 			const memJoin = event.logMessageData.addedParticipants || [];
+			// send a warning messages
+			api.sendMessage(Utils.textFormat('error', 'errWarning', 'Anti-Join mode was active, all newly added members will be removed.'), event.threadID, ()=>{});
 			
 			for (let user of memJoin) {
-			
 				await new Promise(resolve => setTimeout(resolve, 1000));
 				api.removeUserFromGroup(
 					user.userFbId,
@@ -43,6 +43,7 @@ module.exports.run = async function ({ event, api, Utils, Threads, Users }) {
 					}
 				);
 			}
+			
 		} else {
 			return api.sendMessage(
 				Utils.textFormat('error', 'errOccured', 'Unable to perform "Anti Join Mode"\n● reason: Unable to fetch group admin list.'),

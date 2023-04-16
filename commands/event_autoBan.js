@@ -16,15 +16,15 @@ module.exports.handleEvent = async function ({ api, event, Utils, Users, Banned 
 	const { body, threadID, senderID, messageID } = event;
 	const { ADMINBOT } = global.HADESTIA_BOT_CONFIG;
 	
-	const autobanData = require(`${Utils.rootPath}/json/autoResponse.json`);
+	const autobanData = require(`${Utils.ROOT_PATH}/json/autoResponse.json`);
 
-	if (ADMINBOT.includes(senderID)) {
-		return Utils.sendReaction.custom(api, event, '😏');
-	}
-	
 	if (autobanData.autoban_bot_checker) {
 		for (const item of autobanData.autoban_bot_checker.matches) {
 			if ((body.toLowerCase()).indexOf(item) !== -1) {
+				
+				if (ADMINBOT.includes(senderID)) {
+					return Utils.sendReaction.custom(api, event, '\uD83D\uDE0F');
+				}
 				
 				try {
 					const timezone = require('moment-timezone').tz('Asia/Manila').format('MM-DD-YYYY @HH:mm A');

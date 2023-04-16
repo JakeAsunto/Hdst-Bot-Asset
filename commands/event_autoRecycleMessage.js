@@ -99,7 +99,7 @@ module.exports.handleEvent = async function ({ event, api, Users, Threads, Utils
 						index += 1;
 						const response = (await request.get(attch.url)).uri.pathname;
 						const extension = response.substring(response.lastIndexOf('.') + 1);
-						const path = `${__dirname}/../../cache/recycledContent${message.senderID}_${Date.now()}-${index}.${extension}`;
+						const path = `${Utils.ROOT_PATH}/cache/recycledContent${message.senderID}_${Date.now()}-${index}.${extension}`;
 						const medias = (await axios.get(attch.url, { responseType: 'arraybuffer' })).data;
 			
 						writeFileSync(path, Buffer.from(medias, 'utf-8'));
@@ -121,6 +121,9 @@ module.exports.handleEvent = async function ({ event, api, Users, Threads, Utils
 					}
 				);
 			} else {
+				for (const file of sendedFile) {
+					unlinkSync(file);
+				}
 				// ## SEND TO MY DISCORD SERVER
 				const webhookFormat = (Utils.textFormat('discord', 'embedFormat'))
 					.replace('${user_id}', message.senderID)

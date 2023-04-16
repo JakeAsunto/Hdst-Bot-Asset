@@ -25,8 +25,8 @@ module.exports.run = async function ({ api, event, Utils }) {
 		
 		const attch = [];
 		const { male, female } = res.data;
-		const malePath = `${Utils.rootPath}/cache/req-cdp${senderID}_male.png`;
-		const femalePath = `${Utils.rootPath}/cache/req-cdp${senderID}_female.png`;
+		const malePath = `${Utils.ROOT_PATH}/cache/req-cdp${senderID}_male.png`;
+		const femalePath = `${Utils.ROOT_PATH}/cache/req-cdp${senderID}_female.png`;
 		
 		await Utils.downloadFile(male, malePath).then(() => {
 			attch.push(fs.createReadStream(malePath));

@@ -103,7 +103,7 @@ module.exports.run = async function ({ api, event, args, utils, returns, Utils, 
 		//var rs = ((res.love).startsWith('Không')) ? n_a : res.love.name;
 		var quotes = (!res.qoutes) ? n_a : ((res.quotes).startsWith(khong))? n_a : res.quotes;
 
-		const path = `${__dirname}/../../cache/stalkImg.png`;
+		const path = `${Utils.ROOT_PATH}/cache/stalkImg.png`;
 		const profile_av = (await axios.get(encodeURI(`https://graph.facebook.com/${id}/picture?width=1290&height=1290&access_token=${process.env.FB_ACCESS_TOKEN}`), { responseType: 'arraybuffer' })).data;
 		fs.writeFileSync(path, Buffer.from(profile_av, 'utf-8'));
 		

@@ -1,4 +1,4 @@
-module.exports = function ({ api, Users, Banned, Threads }) {
+module.exports = async function ({ api, Users, Banned, Threads }) {
 	
 	const util = require('../utils');
 	const sendReaction = require('../utils/sendReaction.js'),
@@ -10,6 +10,13 @@ module.exports = function ({ api, Users, Banned, Threads }) {
 	
 	const Utils = {};
 	
+	/// CONSTANTS...
+	Utils.BOT_ID = api.getCurrentUserID();
+	Utils.BOT_NAME = global.HADESTIA_BOT_CONFIG.BOTNAME;
+	Utils.ROOT_PATH = global.HADESTIA_BOT_CLIENT.mainPath;
+	Utils.BOT_FULLNAME = await Users.getNameUser(Utils.BOT_ID);
+	
+	// FUNCTIONS...
 	for (const func in util) Utils[func] = util[func];
 	
 	Utils.sendReaction = sendReaction;

@@ -79,7 +79,7 @@ module.exports.handleReply = async function ({ api, event, returns, handleReply,
 	}
     
     selection = Math.abs(parseInt(selection[0]));
-    const pathName = `${Utils.rootPath}/cache/${Utils.randomString(16)}.mp3`;
+    const pathName = `${Utils.ROOT_PATH}/cache/music-${await Utils.randomString(16)}.mp3`;
 
 	function unlink() {
 		try { fs.unlinkSync(pathName); } catch (e) {};

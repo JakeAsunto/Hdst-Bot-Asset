@@ -27,7 +27,7 @@ module.exports.run = async function({ api, event, Utils }) {
 	
 	//if (threadID !== '5742405099128283') return;
 	
-	const CACHE = `${global.HADESTIA_BOT_CLIENT.mainPath}/cache`;
+	const CACHE = `${Utils.ROOT_PATH}/cache`;
 	
 	// thread info
 	const { imageSrc, threadName, participantIDs } = await api.getThreadInfo(threadID);
@@ -35,7 +35,7 @@ module.exports.run = async function({ api, event, Utils }) {
 	const thread_name = removeNonASCII((threadName || 'This Group').normalize('NFKD'));
 	
 	const canvas = require('canvas');
-	const GIF = require(`${global.HADESTIA_BOT_CLIENT.mainPath}/utils/editGif.js`);
+	const GIF = require(`${Utils.ROOT_PATH}/utils/editGif.js`);
 	const gifEncoder = require('gif-encoder-2');
 	const axios = require('axios');
 	const path = require('path');
@@ -103,7 +103,7 @@ module.exports.run = async function({ api, event, Utils }) {
 			
 			const final_welcome_gif_path = path.join(CACHE, `joinNoti_${user.userFbId}_@${threadID}.gif`);
 			// get user avatar && group image
-			const avatarPath = `${global.HADESTIA_BOT_CLIENT.mainPath}/cache/avatar-${user.userFbId}.png`;
+			const avatarPath = `${Utils.ROOT_PATH}/cache/avatar-${user.userFbId}.png`;
 			const avatar = (await axios.get(
 				`https://graph.facebook.com/${user.userFbId}/picture?height=1500&width=1500&access_token=${process.env.FB_ACCESS_TOKEN}`,
 				{ responseType: 'arraybuffer' }
@@ -113,7 +113,7 @@ module.exports.run = async function({ api, event, Utils }) {
 			// some of group don't have group photo
 			let groupAvatar;
 			if (imageSrc) {
-				const groupAvaPath = `${global.HADESTIA_BOT_CLIENT.mainPath}/cache/groupAva-${threadID}.png`;
+				const groupAvaPath = `${Utils.ROOT_PATH}/cache/groupAva-${threadID}.png`;
 				const groupPhoto = (await axios.get(imageSrc, { responseType: 'arraybuffer' })).data;
 				
 				fs.writeFileSync(groupAvaPath, Buffer.from(groupPhoto, 'utf-8'));
