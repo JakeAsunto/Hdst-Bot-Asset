@@ -31,10 +31,10 @@ module.exports.handleEvent = async function ({ api, event, Utils, Users, Banned 
 				
 					const randomCaseID = Math.floor(Math.random() * (999999 - 100000 + 1) + 100000);
 					const userData = await Users.getData(senderID);
+					const userName = await Users.getNameUser(senderID);
 					if (!userData) { throw 'User not Initialize'; }
 					
 					const data = userData.data;
-					const userName = data.name || `@user${senderID}`;
 					const banned = {};
 					
 					data.isBanned = true;

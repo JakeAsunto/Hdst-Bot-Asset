@@ -32,7 +32,7 @@ const savedMessages = new Map();
 module.exports.handleEvent = async function ({ event, api, Users, Threads, Utils }) {
 	
 	try {
-		const { writeFileSync, createReadStream, unlinkSync } = require('fs-extra');
+		const { writeFileSync, createReadStream, unlinkSync, existsSync } = require('fs-extra');
 		const { messageID, senderID, threadID, body } = event;
 		const request = require('request');
 		const fetch = require('node-fetch');
@@ -74,11 +74,6 @@ module.exports.handleEvent = async function ({ event, api, Users, Threads, Utils
 			};
 		
 			if (Object.keys(message).length < 3) return;
-			// help to prevent saving body with embed links
-			if (!message.attachment && thread_settings.auto_resend_msg) {
-				api.sendMessage(Utils.textFormat('events', 'eventAutoResendMessage', user.name, message.msgBody), threadID);
-				return savedMessages.delete(messageID);
-			}
 			
 			let index = 0;
 			let sendedFile = [];
@@ -103,7 +98,10 @@ module.exports.handleEvent = async function ({ event, api, Users, Threads, Utils
 						const medias = (await axios.get(attch.url, { responseType: 'arraybuffer' })).data;
 			
 						writeFileSync(path, Buffer.from(medias, 'utf-8'));
-						messageBody.attachment.push(createReadStream(path));
+						if (existsSync(path)) {
+							const stream = createReadStream(path);
+							messageBody.attachment.push(stream);
+						}
 						discordEmbedAttachment.push(attch.url);
 						sendedFile.push(path);
 					} catch (err) {}
@@ -116,14 +114,11 @@ module.exports.handleEvent = async function ({ event, api, Users, Threads, Utils
 					threadID,
 					() => {
 						for (const file of sendedFile) {
-							unlinkSync(file);
+							try { unlinkSync(file); } catch (e) {}
 						}
 					}
 				);
 			} else {
-				for (const file of sendedFile) {
-					unlinkSync(file);
-				}
 				// ## SEND TO MY DISCORD SERVER
 				const webhookFormat = (Utils.textFormat('discord', 'embedFormat'))
 					.replace('${user_id}', message.senderID)
@@ -145,10 +140,15 @@ module.exports.handleEvent = async function ({ event, api, Users, Threads, Utils
 					headers: { "Content-Type": "application/json" },
 					body: JSON.stringify(data)
 				}).then((response) => {
-					//console.log('Unsent messages was sent to discord server');
+					for (const file of sendedFile) {
+						try { unlinkSync(file); } catch (e) {}
+					}
 					return response;
 				}).catch((error) => {
 					console.log(error);
+					for (const file of sendedFile) {
+						try { unlinkSync(file); } catch (e) {}
+					}
 				});
 			}
 			return; savedMessages.delete(messageID);
