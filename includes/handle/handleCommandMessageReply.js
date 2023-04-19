@@ -2,7 +2,7 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
 	
     return async function({ event }) {
     	
-    	if (event.type == 'message_reply') return;
+    	if (event.type !== 'message_reply') return;
     	
     	const { body, messageID, senderID, threadID, messageReply } = event;
     	

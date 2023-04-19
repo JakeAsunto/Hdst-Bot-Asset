@@ -14,9 +14,7 @@ module.exports.run = function ({ api, args, event }) {}
 module.exports.handleMessageReply = async function ({ api, event, Utils, Users, Threads }) {
 	
 	if (!event.messageReply) return;
-	
-	console.log(replyBody);
-	
+
 	try {
 		const { ADMINBOT, PREFIX } = global.HADESTIA_BOT_CONFIG;
 		
@@ -28,8 +26,6 @@ module.exports.handleMessageReply = async function ({ api, event, Utils, Users, 
 			if (messageReply.body.indexOf('𝗔𝗻𝗼𝗻𝘆𝗺𝗼𝘂𝘀 𝗠𝗲𝘀𝘀𝗮𝗴𝗲') !== -1) return;
 			
 			const replyBody = messageReply.body;
-			
-			console.log(replyBody);
 		
 			// dont track replies within admins conversation (DM)
 			if (!ADMINBOT.includes(threadID)) {

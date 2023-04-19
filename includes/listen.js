@@ -30,13 +30,12 @@ module.exports = async function({ api, models }) {
 			let users = await Users.getAll(['userID', 'name', 'data']),
 				threads = await Threads.getAll(['threadID', 'threadInfo', 'data']);
 				
-			for (const threadData of threads) {
+			for (const GroupData of threads) {
 				
-				const threadID = String(threadData.threadID);
+				const threadID = String(GroupData.threadID);
 				const Info = await Threads.getInfo(threadID);
-				const GroupData = threadData.data;
 				
-				if (!GroupData || !Info) {
+				if (!GroupData.data || !Info) {
 					try { await Threads.delData(threadID); } catch (e) {};
 				} else {
 					
@@ -70,7 +69,7 @@ module.exports = async function({ api, models }) {
 								}
 							);
 						} else {
-							await handleDB.handleGroupData({ threadID, databaseSystem, economySystem, Utils, Users, Threads, Banned });
+							await handleDB.handleGroupData({ GroupData, threadID, databaseSystem, economySystem, Utils, Users, Threads, Banned });
 						}
 					}
 				}
@@ -78,12 +77,11 @@ module.exports = async function({ api, models }) {
 			
 			Utils.logger.loader(Utils.getText('listen', 'loadedEnvironmentThread'));
 			
-			for (const userData of users) {
+			for (const UserData of users) {
 				
-				const userID = String(userData.userID);
-				const UserData = userData.data;
+				const userID = String(UserData.userID);
 				
-				if (!UserData) {
+				if (!UserData.data) {
 					try { await Users.delData(userID); } catch (e) {}
 				} else {
 					if (UserData.isBanned) {
@@ -98,7 +96,7 @@ module.exports = async function({ api, models }) {
 						}
 						await Banned.setData(userID, { data });
 					}
-					await handleDB.handleUserData({ userID, databaseSystem, economySystem, Utils, Users, Threads, Banned });
+					await handleDB.handleUserData({ UserData, userID, databaseSystem, economySystem, Utils, Users, Threads, Banned });
 				}
 			}
 			

@@ -58,10 +58,10 @@ async function handleUserData({ UserData, userID, databaseSystem, economySystem,
     const random1 = job[Math.floor(Math.random() * job.length)];
     const random2 = job[Math.floor(Math.random() * job.length)];
 
-	UserData = await Users.getData(userID);
+	const userData = UserData || await Users.getData(userID);
 	
 	const userName = await Users.getNameUser(userID);
-    const credentials = (UserData) ? UserData : {};
+    const credentials = (userData) ? userData : {};
     const data = new Object(credentials.data || {});
     let changesCount = 0;
     
@@ -114,9 +114,9 @@ async function handleGroupData({ GroupData, log, threadID, databaseSystem, econo
 	threadInfo.adminIDs = threadIn4.adminIDs;
 	threadInfo.nicknames = threadIn4.nicknames;
 	
-	GroupData = await Threads.getData(threadID);
+	const groupData = GroupData || await Threads.getData(threadID);
 	
-	const credentials = (GroupData) ? GroupData : {};
+	const credentials = (groupData) ? groupData : {};
     const inventory = new Object(credentials.inventory || {});
     const economy = new Object(credentials.economy || {});
     const data = new Object(credentials.data || {});
