@@ -26,8 +26,8 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
 			const evn = value.config.eventType
 			const envConfig = value.config.envConfig || {};
 			const groupDataPass = (envConfig.needGroupData) ? groupData && true : true;
-			const allowBannedUser = (envConfig.allowBannedUser) ? bannedUserData && true : false;
-			const allowBannedThread = (envConfig.allowBannedThread) ? bannedGroupData && true : false;
+			const allowBannedUser = (bannedUserData) ? envConfig.allowBannedUser && true : true;
+			const allowBannedThread = (bannedGroupData) ? envConfig.allowBannedThread && true : true;
 			
             if (evn.indexOf(event.logMessageType) !== -1 && groupDataPass && allowBannedUser && allowBannedThread) {
 

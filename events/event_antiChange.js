@@ -5,7 +5,8 @@ module.exports.config = {
     credits: 'Hadestia',
     description: 'Prevent admin changes',
     envConfig: {
-		needGroupData: true
+		needGroupData: true,
+		allowBannedThread: false
 	}		
 };
 

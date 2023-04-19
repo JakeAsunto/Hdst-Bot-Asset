@@ -23,15 +23,15 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
         const botPrefix = (threadSetting.hasOwnProperty('PREFIX')) ? threadSetting.PREFIX : global.HADESTIA_BOT_CONFIG.PREFIX;
         
         // do not track replies from command that has handleReply event && replies that has bot prefix
-        if ((handleReply.findIndex(e => e => e.messageID == messageReply.messageID)) !== -1 || body.startsWith(botPrefix)) return;
+        if ((handleReply.findIndex(e => e.messageID == messageReply.messageID)) !== -1 || body.startsWith(botPrefix)) return;
 		
         for (const mrReg of messageReplyRegistered) {
 
             const command = commands.get(mrReg);
             
             const config = command.config.envConfig || {};
-            const gDataPass = (config.needGroupData) ? config.needGroupData && groupData : true
-			const uDataPass = (config.needUserData) ? config.needUserData && userData : true
+            const gDataPass = (config.needGroupData) ? groupData && true : true;
+			const uDataPass = (config.needUserData) ?  userData && true : true;
 			
 			if (gDataPass && uDataPass) {
             	try {

@@ -11,30 +11,34 @@ module.exports.config = {
 // nothing to do here this is a hidden command
 module.exports.run = function ({ api, args, event }) {}
 
-module.exports.handleMessageReply = async function ({ api, event, Utils, Threads }) {
+module.exports.handleMessageReply = async function ({ api, event, Utils, Users, Threads }) {
+	
+	if (!event.messageReply) return;
+	
+	console.log(replyBody);
 	
 	try {
 		const { ADMINBOT, PREFIX } = global.HADESTIA_BOT_CONFIG;
-		// return if not replies on bot
+		
 		if (!event.body.startsWith(PREFIX)) {
-			
-			if (!event.messageReply) return;
 			
 			const { messageReply, threadID, messageID, senderID, body } = event;
 			
-			if (messageReply.senderID !== global.botUserID) return;
+			if (messageReply.senderID !== Utils.BOT_ID) return;
 			if (messageReply.body.indexOf('𝗔𝗻𝗼𝗻𝘆𝗺𝗼𝘂𝘀 𝗠𝗲𝘀𝘀𝗮𝗴𝗲') !== -1) return;
 			
 			const replyBody = messageReply.body;
+			
+			console.log(replyBody);
 		
-			// handle reply from other thread
+			// dont track replies within admins conversation (DM)
 			if (!ADMINBOT.includes(threadID)) {
 			
-				const group = (event.isGroup) ? await Threads.getInfo(threadID) : {};
-				const sender = (await api.getUserInfo(senderID))[senderID];
+				const group = await Threads.getInfo(threadID) || {};
+				const sender_name = await Users.getNameUser(senderID);
 			
 				// contruct message that will send to admin
-				const message = Utils.textFormat('events', 'eventMessageReplyToAdmin', (event.isGroup) ? group.threadName || '<No Data>' : sender.name, sender.name, body, messageReply.body, threadID, messageID);
+				const message = Utils.textFormat('events', 'eventMessageReplyToAdmin', (event.isGroup) ? group.threadName || '<No Data>' : sender_name, sender_name, body, messageReply.body, threadID, messageID);
 			
 				for (const adminID of ADMINBOT) {
 					api.sendMessage(

@@ -7,7 +7,7 @@ module.exports.config = {
 	envConfig: {
 		needGroupData: true,
 		allowBannedUser: true,
-		allowBannedGroup: true
+		allowBannedGroup: false
 	}
 };
 
@@ -17,7 +17,7 @@ module.exports.run = async function ({ event, api, Utils, Threads, Users }) {
 	const threadInfo = await Threads.getInfo(event.threadID);
 	const data = threadData.data;
 
-	const isThisBot = event.logMessageData.addedParticipants.some(i => i.userFbId !== api.getCurrentUserID());
+	const isThisBot = event.logMessageData.addedParticipants.some(i => i.userFbId === api.getCurrentUserID());
 	if (data.antijoin && !isThisBot) {
 		
 		if (threadInfo) {
@@ -31,7 +31,7 @@ module.exports.run = async function ({ event, api, Utils, Threads, Users }) {
 		
 			const memJoin = event.logMessageData.addedParticipants || [];
 			// send a warning messages
-			api.sendMessage(Utils.textFormat('error', 'errWarning', 'Anti-Join mode was active, all newly added members will be removed.'), event.threadID, ()=>{});
+			api.sendMessage(Utils.textFormat('error', 'errWarning', 'Anti-Join mode was active, all newly added members will be removed.'), event.threadID, Utils.autoUnsend);
 			
 			for (let user of memJoin) {
 				await new Promise(resolve => setTimeout(resolve, 1000));

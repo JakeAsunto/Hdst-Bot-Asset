@@ -58,10 +58,12 @@ async function handleUserData({ UserData, userID, databaseSystem, economySystem,
     const random1 = job[Math.floor(Math.random() * job.length)];
     const random2 = job[Math.floor(Math.random() * job.length)];
 
-	let changesCount = 0;
+	UserData = await Users.getData(userID);
+	
 	const userName = await Users.getNameUser(userID);
     const credentials = (UserData) ? UserData : {};
     const data = new Object(credentials.data || {});
+    let changesCount = 0;
     
     for (const key in databaseSystem.user_data_config) {
     	if (!data.hasOwnProperty(key)) {
@@ -79,7 +81,6 @@ async function handleUserData({ UserData, userID, databaseSystem, economySystem,
 			reason: bd.reason || databaseSystem.user_data_config.banned.reason,
 			dateIssued: bd.dateIssued || databaseSystem.user_data_config.banned.dateIssued
 		}
-		changesCount++;
 		data.banned = banned;
 		await Banned.setData(userID, { data: banned });
 	}
@@ -112,6 +113,8 @@ async function handleGroupData({ GroupData, log, threadID, databaseSystem, econo
     threadInfo.threadName = threadIn4.threadName;
 	threadInfo.adminIDs = threadIn4.adminIDs;
 	threadInfo.nicknames = threadIn4.nicknames;
+	
+	GroupData = await Threads.getData(threadID);
 	
 	const credentials = (GroupData) ? GroupData : {};
     const inventory = new Object(credentials.inventory || {});

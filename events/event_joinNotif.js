@@ -13,7 +13,8 @@ module.exports.config = {
 		'jimp': ''
 	},
 	envConfig: {
-		needGroupData: true
+		needGroupData: true,
+		allowBannedUser: false
 	}
 };
 

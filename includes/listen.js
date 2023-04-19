@@ -70,7 +70,7 @@ module.exports = async function({ api, models }) {
 								}
 							);
 						} else {
-							await handleDB.handleGroupData({ GroupData, threadID, databaseSystem, economySystem, Utils, Users, Threads, Banned });
+							await handleDB.handleGroupData({ threadID, databaseSystem, economySystem, Utils, Users, Threads, Banned });
 						}
 					}
 				}
@@ -98,7 +98,7 @@ module.exports = async function({ api, models }) {
 						}
 						await Banned.setData(userID, { data });
 					}
-					await handleDB.handleGroupData({ UserData, userID, databaseSystem, economySystem, Utils, Users, Threads, Banned });
+					await handleDB.handleUserData({ userID, databaseSystem, economySystem, Utils, Users, Threads, Banned });
 				}
 			}
 			
