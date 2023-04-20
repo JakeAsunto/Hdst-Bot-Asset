@@ -48,7 +48,9 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
             if (!ADMINBOT.includes(senderID.toString())) {
 				// User is banned?
                 if (bannedUserData) {             	
-                    const { caseID, reason, dateIssued } = bannedUserData.data || {};
+                    const { caseID, reason, dateIssued } = bannedUserData.data;
+                    if (reason.toLowerCase().indexOf('other bot') !== -1) return;
+                    
                     return api.sendMessage(Utils.textFormat('events', 'eventUserBannedForBot', caseID, reason, dateIssued), threadID, async (err, info) => {
 						if (err) return;
                         await new Promise(resolve => setTimeout(resolve, 20 * 1000));

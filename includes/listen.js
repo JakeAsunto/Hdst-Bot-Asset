@@ -40,7 +40,7 @@ module.exports = async function({ api, models }) {
 				} else {
 					
 					if (GroupData.isBanned) {
-						const banned = Data.banned;
+						const banned = GroupData.banned;
 						const data = {
 							isGroup: true,
 							name: Info.threadName,
