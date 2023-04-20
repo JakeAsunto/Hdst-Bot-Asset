@@ -143,15 +143,16 @@ module.exports.handleEvent = async function ({ event, api, Users, Threads, Utils
 					for (const file of sendedFile) {
 						try { unlinkSync(file); } catch (e) {}
 					}
-					return response;
+					return savedMessages.delete(messageID);
 				}).catch((error) => {
 					console.log(error);
 					for (const file of sendedFile) {
 						try { unlinkSync(file); } catch (e) {}
 					}
+					return savedMessages.delete(messageID);
 				});
 			}
-			return; savedMessages.delete(messageID);
+			return;
 		}
 	} catch (err) {
 		console.log(err);
