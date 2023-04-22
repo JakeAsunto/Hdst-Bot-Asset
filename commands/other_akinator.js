@@ -8,6 +8,9 @@ module.exports.config = {
 	cooldowns: 0,
 	commandCategory: 'other',
 	credits: 'Hadestia',
+	envConfig: {
+		handleEvent_allowDirectMessages: true
+	},
 	dependencies: {
         'axios': '',
         'stream': '',
@@ -20,10 +23,7 @@ const possibleAns = {
 	'yes': 0,
 	'no': 1,
 	'don\'t know': 2,
-	'dont know': 2,
-	'idk': 2,
 	'probably': 3,
-	'prolly': 3,
 	'probably not': 4
 }
 
@@ -43,7 +43,7 @@ module.exports.lateInit = function ({ api, Utils }) {
 						}
 					);
 				} else {
-					userMAP[ID].expiration--;
+					userMAP[ID].expiration = userMAP[ID].expiration - 1;
 				}
 			}
 			return;
@@ -93,10 +93,8 @@ module.exports.handleEvent = async function ({ api, event, Utils }) {
 	if (userMAP[mappingID]) {
 		const data = userMAP[mappingID];
 		
-		if (Object.keys(possibleAns).includes(response)) {
-			const client_answer = possibleAns[response];
-			
-			await data.akiAPI.step(client_answer);
+		if (['yes', 'no', 'don\'t know', 'probably', 'probably not'].includes(response)) {
+			await data.akiAPI.step(response);
 			
 			// If bot already have a guess
 			if (data.botGuessed) {
@@ -104,29 +102,42 @@ module.exports.handleEvent = async function ({ api, event, Utils }) {
 					delete userMAP[mappingID];
 					api.sendMessage('Great! I guessed correctly. I love playing with you!', data.threadID, data.messageID);
 				} else {
-					await sendOtherQuestion(data);
+					await data.akiAPI.back();
+					await sendOtherQuestion(data).catch(console.error);
 				}
 			} else {
 			
-				if (data.akiAPI.progress >= 70 || data.akiAPI.currentStep >= 20) {
+				if (data.akiAPI.progress >= 80 || data.akiAPI.currentStep >= 50) {
 					await data.akiAPI.win(); 
 					const answer = data.akiAPI.answers[0];
-					const path = `${Utils.ROOT_PATH}/cache/${mappingID}.jpg`;
-					await Utils.downloadFile(answer.absolute_picture_path, path);
-					const body = Utils.textFormat('cmd', 'cmdAkinatorGuess', data.akiAPI.progress, answer.name);
-					const attachment = (fs.existsSync(path)) ? fs.createReadStream(path) : null;
+					const path = `${Utils.ROOT_PATH}/cache/akinator_${mappingID}_${Date.now()}.jpg`;
+					const body = Utils.textFormat('cmd', 'cmdAkinatorGuess', Math.floor(data.akiAPI.progress), answer.name);
+					await Utils.downloadFile(answer.absolute_picture_path, path).then(() => {
 						api.sendMessage(
-							{ body, attachment },
-							data.threadID,
+							{ body, attachment: fs.createReadStream(path) },
+							threadID,
 							(err) => {
 								if (!err) {
 									userMAP[mappingID].botGuessed = true;
 								}
+								fs.unlinkSync(path);
 							},
-							data.messageID
+							messageID
 						);
+					}).catch(() => {
+						api.sendMessage(
+							body, threadID,
+							(err) => {
+								if (!err) {
+									userMAP[mappingID].botGuessed = true;
+								}
+								fs.unlinkSync(path);
+							},
+							messageID
+						);
+					});
 				} else {
-					await sendOtherQuestion(data);
+					await sendOtherQuestion(data).catch(console.error);
 				}
 			}
 		} else {
@@ -134,7 +145,7 @@ module.exports.handleEvent = async function ({ api, event, Utils }) {
 				'\u274E Cancelled Akinator game.',
 				threadID,
 				() => {
-					delete userMAP[ID];
+					delete userMAP[mappingID];
 				}
 			);
 		}

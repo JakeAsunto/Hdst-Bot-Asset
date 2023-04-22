@@ -5,8 +5,8 @@
         "https://facebook.com/mensaherong.iantot",
         "This repository was linked to bot assets repository of Hadestia that include assets auto updater."
     ],
-    "VERSION": "6.11.81",
-    "CHANGELOGS": "- As usual, Fix fucking errors.\n\n● Bot version was currently set to `Beta` due to major changes.",
+    "VERSION": "6.11.82",
+    "CHANGELOGS": "- Add akinator command. (A character guessing game)\n\n● Bot version was currently set to `Beta` due to major changes.",
     "PRIORITY": {
         "fileTree.js": {
             "path": "scripts/"
@@ -122,6 +122,7 @@
         "media_coupleDP",
         "media_pinterest",
         "media_playMusic",
+        "other_akinator",
         "other_fontStyle",
         "other_findLyrics",
         "other_getLink",
