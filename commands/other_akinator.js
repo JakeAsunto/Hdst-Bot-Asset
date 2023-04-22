@@ -1,7 +1,7 @@
 module.exports.config = {
 	name: 'akinator',
 	version: '1.0.0',
-	description: '',
+	description: 'Think about a real or fictional character. I will try to guess who it is',
 	hasPermssion: 0,
 	usage: '',
 	aliases: [ 'aki' ],
