@@ -1,12 +1,12 @@
 module.exports.config = {
 	name: 'akinator',
 	version: '1.0.0',
-	description: 'Think about a real or fictional character. I will try to guess who it is',
+	description: 'Think about a real or fictional character. I will try to guess who it is.',
 	hasPermssion: 0,
 	usage: '',
 	aliases: [ 'aki' ],
 	cooldowns: 0,
-	commandCategory: 'other',
+	commandCategory: 'games',
 	credits: 'Hadestia',
 	envConfig: {
 		handleEvent_allowDirectMessages: true
@@ -96,6 +96,19 @@ module.exports.handleEvent = async function ({ api, event, Utils }) {
 		
 		if (Object.keys(possibleAns).includes(response)) {
 			const client_ans = possibleAns[response];
+			
+			// if Already Max: (80)
+			if (akiAPI.currentStep >= 80) {
+				return api.sendMessage(
+					'\u274E I\'m sorry, I cannot guess your character, Maybe think another one and try again. \uD83D\uDE01',
+					threadID,
+					() => {
+						delete userMAP[mappingID];
+					},
+					messageID
+				);
+			}
+			
 			await akiAPI.step(client_ans);
 			// If bot already have a guess
 			if (data.botGuessed) {
@@ -111,7 +124,7 @@ module.exports.handleEvent = async function ({ api, event, Utils }) {
 					await akiAPI.win(); 
 					const answer = akiAPI.answers[0];
 					const path = `${Utils.ROOT_PATH}/cache/akinator_${mappingID}_${Date.now()}.jpg`;
-					const body = Utils.textFormat('cmd', 'cmdAkinatorGuess', Math.floor(akiAPI.progress), answer.name);
+					const body = Utils.textFormat('cmd', 'cmdAkinatorGuess', Math.floor(akiAPI.progress), await Utils.fancyFont.get(answer.name, 1);
 					await Utils.downloadFile(answer.absolute_picture_path, path).then(() => {
 						api.sendMessage(
 							{ body, attachment: fs.createReadStream(path) },

@@ -35,6 +35,10 @@
         "icon": "🎭",
         "description": "Edited images and memes related commands are dumped here."
     },
+    "games": {
+        "icon": "🎮",
+        "description": "Free, Fun and Enjoying game commands."
+    },
     "gambling": {
         "icon": "🎰",
         "description": "An easy game to earn and loss a lot of money."
