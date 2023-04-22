@@ -9,8 +9,14 @@ module.exports = function ({ models, api }) {
 	async function getNameUser(id) {
 		try {
 			const info = (await getInfo(id))[id] || {};
-			const data = await getData(id) || {};
-			return info.name || data.name || `@user${id}`;
+			if (!info.name) {
+				const data = await getData(id) || {};
+				if (!data.name) {
+					return `@user${id}`;
+				}
+				return data.name;
+			}
+			return info.name;
 		}
 		catch (e) { return `@user${id}` }
 	}

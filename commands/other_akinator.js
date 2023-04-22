@@ -92,26 +92,27 @@ module.exports.handleEvent = async function ({ api, event, Utils }) {
 	
 	if (userMAP[mappingID]) {
 		const data = userMAP[mappingID];
+		const akiAPI = data.akiAPI;
 		
-		if (['yes', 'no', 'don\'t know', 'probably', 'probably not'].includes(response)) {
-			await data.akiAPI.step(response);
-			
+		if (Object.keys(possibleAns).includes(response)) {
+			const client_ans = possibleAns[response];
+			await akiAPI.step(client_ans);
 			// If bot already have a guess
 			if (data.botGuessed) {
-				if (response == 'yes') {
+				if (client_ans == 0) {
 					delete userMAP[mappingID];
-					api.sendMessage('Great! I guessed correctly. I love playing with you!', data.threadID, data.messageID);
+					return api.sendMessage('Great! I guessed correctly. I love playing with you!', data.threadID, data.messageID);
 				} else {
 					userMAP[mappingID].botGuessed = false;
-					await sendOtherQuestion(data).catch(console.error);
+					await akiAPI.back();
+					await sendOtherQuestion(akiAPI).catch(console.error);
 				}
 			} else {
-			
-				if (data.akiAPI.progress >= 80 || data.akiAPI.currentStep >= 50) {
-					await data.akiAPI.win(); 
-					const answer = data.akiAPI.answers[0];
+				if (akiAPI.progress >= 80 || akiAPI.currentStep >= 50) {
+					await akiAPI.win(); 
+					const answer = akiAPI.answers[0];
 					const path = `${Utils.ROOT_PATH}/cache/akinator_${mappingID}_${Date.now()}.jpg`;
-					const body = Utils.textFormat('cmd', 'cmdAkinatorGuess', Math.floor(data.akiAPI.progress), answer.name);
+					const body = Utils.textFormat('cmd', 'cmdAkinatorGuess', Math.floor(akiAPI.progress), answer.name);
 					await Utils.downloadFile(answer.absolute_picture_path, path).then(() => {
 						api.sendMessage(
 							{ body, attachment: fs.createReadStream(path) },
@@ -137,7 +138,10 @@ module.exports.handleEvent = async function ({ api, event, Utils }) {
 						);
 					});
 				} else {
-					await sendOtherQuestion(data).catch(console.error);
+					if (client_ans == 0) {
+						await akiAPI.back();
+					}
+					await sendOtherQuestion(akiAPI).catch(console.error);
 				}
 			}
 		} else {
@@ -151,14 +155,17 @@ module.exports.handleEvent = async function ({ api, event, Utils }) {
 		}
 	}
 	
-	async function sendOtherQuestion(data) {
-		const question = await Utils.fancyFont.get(`Q${data.akiAPI.currentStep + 1}. ${data.akiAPI.question}`, 1);
+	
+	
+	async function sendOtherQuestion(akiAPI) {
+		const question = await Utils.fancyFont.get(`Q${akiAPI.currentStep + 1}. ${akiAPI.question}`, 1);
 		api.sendMessage(
 			Utils.textFormat('cmd', 'cmdAkinatorQuestion', question),
 			threadID,
 			(err) => {
 				if (!err) {
 					userMAP[mappingID].expiration = 120;
+					userMAP[mappingID].akiAPI = akiAPI;
 				}
 			},
 			messageID
