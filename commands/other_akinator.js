@@ -73,7 +73,7 @@ module.exports.run = async function ({ api, event, Utils }) {
 			threadID,
 			(err) => {
 				if (!err) {
-					userMAP[mappingID] = { akiAPI, expiration, botGuessed }
+					userMAP[mappingID] = { threadID, akiAPI, expiration, botGuessed }
 				}
 			},
 			messageID
@@ -98,11 +98,11 @@ module.exports.handleEvent = async function ({ api, event, Utils }) {
 			
 			// If bot already have a guess
 			if (data.botGuessed) {
-				if (client_answer == 0) {
+				if (response == 'yes') {
 					delete userMAP[mappingID];
 					api.sendMessage('Great! I guessed correctly. I love playing with you!', data.threadID, data.messageID);
 				} else {
-					await data.akiAPI.back();
+					userMAP[mappingID].botGuessed = false;
 					await sendOtherQuestion(data).catch(console.error);
 				}
 			} else {
