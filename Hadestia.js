@@ -445,8 +445,8 @@ async function onBot({ models: botModel }) {
 		}
 	
 		// AUTO RESTART 
-		if (global.HADESTIA_BOT_CONFIG.autoRestart && global.HADESTIA_BOT_CONFIG.autoRestart.status) {
-			cron.schedule (`0 0 */${global.HADESTIA_BOT_CONFIG.autoRestart.every} * * *`, async () => {
+		/*if (global.HADESTIA_BOT_CONFIG.autoRestart && global.HADESTIA_BOT_CONFIG.autoRestart.status) {
+			cron.schedule (`0 0 (asterisk)/${global.HADESTIA_BOT_CONFIG.autoRestart.every} * * *`, async () => {
 				const time_now = gmt.tz('Asia/Manila').format('HH:mm:ss');
 				for (const admin of botAdmins) {
 	  	  		await loginApiData.sendMessage(textFormat('system', 'botLogRestart', time_now), admin);
@@ -456,7 +456,7 @@ async function onBot({ models: botModel }) {
 				scheduled: true,
 				timezone: "Asia/Manila"
 			});
-		}
+		}*/
 		
 		/*
 		cron.schedule('0 5 6 * * *', () => {
