@@ -124,7 +124,7 @@ module.exports.handleEvent = async function ({ api, event, Utils }) {
 					await akiAPI.win(); 
 					const answer = akiAPI.answers[0];
 					const path = `${Utils.ROOT_PATH}/cache/akinator_${mappingID}_${Date.now()}.jpg`;
-					const body = Utils.textFormat('cmd', 'cmdAkinatorGuess', Math.floor(akiAPI.progress), await Utils.fancyFont.get(answer.name, 1);
+					const body = Utils.textFormat('cmd', 'cmdAkinatorGuess', Math.floor(akiAPI.progress), await Utils.fancyFont.get(answer.name, 1));
 					await Utils.downloadFile(answer.absolute_picture_path, path).then(() => {
 						api.sendMessage(
 							{ body, attachment: fs.createReadStream(path) },

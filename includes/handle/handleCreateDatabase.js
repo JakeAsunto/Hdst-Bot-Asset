@@ -57,8 +57,10 @@ async function handleUserData({ UserData, userID, databaseSystem, economySystem,
 	const random = job[Math.floor(Math.random() * job.length)];
     const random1 = job[Math.floor(Math.random() * job.length)];
     const random2 = job[Math.floor(Math.random() * job.length)];
+    
+    const info = await Users.getInfo(userID) || {};
 
-	const userName = await Users.getNameUser(userID);
+	const userName = info.name || await Users.getNameUser(userID);
     const credentials = (UserData) ? UserData : {};
     const data = new Object(credentials.data || {});
     let changesCount = 0;
