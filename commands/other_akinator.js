@@ -104,7 +104,6 @@ module.exports.handleEvent = async function ({ api, event, Utils }) {
 					return api.sendMessage('Great! I guessed correctly. I love playing with you!', data.threadID, data.messageID);
 				} else {
 					userMAP[mappingID].botGuessed = false;
-					await akiAPI.back();
 					await sendOtherQuestion(akiAPI).catch(console.error);
 				}
 			} else {
@@ -138,9 +137,6 @@ module.exports.handleEvent = async function ({ api, event, Utils }) {
 						);
 					});
 				} else {
-					if (client_ans == 0) {
-						await akiAPI.back();
-					}
 					await sendOtherQuestion(akiAPI).catch(console.error);
 				}
 			}
