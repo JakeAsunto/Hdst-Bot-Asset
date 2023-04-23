@@ -36,7 +36,7 @@ module.exports.run = async function ({ api, args, event, Utils }) {
 					{ 'role': 'user', 'content': `${args.join(' ')}` }
 				],
 				'temperature': 0
-			})
+			}
 		}
 	).then((res) => {
 		api.sendMessage(
