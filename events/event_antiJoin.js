@@ -31,13 +31,9 @@ module.exports.run = async function ({ event, api, Utils, Threads, Users }) {
 		
 			const memJoin = event.logMessageData.addedParticipants || [];
 			
-			for (const user of memJoin) {
-				global.HADESTIA_BOT_DATA.preventWelcomeMessage.set(`${event.threadID}-${user.userFbId}`, true);
-			}
-			
 			// send a warning messages
 			api.sendMessage(
-				Utils.textFormat('error', 'errWarning', 'Anti-Join mode was active, all newly added members will be removed.'),
+				Utils.textFormat('error', 'errWarning', 'Anti-Join mode was active, all newly added members will be removed and welcome messages will be disable.'),
 				event.threadID,
 				async (err, info) => {
 					Utils.autoUnsend(err, info);

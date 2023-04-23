@@ -5,7 +5,7 @@
         "https://facebook.com/mensaherong.iantot",
         "This repository was linked to bot assets repository of Hadestia that include assets auto updater."
     ],
-    "VERSION": "6.11.92",
+    "VERSION": "6.11.93",
     "CHANGELOGS": "- Fix not sending group notif for admin or group name change.\n- Prevent welcome message when group anti-join was enable.",
     "PRIORITY": {
         "fileTree.js": {

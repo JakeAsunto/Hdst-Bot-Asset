@@ -18,18 +18,14 @@ module.exports.config = {
 	}
 };
 
-module.exports.run = async function({ api, event, Utils }) {
+module.exports.run = async function({ api, event, Utils, Threads }) {
 
 	//const { Readable } = require('stream');
 	const { threadID, logMessageData } = event;
 	const addedMember = logMessageData.addedParticipants || [];
+	const { data } = await Threads.getData(threadID) || { data: {} };
 	// do not send a notif if bot was part of an added members OR if anti-join was enable
-	if (addedMember.some(i => i.userFbId == global.botUserID || global.HADESTIA_BOT_DATA.preventWelcomeMessage.has(`${threadID}-${i.userFbId}`))) {
-		for (const user of addedMember) {
-			if (global.HADESTIA_BOT_DATA.preventWelcomeMessage.has(`${threadID}-${user.userFbId}`)) {
-				global.HADESTIA_BOT_DATA.preventWelcomeMessage.delete(`${threadID}-${user.userFbId}`)
-			}
-		}
+	if (addedMember.some(i => i.userFbId == global.botUserID) || data.antijoin){
 		return;
 	}
 
