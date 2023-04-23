@@ -22,12 +22,17 @@ module.exports.run = async function({ api, event, Utils }) {
 
 	//const { Readable } = require('stream');
 	const { threadID, logMessageData } = event;
-	const addedMember = logMessageData.addedParticipants;
-	// do not send a notif if bot was part of an added members
-	if (addedMember.some(i => i.userFbId == global.botUserID)) return;
-	
-	//if (threadID !== '5742405099128283') return;
-	
+	const addedMember = logMessageData.addedParticipants || [];
+	// do not send a notif if bot was part of an added members OR if anti-join was enable
+	if (addedMember.some(i => i.userFbId == global.botUserID || global.HADESTIA_BOT_DATA.preventWelcomeMessage.has(`${threadID}-${i.userFbId}`))) {
+		for (const user of addedMember) {
+			if (global.HADESTIA_BOT_DATA.preventWelcomeMessage.has(`${threadID}-${user.userFbId}`)) {
+				global.HADESTIA_BOT_DATA.preventWelcomeMessage.delete(`${threadID}-${user.userFbId}`)
+			}
+		}
+		return;
+	}
+
 	const CACHE = `${Utils.ROOT_PATH}/cache`;
 	
 	// thread info
@@ -42,6 +47,7 @@ module.exports.run = async function({ api, event, Utils }) {
 	const path = require('path');
 	const fs = require('fs-extra');
 
+	
 	
 	if (addedMember.length > 1) {
 		try {

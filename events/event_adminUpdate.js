@@ -17,7 +17,7 @@ module.exports.run = async function ({ event, api, Utils, Threads, Users }) {
 	const threadData = await Threads.getData(threadID);
     const data = threadData.data;
     
-    if (!data.adminUpdate) return;
+    //if (!data.adminUpdate) return;
 
     try {
     	

@@ -73,6 +73,8 @@ global.HADESTIA_BOT_DATA = new Object({
 	
 	language: new Object(),
 	
+	preventWelcomeMessage: new Map(), // if anti-join was enabled
+	
 	updatedThreadDatabase: new Map()
 	
 });

@@ -30,19 +30,31 @@ module.exports.run = async function ({ event, api, Utils, Threads, Users }) {
 			}
 		
 			const memJoin = event.logMessageData.addedParticipants || [];
-			// send a warning messages
-			api.sendMessage(Utils.textFormat('error', 'errWarning', 'Anti-Join mode was active, all newly added members will be removed.'), event.threadID, Utils.autoUnsend);
 			
-			for (let user of memJoin) {
-				await new Promise(resolve => setTimeout(resolve, 1000));
-				api.removeUserFromGroup(
-					user.userFbId,
-					event.threadID,
-					async function (err) {
-						if (err) return api.sendMessage(Utils.textFormat('group', 'groupAntiJoinError'), event.threadID, ()=>{});
-					}
-				);
+			for (const user of memJoin) {
+				global.HADESTIA_BOT_DATA.preventWelcomeMessage.set(`${event.threadID}-${user.userFbId}`, true);
 			}
+			
+			// send a warning messages
+			api.sendMessage(
+				Utils.textFormat('error', 'errWarning', 'Anti-Join mode was active, all newly added members will be removed.'),
+				event.threadID,
+				(err, info) => {
+					Utils.autoUnsend(err, info);
+					for (let user of memJoin) {
+						api.removeUserFromGroup(
+							user.userFbId,
+							event.threadID,
+							async function (err) {
+								if (err) {
+									return api.sendMessage(Utils.textFormat('group', 'groupAntiJoinError'), event.threadID, ()=>{});
+								}
+							}
+						);
+						await new Promise(resolve => setTimeout(resolve, 1000));
+					}
+				}
+			);
 			
 		} else {
 			return api.sendMessage(

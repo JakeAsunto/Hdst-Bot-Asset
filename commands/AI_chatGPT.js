@@ -2,7 +2,7 @@ module.exports.config = {
     name: 'open-ai',
     version: '2.0.0',
     hasPermssion: 0,
-    credits: '© to rest API owner',
+    credits: 'Hadestia, OpenAI',
     description: 'An Artificial Intelligence from Open AI.',
     commandCategory: 'artificial_intellegence',
     usages: '<prompt>',

@@ -5,8 +5,8 @@
         "https://facebook.com/mensaherong.iantot",
         "This repository was linked to bot assets repository of Hadestia that include assets auto updater."
     ],
-    "VERSION": "6.11.91",
-    "CHANGELOGS": "- Changes in API for couple matching photo command. (Expect more couple DPs results)\n- Re-add chatGPT AI.\n- Move bot auto restart function to listen.js\n\n● Bot version was currently set to `Beta` due to major changes.",
+    "VERSION": "6.11.92",
+    "CHANGELOGS": "- Fix not sending group notif for admin or group name change.\n- Prevent welcome message when group anti-join was enable.",
     "PRIORITY": {
         "fileTree.js": {
             "path": "scripts/"
