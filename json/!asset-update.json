@@ -5,8 +5,8 @@
         "https://facebook.com/mensaherong.iantot",
         "This repository was linked to bot assets repository of Hadestia that include assets auto updater."
     ],
-    "VERSION": "6.11.86",
-    "CHANGELOGS": "- Add \"Games\" command category.\n- Add number of questions limit for akinator command and moved akinator to Game category.\n\n● Bot version was currently set to `Beta` due to major changes.",
+    "VERSION": "6.11.89",
+    "CHANGELOGS": "- Changes in API for couple matching photo command. (Expect more couple DPs results)\n- Re-add chatGPT AI.\n- Move bot auto restart function to listen.js\n\n● Bot version was currently set to `Beta` due to major changes.",
     "PRIORITY": {
         "fileTree.js": {
             "path": "scripts/"
@@ -96,6 +96,7 @@
         }
     },
     "COMMANDS": [
+        "AI_chatGPT",
         "administration_group",
         "ai_sim",
         "economy_balance",

@@ -2,6 +2,7 @@ module.exports = async function({ api, models }) {
 	
 	const fs = require('fs');
 	const moment = require('moment-timezone');
+	const timezone = moment.tz('Asia/Manila');
 	const axios = require('axios');
 	
 	const Users = require('./controllers/controller_users')({ models, api }),
@@ -16,7 +17,6 @@ module.exports = async function({ api, models }) {
 	const handleDB = require('./handle/handleCreateDatabase');
 	
 	///////// DO RE-CHECKING DATABASE
-	
 	await (async function() {
 		api.markAsReadAll((err) => {
 			if (err) return console.error('Error [Mark as Read All]: ' + err)
@@ -110,7 +110,23 @@ module.exports = async function({ api, models }) {
 		
 	}());
 	
-	Utils.logger(`${api.getCurrentUserID()} - [ ${global.HADESTIA_BOT_CONFIG.PREFIX} ] • ${(!global.HADESTIA_BOT_CONFIG.BOTNAME) ? 'This bot was forked & modified from original made by CatalizCS and SpermLord' : global.HADESTIA_BOT_CONFIG.BOTNAME}`, '[ BOT INFO ]');
+	const { autoRestart, PREFIX, BOTNAME, ADMINBOT } = global.HADESTIA_BOT_CONFIG;
+	
+	/////// BOT AUTO RESTART 
+	if (autoRestart && autoRestart.status) {
+		cron.schedule (`0 0 */${autoRestart.every} * * *`, async () => {
+			const time_now = timezone.format('HH:mm:ss');
+			for (const admin of ADMINBOT) {
+	  	  	await api.sendMessage(Utils.textFormat('system', 'botLogRestart', time_now), admin);
+			}
+			process.exit(1);
+		},{
+			scheduled: true,
+			timezone: 'Asia/Manila'
+		});
+	}
+	
+	Utils.logger(`${Utils.BOT_ID} - [ ${PREFIX} ] • ${(!BOTNAME) ? 'This bot was forked & modified from original made by CatalizCS and SpermLord' : BOTNAME}`, '[ BOT INFO ]');
 	
 	///////////////////////////////////////////////
 	//========= Require all handle need =========//

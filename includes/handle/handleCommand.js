@@ -151,7 +151,8 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
 		var requiredArgs = (command.config.envConfig) ? command.config.envConfig.requiredArgument || 0 : 0;
 		
 		let is_admin_group;
-		let is_admin_bot = ADMINBOT.includes(senderID.toString());
+		let is_admin_bot = ADMINBOT.includes(String(senderID));
+		let is_bot_owner = ADMINBOT[0] == String(senderID);
 		try {
 			is_admin_group = (event.isGroup) ? threadInfo.adminIDs.find(el => el.id == senderID) : false;
 		} catch (err) {
@@ -174,6 +175,8 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
 			eligible = (is_admin_bot || is_admin_group) ? true : false;
 		} else if (cmdPerm == 0) {
 			eligible = true;
+		} else if (cmdPerm == -1) {
+			eligible = is_bot_owner && true;
 		}
 		
 		if (args.length < requiredArgs) {

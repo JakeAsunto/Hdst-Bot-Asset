@@ -2,7 +2,7 @@ module.exports.config = {
     name: 'couple-dp',
     version: '4.3.7',
     hasPermssion: 0,
-    credits: 'Rest API by John A.',
+    credits: '© to rest API owner',
     description: 'Returns a random avatar matching photos.',
     commandCategory: 'media',
     usages: '',
@@ -21,10 +21,10 @@ module.exports.run = async function ({ api, event, Utils }) {
 	const fs = require('fs-extra');
 	
 	Utils.sendReaction.inprocess(api, event);
-	await axios.get('https://tanjiro-api.onrender.com/cdp?&api_key=tanjiro').then(async (res) => {
+	await axios.get('https://api.zahwazein.xyz/randomanime/couples?apikey=0ddb753564b9').then(async (res) => {
 		
 		const attch = [];
-		const { male, female } = res.data;
+		const { male, female } = res.data.result;
 		const malePath = `${Utils.ROOT_PATH}/cache/req-cdp${senderID}_male.png`;
 		const femalePath = `${Utils.ROOT_PATH}/cache/req-cdp${senderID}_female.png`;
 		

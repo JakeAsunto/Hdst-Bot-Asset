@@ -425,17 +425,8 @@ async function onBot({ models: botModel }) {
 			logger(getText('mirai', 'warningSourceCode'), '[ GLOBAL BAN ]');
 		}
 		
-        global.HADESTIA_BOT_CLIENT.api = loginApiData
-
-		//////////// SAVE BOT USER ///////////
-		const botUserID = loginApiData.getCurrentUserID();
-		const thisBot = await loginApiData.getUserInfoV2(botUserID);
-		global.botUserID = botUserID;
-		global.botName = thisBot.name || 'Alyanna Rousseao';
-		
 		const gmt = require('moment-timezone');
 		const momentt = gmt.tz('Asia/Manila');
-    	const day = momentt.day();
 		const time = momentt.format('HH:mm:ss');
 		
 		// notify every admin
@@ -443,32 +434,6 @@ async function onBot({ models: botModel }) {
 		for (const admin of botAdmins) {
     		loginApiData.sendMessage(textFormat('system', 'botLogActivate', time), admin);
 		}
-	
-		// AUTO RESTART 
-		/*if (global.HADESTIA_BOT_CONFIG.autoRestart && global.HADESTIA_BOT_CONFIG.autoRestart.status) {
-			cron.schedule (`0 0 (asterisk)/${global.HADESTIA_BOT_CONFIG.autoRestart.every} * * *`, async () => {
-				const time_now = gmt.tz('Asia/Manila').format('HH:mm:ss');
-				for (const admin of botAdmins) {
-	  	  		await loginApiData.sendMessage(textFormat('system', 'botLogRestart', time_now), admin);
-				}
-				process.exit(1);
-			},{
-				scheduled: true,
-				timezone: "Asia/Manila"
-			});
-		}*/
-		
-		/*
-		cron.schedule('0 5 6 * * *', () => {
-			loginApiData.getThreadList(30, null, ["INBOX"], (err, list) => {
-				if (err) return console.log("ERR: "+err);
-				list.forEach(now => (now.isGroup == true && now.threadID != list.threadID) ? loginApiData.sendMessage("Good Morning everyone! let's eat breakfast", now.threadID) : '');
-			});
-		},{
-			scheduled: true,
-			timezone: "Asia/Manila"
-		});
-		*/
 		
 		// auto accept pending message requests
 		/*setInterval(function() {
