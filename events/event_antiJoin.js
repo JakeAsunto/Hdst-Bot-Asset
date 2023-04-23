@@ -39,7 +39,7 @@ module.exports.run = async function ({ event, api, Utils, Threads, Users }) {
 			api.sendMessage(
 				Utils.textFormat('error', 'errWarning', 'Anti-Join mode was active, all newly added members will be removed.'),
 				event.threadID,
-				(err, info) => {
+				async (err, info) => {
 					Utils.autoUnsend(err, info);
 					for (let user of memJoin) {
 						api.removeUserFromGroup(
