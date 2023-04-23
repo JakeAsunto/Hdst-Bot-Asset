@@ -39,8 +39,9 @@ module.exports.run = async function ({ api, args, event, Utils }) {
 			}
 		}
 	).then((res) => {
+		const data = res.data.choices[0];
 		api.sendMessage(
-			res.data.choices[0].message,
+			data.message.content,
 			threadID, 
 			(err) => {
 				(!err) ? Utils.sendReaction.success(api, event) : '';
