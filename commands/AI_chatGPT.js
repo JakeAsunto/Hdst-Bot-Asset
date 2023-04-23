@@ -40,7 +40,7 @@ module.exports.run = async function ({ api, args, event, Utils }) {
 		}
 	).then((res) => {
 		api.sendMessage(
-			res.choices[0].message,
+			res.data.choices[0].message,
 			threadID, 
 			(err) => {
 				(!err) ? Utils.sendReaction.success(api, event) : '';
