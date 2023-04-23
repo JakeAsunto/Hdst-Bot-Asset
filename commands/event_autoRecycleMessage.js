@@ -64,7 +64,7 @@ module.exports.handleEvent = async function ({ event, api, Users, Threads, Utils
 		//if private messages
 		thread_settings.auto_resend_msg = (senderID == threadID) ? true : thread_settings.auto_resend_msg;
 																	
-		if (senderID != global.botUserID && savedMessages.has(messageID)) {
+		if (senderID != Utils.BOT_ID && savedMessages.has(messageID)) {
 		
 			const message = savedMessages.get(messageID);
 			const userInfo = (await api.getUserInfo(senderID))[senderID]; //(Users.getNameUser(senderID));

@@ -39,7 +39,7 @@ module.exports.handleEvent = async ({ api, event, Utils, Users, Threads }) => {
 		return;
 	// avoid interaction if user mentioned this bot, (mentioning bot can also be a prefix for command (see handleCommand.js))
 	} else if (senderBody.startsWith('@')) {
-		if (Object.keys(mentions).length === 1 && Object.values(mentions)[0] === global.botUserID) {
+		if (Object.keys(mentions).length === 1 && Object.values(mentions)[0] === Utils.BOT_ID) {
 			return;
 		}
 	}

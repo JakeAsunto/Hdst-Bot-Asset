@@ -38,7 +38,7 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
 		}
 		
 		// ## HANDLE BOT PREFIX ## //
-		const botMent = (mentions && Object.keys(mentions).length > 0 && Object.keys(mentions)[0] == global.botUserID) ? (Object.values(mentions)[0]).replace('@', '') : global.botUserID;
+		const botMent = (mentions && Object.keys(mentions).length > 0 && Object.keys(mentions)[0] == Utils.BOT_ID) ? (Object.values(mentions)[0]).replace('@', '') : Utils.BOT_ID;
 		let PREFIX_FINAL = (threadSetting.hasOwnProperty('PREFIX')) ? threadSetting.PREFIX : PREFIX;
         const prefixRegex = new RegExp(`^(<@!?${senderID}>|\@${botMent}|${escapeRegex(PREFIX_FINAL)})\\s*`);
         
@@ -79,8 +79,8 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
 		const args = body.slice(matchedPrefix.length).trim().split(/\s+/);
 		
 		//delete the mention about this bot if user used mentioning this bot as prefix
-		if (Object.keys(mentions).length >= 1 && Object.keys(mentions)[0] === global.botUserID) {
-			delete event.mentions[global.botUserID];
+		if (Object.keys(mentions).length >= 1 && Object.keys(mentions)[0] === Utils.BOT_ID) {
+			delete event.mentions[Utils.BOT_ID];
 		}
 		
 		// send under maintenance response

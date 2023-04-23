@@ -32,14 +32,14 @@ async function simsimi(a, b, c) {
     }
 }
 
-module.exports.handleEvent = async function ({ api, event }) {
+module.exports.handleEvent = async function ({ api, event, Utils }) {
 	
     const { threadID, messageID, senderID, body } = event;
 	const send = (text) => api.sendMessage(text, threadID, messageID);
 	
     if (HDST_BOT_SIMISIMI.has(threadID)) {
     	
-        if (senderID == global.botUserID || body == '' || messageID == HDST_BOT_SIMISIMI.get(threadID)) return;
+        if (senderID == Utils.BOT_ID || body == '' || messageID == HDST_BOT_SIMISIMI.get(threadID)) return;
         
         var { data, error } = await simsimi(body, api, event);
         return !0 == error ? void 0 : !1 == data.success ? send(data.error) : send(data.success)

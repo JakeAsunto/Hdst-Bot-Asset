@@ -15,7 +15,6 @@ module.exports.handleMessageReply = async function ({ api, event, Utils }) {
 	if (!['unsend', 'unsent', 'remove', 'delete'].includes(event.body.toLowerCase())) return;
 	
 	const eligible = await Utils.hasPermission(event.senderID, event.threadID, this.config.hasPermssion);
-	console.log(eligible);
 	if (eligible) {
 		this.run({ api, event, Utils });
 	}
@@ -30,7 +29,7 @@ module.exports.run = function({ api, event, Utils }) {
 		return api.sendMessage(Utils.textFormat('system', 'botUnsentMissingReply'), event.threadID, event.messageID);
 	}
 	
-	if (event.messageReply.senderID != global.botUserID) {
+	if (event.messageReply.senderID != Utils.BOT_ID) {
 		Utils.sendReaction.failed(api, event);
 		return api.sendMessage(Utils.textFormat('system', 'botCantUnsent'), event.threadID, event.messageID);
 	}
