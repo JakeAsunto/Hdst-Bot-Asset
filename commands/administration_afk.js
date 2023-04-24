@@ -61,7 +61,7 @@ module.exports.handleEvent = async function ({ api, event, Utils, Users, Threads
 					const ago_text = await Utils.fancyFont.get(`${when} ago`, 6);
 					
 					api.sendMessage(
-						`${await Utils.fancyFont.get(name, 1)} is AFK: ${data.message} - ${ago_text}.`,
+						`${await Utils.fancyFont.get(name, 1)} is AFK:\n ${data.message} - ${ago_text}.`,
 						threadID,
 						Utils.autoUnsend,
 						messageID
