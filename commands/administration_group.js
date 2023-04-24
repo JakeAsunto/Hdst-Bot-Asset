@@ -85,7 +85,34 @@ module.exports.run = async function ({ api, args, alias, event, returns, Utils, 
 		
 		// group settings (SEE GROUP SETTINGS)
 		case 'settings':
+			const databaseConfig = require(`${Utils.ROOT_PATH}/json/databaseConfig.json`);
+			let settings_body = '';
+			// group settings
+			for (const setting_name in GROUP_DATA) {
+				const value_type = typeof(GROUP_DATA[setting_name]);
+				if (databaseConfig.all_settings_name[setting_name] && value_type == 'boolean') {
+					const data_name = databaseConfig.all_settings_name[setting_name];
+					const value = (GROUP_DATA[setting_name]) ? Utils.textFormat('reaction', 'execSuccess') : Utils.textFormat('reaction', 'execFailed');
+					settings_body += `[${value}] : ${await Utils.fancyFont.get(data_name, 1)}\n`;
+				}
+			}
 			
+			const bannedCommands = (GROUP_DATA.bannedCommands.length > 0) ? ` -•${await GROUP_DATA.bannedCommands.join('\n -• ')}` : '<no banned commands found>';
+			
+			api.sendMessage(
+				Utils.textFormat(
+					'group', 'groupViewInfoSettings',
+					threadInfo.adminIDs.length,
+					threadInfo.participantIDs.length,
+					(threadInfo.approvalMode) ? 'On' : 'Off',
+					threadInfo.messageCount,
+					settings_body,
+					bannedCommands
+				),
+				threadID,
+				() => {},
+				messageID
+			);
 			break;
 			
 		// anti out state

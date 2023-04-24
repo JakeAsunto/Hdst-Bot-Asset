@@ -183,7 +183,8 @@
         "groupCmdGroupInvalidAdminState": "🔴 Invalid syntax, specify what you want to do with this/these user(s).\nUse:\n[ add | promote ] to add user as admin.\n[ remove | demote ] to remove user as admin.",
         "groupCmdGroupInvalidCommandType": "🔴 Invalid command type.\n● accepted option :\n%1",
         "groupCmdGroupAdminNoParam": "🔴 Mention or Reply to the person you want to apply the changes with.",
-        "groupCmdAddInvalidSyntax": "🔴 Invalid syntax. No parameters given.\n● usage: %1group add [ user id | (user ids sperated with space) | (reply message) ]"
+        "groupCmdAddInvalidSyntax": "🔴 Invalid syntax. No parameters given.\n● usage: %1group add [ user id | (user ids sperated with space) | (reply message) ]",
+        "groupViewInfoSettings": "✦ 𝗚𝗥𝗢𝗨𝗣 𝗜𝗡𝗙𝗢𝗥𝗠𝗔𝗧𝗜𝗢𝗡\n────────────────────\n𝙰𝚍𝚖𝚒𝚗𝚜: %1\n𝙼𝚎𝚖𝚋𝚎𝚛𝚜: %2\n\n𝙼𝚎𝚖𝚋𝚎𝚛 𝚊𝚙𝚙𝚛𝚘𝚟𝚊𝚕: %3\n𝙾𝚟𝚎𝚛𝚊𝚕𝚕 𝚖𝚎𝚜𝚜𝚊𝚐𝚎: %4\n\n✦ 𝗚𝗥𝗢𝗨𝗣 𝗦𝗘𝗧𝗧𝗜𝗡𝗚𝗦\n────────────────────\n%5\n\n● 𝗕𝗮𝗻𝗻𝗲𝗱 𝗰𝗼𝗺𝗺𝗮𝗻𝗱𝘀:\n%6"
     },
     "canvas": {
         "fbcoverFillOutForm": "● 𝙁𝙖𝙘𝙚𝙗𝙤𝙤𝙠 𝘾𝙤𝙫𝙚𝙧 𝙁𝙤𝙧𝙢\n━━━━━━━━━━━━━━━━━━━━\ncolor:\nname:\nsubname:\n\nemail:\naddress:\ncontact no.:\n────────────────────\n✱ Kindly copy and fill out this form. Don't change anything on the form just fill out. Once you're done, 𝗦𝗘𝗡𝗗 the form to process your request. :)"
