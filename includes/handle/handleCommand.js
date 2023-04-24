@@ -74,7 +74,7 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
                 }
             }
         }
-        
+        //commandName
         const [matchedPrefix] = body.match(prefixRegex);
         const userWholeInput = body.slice(matchedPrefix.length).trim();
 		const args = userWholeInput.split(/\s+/);
@@ -97,6 +97,8 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
         commandName = (args.length > 1 && args[0] === '') ? args[1] : args.shift().toLowerCase();
 		
         let command = (commandAliases.has(commandName)) ? commands.get(commandAliases.get(commandName)) : commands.get(commandName);
+        // Absolute User Input
+		const absolute_userInput = userWholeInput.slice(commandName.length).trim();
 
         if (!command && allowCommandSimilarity) {
 			var allCommandName = [];
@@ -286,7 +288,7 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
 
             Obj.models = models;
             
-            Obj.body = userWholeInput;
+            Obj.body = absolute_userInput;
             
             Obj.Utils = Utils;
 
