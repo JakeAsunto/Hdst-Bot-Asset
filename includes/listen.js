@@ -2,7 +2,6 @@ module.exports = async function({ api, models }) {
 	
 	const fs = require('fs');
 	const moment = require('moment-timezone');
-	const timezone = moment.tz('Asia/Manila');
 	const cron = require('node-cron');
 	const axios = require('axios');
 	
@@ -116,6 +115,7 @@ module.exports = async function({ api, models }) {
 	/////// BOT AUTO RESTART 
 	if (autoRestart && autoRestart.status) {
 		cron.schedule (`0 0 */${autoRestart.every} * * *`, async () => {
+			const timezone = moment.tz('Asia/Manila');
 			const time_now = timezone.format('HH:mm:ss');
 			for (const admin of ADMINBOT) {
 	  	  	await api.sendMessage(Utils.textFormat('system', 'botLogRestart', time_now), admin);
