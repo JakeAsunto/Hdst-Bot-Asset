@@ -33,7 +33,7 @@ module.exports.run = async function ({ api, args, event, body, Utils, Threads })
 	await Threads.setData(threadID, { afk });
 }
 
-module.exports.handleEvent = async function ({ api, event, Utils, Threads }) {
+module.exports.handleEvent = async function ({ api, event, Utils, Users, Threads }) {
 	
 	const { senderID, threadID, messageID } = event;
 	const { afk } = await Threads.getData(threadID);
