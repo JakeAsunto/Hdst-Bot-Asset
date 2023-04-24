@@ -13,10 +13,11 @@ module.exports.config = {
 
 module.exports.run = async function ({ event, api, Utils, Threads, Users }) {
 	
+	console.log(event);
 	const threadData = await Threads.getData(event.threadID);
 	const threadInfo = await Threads.getInfo(event.threadID);
 	const data = threadData.data;
-
+	
 	// Ignore members added by group/bot admin.
 	const referr_by_admin = await Utils.hasPermission(event.author, event.threadID, 3, threadInfo);
 	if (referr_by_admin) return;

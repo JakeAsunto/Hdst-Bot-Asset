@@ -5,7 +5,7 @@
         "https://facebook.com/mensaherong.iantot",
         "This repository was linked to bot assets repository of Hadestia that include assets auto updater."
     ],
-    "VERSION": "6.11.97",
+    "VERSION": "6.11.98",
     "CHANGELOGS": "- Update command info when using help to become more readable\n- Update anti-join ignores members added by bot and group administrators.\n- Update join-notif welcome members added by bot and group administrators while anti-join was enable.",
     "PRIORITY": {
         "fileTree.js": {

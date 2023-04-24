@@ -23,14 +23,13 @@ module.exports.run = async function({ api, event, Utils, Threads }) {
 	//const { Readable } = require('stream');
 	const { threadID, author, logMessageData } = event;
 	const addedMember = logMessageData.addedParticipants || [];
-	const { data } = await Threads.getData(threadID) || { data: {} };
+	const { data } = await Threads.getData(threadID);
 	
 	// do not send a notif if bot was part of an added members OR if anti-join was enable
 	// Welcome members added by group/bot admin. even anti-join was enable
 	const referr_by_admin = await Utils.hasPermission(author, threadID, 3);
-	if (addedMember.some(i => i.userFbId == Utils.BOT_ID) || (data.antijoin && !referr_by_admin)){
-		return;
-	}
+	if (addedMember.some(i => i.userFbId == Utils.BOT_ID)) return;
+	if (data.antijoin && !referr_by_admin) return;
 
 	const CACHE = `${Utils.ROOT_PATH}/cache`;
 	
