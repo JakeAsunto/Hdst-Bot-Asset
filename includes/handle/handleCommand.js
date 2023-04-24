@@ -76,7 +76,8 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
         }
         
         const [matchedPrefix] = body.match(prefixRegex);
-		const args = body.slice(matchedPrefix.length).trim().split(/\s+/);
+        const userWholeInput = body.slice(matchedPrefix.length).trim();
+		const args = userWholeInput.split(/\s+/);
 		
 		//delete the mention about this bot if user used mentioning this bot as prefix
 		if (Object.keys(mentions).length >= 1 && Object.keys(mentions)[0] === Utils.BOT_ID) {
@@ -278,12 +279,14 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
             const Obj = {};
 
             Obj.api = api;
+            
+            Obj.args = args;
 
             Obj.event = event;
 
-            Obj.args = args;
-
             Obj.models = models;
+            
+            Obj.body = userWholeInput;
             
             Obj.Utils = Utils;
 

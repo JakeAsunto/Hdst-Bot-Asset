@@ -5,8 +5,8 @@
         "https://facebook.com/mensaherong.iantot",
         "This repository was linked to bot assets repository of Hadestia that include assets auto updater."
     ],
-    "VERSION": "6.11.100",
-    "CHANGELOGS": "- Add 'settings' attributes for group command for viewing (only) group settings",
+    "VERSION": "6.12.1",
+    "CHANGELOGS": "- Add 'settings' attributes for group command for viewing (only) group settings\n- Add afk command.\n- Moved economy command to \"administration\" category",
     "PRIORITY": {
         "fileTree.js": {
             "path": "scripts/"
@@ -97,6 +97,8 @@
     },
     "COMMANDS": [
         "AI_chatGPT",
+        "administration_afk",
+        "administration_economyMain",
         "administration_group",
         "ai_sim",
         "economy_balance",
@@ -104,7 +106,6 @@
         "economy_deposit",
         "economy_give",
         "economy_leaderboard",
-        "economy_main",
         "economy_withdraw",
         "economy_work",
         "edited-img_avatar",
