@@ -121,7 +121,7 @@ module.exports.run = async function({ api, event, args, Utils, Prefix }) {
 				const permssion = Utils.textFormat('system', `perm${command.config.hasPermssion || 0}`);
 				const commandUsage = `${Prefix}${command.config.name} ${command.config.usages || ''}`;
 				const cooldown = (command.config.cooldowns && command.config.cooldowns > 1) ? `${command.config.cooldowns} seconds` : 'no cooldown';
-				const commandReplyUsage = (command.config.replyUsages) ? `\n● reply usage:\n${command.config.replyUsages}` : '';
+				const commandReplyUsage = (command.config.replyUsages) ? `\n\n${await Utils.fancyFont.get('● reply usage:', 1)}\n\`${command.config.replyUsages}\`` : '';
 				const commandName = await Utils.fancyFont.get(command.config.name, 1);
 	
 				const messageBody = Utils.textFormat(

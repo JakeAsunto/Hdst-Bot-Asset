@@ -17,7 +17,12 @@ module.exports.run = async function ({ event, api, Utils, Threads, Users }) {
 	const threadInfo = await Threads.getInfo(event.threadID);
 	const data = threadData.data;
 
-	const isThisBot = event.logMessageData.addedParticipants.some(i => i.userFbId === api.getCurrentUserID());
+	// Ignore members added by group/bot admin.
+	const referr_by_admin = await Utils.hasPermission(event.author, event.threadID, 3, threadInfo);
+	if (referr_by_admin) return;
+
+	const memJoin = event.logMessageData.addedParticipants || [];
+	const isThisBot = memJoin.some(i => i.userFbId === Utils.BOT_ID);
 	if (data.antijoin && !isThisBot) {
 		
 		if (threadInfo) {
@@ -28,8 +33,6 @@ module.exports.run = async function ({ event, api, Utils, Threads, Users }) {
 					event.threadID
 				);
 			}
-		
-			const memJoin = event.logMessageData.addedParticipants || [];
 			
 			// send a warning messages
 			api.sendMessage(

@@ -21,11 +21,14 @@ module.exports.config = {
 module.exports.run = async function({ api, event, Utils, Threads }) {
 
 	//const { Readable } = require('stream');
-	const { threadID, logMessageData } = event;
+	const { threadID, author, logMessageData } = event;
 	const addedMember = logMessageData.addedParticipants || [];
 	const { data } = await Threads.getData(threadID) || { data: {} };
+	
 	// do not send a notif if bot was part of an added members OR if anti-join was enable
-	if (addedMember.some(i => i.userFbId == global.botUserID) || data.antijoin){
+	// Welcome members added by group/bot admin. even anti-join was enable
+	const referr_by_admin = await Utils.hasPermission(author, threadID, 3);
+	if (addedMember.some(i => i.userFbId == Utils.BOT_ID) || (data.antijoin && !referr_by_admin)){
 		return;
 	}
 

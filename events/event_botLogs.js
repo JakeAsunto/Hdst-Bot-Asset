@@ -34,7 +34,6 @@ module.exports.run = async function({ api, event, Utils, Users, Threads, Banned 
         		const oldInfo = threadData.threadInfo;
 				
       	      action = `Update the group name from '${oldInfo.threadName}' to '${threadInfo.threadName}'`;
-   	         await Threads.setData(threadID, { threadInfo });
    
 				const ban = await Banned.getData(threadID);
 				if (ban) {
@@ -62,6 +61,13 @@ module.exports.run = async function({ api, event, Utils, Users, Threads, Banned 
         
     	        break;
   	  }
+  
+		// UPDATE Thread Info
+		const updatedData = {}
+		updatedData.threadName = threadInfo.threadName;
+		updatedData.adminIDs = threadInfo.adminIDs;
+		updatedData.nicknames = threadInfo.nicknames;
+    	await Threads.setData(threadID, { threadInfo: updatedData });
     
  	   if (action) {
   	  	const messageBody = Utils.textFormat('events', 'eventBotLogs', date, threadID, threadInfo.threadName, threadInfo.participantIDs.length, action, res.name || author, author);

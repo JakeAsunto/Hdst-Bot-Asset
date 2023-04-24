@@ -5,8 +5,8 @@
         "https://facebook.com/mensaherong.iantot",
         "This repository was linked to bot assets repository of Hadestia that include assets auto updater."
     ],
-    "VERSION": "6.11.94",
-    "CHANGELOGS": "- Fix unsent command.",
+    "VERSION": "6.11.97",
+    "CHANGELOGS": "- Update command info when using help to become more readable\n- Update anti-join ignores members added by bot and group administrators.\n- Update join-notif welcome members added by bot and group administrators while anti-join was enable.",
     "PRIORITY": {
         "fileTree.js": {
             "path": "scripts/"
@@ -144,7 +144,7 @@
         "system_shell"
     ],
     "EVENTS": [
-        "event_adminUpdate",
+        "event_groupUpdate",
         "event_antiChange",
         "event_antiJoin",
         "event_antiOut",

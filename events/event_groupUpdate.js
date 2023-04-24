@@ -1,5 +1,5 @@
 module.exports.config = {
-	name: 'adminUpdate',
+	name: 'groupUpdate',
 	eventType: ['log:thread-admins','log:thread-name', 'log:user-nickname','log:thread-icon','log:thread-color'],
 	version: '1.0.1',
 	credits: 'Mirai Team',
@@ -11,7 +11,6 @@ module.exports.config = {
 
 module.exports.run = async function ({ event, api, Utils, Threads, Users }) {
 	
-	const fs = require('fs');
     const { threadID, logMessageType, logMessageData } = event;
 
 	const threadData = await Threads.getData(threadID);
@@ -50,10 +49,10 @@ module.exports.run = async function ({ event, api, Utils, Threads, Users }) {
                 break;
 
             case 'log:thread-name':
-            
-                dataThread.threadName = event.logMessageData.name || 'No name';
+            	// Group name DB update happens in event_botLogs to log group name change to admin
+                const name = event.logMessageData.name || 'No name';
 				api.sendMessage(
-					Utils.textFormat('group', 'groupGroupUpdateGroupName', dataThread.threadName),
+					Utils.textFormat('group', 'groupGroupUpdateGroupName', name),
 					threadID
                 );
                 break;

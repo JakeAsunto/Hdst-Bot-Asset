@@ -22,7 +22,7 @@ const validTypes = [
 	'anti-change',
 	'anti-join',
 	'anti-out',
-	'setting',
+	'settings',
 	'prefix',
 	'admin',
 	'name',
@@ -85,7 +85,7 @@ module.exports.run = async function ({ api, args, alias, event, returns, Utils, 
 		
 		// group settings (SEE GROUP SETTINGS)
 		case 'settings':
-		
+			
 			break;
 			
 		// anti out state
