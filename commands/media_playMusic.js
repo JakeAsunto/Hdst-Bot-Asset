@@ -162,7 +162,7 @@ function handleDownloadError(err, api, threadID, messageID, Utils) {
 	} else if (err == 'live-stream') {
 		send('Cannot process "LIVE" video.');
 	} else if (err == 'long-music') {
-		send('Cannot process long music above 12 minutes.');
+		send('Cannot process music longer than 12 minutes.');
 	} else {
 		send(err);
 	}

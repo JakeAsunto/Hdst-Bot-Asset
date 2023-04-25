@@ -4,7 +4,7 @@ module.exports.config = {
 	hasPermssion: 3,
 	commandCategory: 'administration',
 	description: 'Sets specific type for a group/thread',
-	usages: '< prefix | name | admin | bot-updates | auto-response | auto-resend | anti-change | anti-join | anti-out > [ ... ]',
+	usages: '< info | prefix | name | admin | bot-updates | auto-response | auto-resend | anti-change | anti-join | anti-out > [ ... ]',
 	credits: 'Hadestia',
 	cooldowns: 10,
 	aliases: [ 'group' ],
@@ -22,10 +22,10 @@ const validTypes = [
 	'anti-change',
 	'anti-join',
 	'anti-out',
-	'settings',
 	'prefix',
 	'admin',
 	'name',
+	'info',
 	'add'
 ];
 
@@ -84,7 +84,7 @@ module.exports.run = async function ({ api, args, alias, event, returns, Utils, 
 			break;
 		
 		// group settings (SEE GROUP SETTINGS)
-		case 'settings':
+		case 'info':
 			const databaseConfig = require(`${Utils.ROOT_PATH}/json/databaseConfig.json`);
 			let settings_body = '';
 			// group settings
@@ -97,13 +97,14 @@ module.exports.run = async function ({ api, args, alias, event, returns, Utils, 
 				}
 			}
 			
-			const bannedCommands = (GROUP_DATA.bannedCommands.length > 0) ? ` -•${await GROUP_DATA.bannedCommands.join('\n -• ')}` : '<no banned commands found>';
+			const bannedCommands = (GROUP_DATA.bannedCommands.length > 0) ? ` -•${await GROUP_DATA.bannedCommands.join('\n -• ')}` : await Utils.fancyFont.get('<no banned commands found>', 6);
 			
 			api.sendMessage(
 				Utils.textFormat(
 					'group', 'groupViewInfoSettings',
 					threadInfo.adminIDs.length,
 					threadInfo.participantIDs.length,
+					GROUP_DATA.PREFIX || global.HADESTIA_BOT_CONFIG.PREFIX,
 					(threadInfo.approvalMode) ? 'On' : 'Off',
 					threadInfo.messageCount,
 					settings_body,
