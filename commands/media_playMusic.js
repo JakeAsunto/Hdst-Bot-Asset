@@ -9,7 +9,9 @@ module.exports.config = {
 	replyUsages: '<number(index/position)>',
 	cooldowns: 60,
 	dependencies: {
-		'fs-extra': ''
+		'fs-extra': '',
+		'youtube-search-api': '',
+		'ytdl-core': ''
 	},
 	envConfig: {
 		requiredArgument: 1,
@@ -17,33 +19,109 @@ module.exports.config = {
 	}
 }
 
-module.exports.run = async function ({ api, event, args, returns, Utils }) {
+module.exports.handleReply = async function ({ api, event, returns, handleReply, Utils }) {
+	
+    const { body, threadID, messageID, senderID } = event;
+    const { createReadStream, unlinkSync, statSync } = require('fs-extra');
+    let selection = body.match(/\d+/g);
+    
+    if (!selection || Math.abs(parseInt(selection[0])) < 1 || Math.abs(parseInt(selection[0])) > (handleReply.results).length) return returns.invalid_reply_syntax();
+    
+    selection = Math.abs(parseInt(selection[0]));
+    
+    try {
+    	const directory = `${__dirname}/../../cache/`;
+        const path = `${directory}req_${senderID}`;
+        await downloadMusic('https://www.youtube.com/watch?v=' + handleReply.results[selection - 1], path).then((data) => {
+        	api.sendMessage(
+				{ 
+					body: Utils.textFormat('cmd', 'cmdPlayMusicSuccess', data.title),
+					attachment: createReadStream(data.path)
+				},
+				threadID,
+				(e) => {
+					if (!e) {
+						Utils.sendReaction.success(api, { messageID: handleReply.requestMsgID });
+						Utils.sendReaction.success(api, event);
+					}
+					try { return unlinkSync(data.path) } catch (e) {}
+				},
+				handleReply.requestMsgID
+			);
+			returns.delete_data();
+    	}).catch((err) => {
+    		handleDownloadError(err, api, threadID, messageID, Utils);
+    		Utils.sendReaction.failed(api, { messageID: handleReply.requestMsgID });
+			Utils.sendReaction.failed(api, event);
+    		return returns.delete_data();
+    	});
+    } catch (e) {
+		console.log(e);
+    	Utils.sendReaction.failed(api, { messageID: handleReply.requestMsgID });
+		Utils.logModuleErrorToAdmin(e, __filename, event);
+		return api.sendMessage(global.textFormat('error', 'errCmdExceptionError', e, global.HADESTIA_BOT_CONFIG.PREFIX), threadID, messageID);
+    }
+}
 
+module.exports.run = async function ({ api, args, event, returns, Utils, Prefix }) {
+	
 	const { threadID, messageID, senderID } = event;
-	const Innertube = require('youtubei.js');
+    const fs = require('fs-extra');
 	
-	const youtube = await new Innertube();
-	const { videos: result } = await youtube.search(args.join(' '));
+	const song = args.join(' ');
+	const directory = `${__dirname}/../../cache/`;
 	
-	if (result.length > 0 ) {
-		let msg = '', num = 0;
-		const link = [];
-		
-		for (const item of result) {
-			num += 1;
-			if (num < 6) {
-				link.push({
-					id: item.id,
-					title: item.title
-				});
-				msg += `${Utils.textFormat('cmd', 'cmdPlayMusicSearchResultItemFormat', num, item.title)}\n`;
-			} else {
-				break;
-			}
+	Utils.sendReaction.custom(api, event, '🔍');
+	// handle search via link
+	if (song.indexOf('https://') !== -1) {
+		try {
+			const path = `${directory}req_${senderID}`;
+			await downloadMusic(song, path).then((data) => {
+				return api.sendMessage(
+					{ 
+						body: Utils.textFormat('cmd', 'cmdPlayMusicSuccess', data.title),
+						attachment: fs.createReadStream(data.path)
+					},
+					threadID,
+					(e) => {
+						if (!e) {
+							Utils.sendReaction.success(api, event);
+							return fs.unlinkSync(data.path);
+						}
+					},
+					messageID
+				);
+			}).catch((err) => {
+				handleDownloadError(err, api, threadID, messageID, Utils);
+				Utils.sendReaction.failed(api, event);
+				returns.remove_usercooldown();
+			});
+					
+		} catch (err_link_req) {
+			console.log(err_link_req);
+			Utils.sendReaction.success(api, event);
+			Utils.sendRequestError(err_link_req, event, Prefix);
+			return Utils.logModuleErrorToAdmin(err_link_req, __filename, event);
 		}
-		
+		return;
+	}
+			
+	// handle via search manually
+	try {
+		const link = [];
+		let msg = '', num = 0;
+
+		const Youtube = require('youtube-search-api');
+		const data = (await Youtube.GetListByKeyword(song, false, 6)).items;
+				
+		for (const value of data) {
+			link.push(value.id);
+			num += 1;
+			msg += `${Utils.textFormat('cmd', 'cmdPlayMusicSearchResultItemFormat', num, value.title)}\n`;
+		}
+				
 		const messageBody = Utils.textFormat('cmd', 'cmdPlayMusicSearchResultFormat', msg);
-		
+				
 		return api.sendMessage(
 			messageBody,
 			threadID,
@@ -56,94 +134,92 @@ module.exports.run = async function ({ api, event, args, returns, Utils }) {
 					requestMsgID: messageID,
 					author: senderID,
 					results: link,
-					timeout: Date.now() + 20000,
-					youtube,
+					timeout: Date.now() + 20000
 				});
 			},
 			messageID
 		);
-		
-	} else {
-		
+	} catch (api_second_error_manual_search) {
+		console.log(api_second_error_manual_search)
+		Utils.sendReaction.failed(api, event);
+		Utils.sendRequestError(api_second_error_manual_search, event, Prefix)
+		return Utils.logModuleErrorToAdmin(api_second_error_manual_search, __filename, event);
 	}
 }
 
-module.exports.handleReply = async function ({ api, event, returns, handleReply, Utils }) {
+function handleDownloadError(err, api, threadID, messageID, Utils) {
+	
+	const send = (e) => {
+		api.sendMessage(Utils.textFormat('error', 'errOccured', e), threadID, messageID);
+	}
+	
+	if (err == 'oversize-file') {
+		send(Utils.textFormat('cmd', 'cmdPlayMusicFileWasBig', 8));
+	} else if (err == 'no-videoid') {
+		send('No video ID found on the request.');
+	} else if (err == 'invalid-url') {
+		send('Invalid YouTube link URL.');
+	} else if (err == 'live-stream') {
+		send('Cannot process "LIVE" video.');
+	} else if (err == 'long-music') {
+		send('Cannot process long music above 12 minutes.');
+	} else {
+		send(err);
+	}
+	return;
+}
+
+async function downloadMusic(link, path) {
 
 	const fs = require('fs-extra');
-	const { body, threadID, messageID, senderID } = event;
-	let selection = body.match(/\d+/g);
-    
-    if (!selection || parseInt(selection[0]) < 1 || parseInt(selection[0]) > (handleReply.results).length) {
-		return returns.invalid_reply_syntax();
-	}
-    
-    selection = Math.abs(parseInt(selection[0]));
-    const pathName = `${Utils.ROOT_PATH}/cache/music-${await Utils.randomString(16)}.mp3`;
-
-	function unlink() {
-		try { fs.unlinkSync(pathName); } catch (e) {};
-	}
+	const ytdl = require('ytdl-core');
 	
-    /*let timeleft = 5;
-    var downloadTimer = setInterval(function(){
-		if(timeleft <= 0){
-			clearInterval(downloadTimer);
-			api.sendMessage(Utils.textFormat('error', 'errOccured', 'File was too big.'), threadID, messageID);
-		}
-        timeleft -= 1;
-    }, 1000);*/
-    
-    const youtube = handleReply.youtube;
-    
-    const request = handleReply.results[selection - 1];
-    const stream = youtube.download(request.id, {
-		format: 'mp4',
-		type: 'audio',
-		audioQuality: 'lowest',
-		loudnessDB: '20',
-		audioBitrate: '320',
-		fps: '30'
-	});
-	
-	stream.pipe(fs.createWriteStream(pathName));
-	
-	stream.on('start', function () {
-		Utils.logger(`CMD: MUSIC: Downloading ${request.id}`, 'cache');
-	});
-	
-	stream.on('end', function () {
-		api.sendMessage(
-			{ 
-				body: Utils.textFormat('cmd', 'cmdPlayMusicSuccess', request.title),
-				attachment: fs.createReadStream(pathName)
-			},
-			threadID,
-			(e) => {
-				if (!e) {
-					Utils.sendReaction.success(api, { messageID: handleReply.requestMsgID });
-					Utils.sendReaction.success(api, event);
-				} else {
-					Utils.sendReaction.failed(api, { messageID: handleReply.requestMsgID });
-					Utils.sendReaction.failed(api, event);
+	return new Promise(async function (resolve, reject) {
+		try {
+			if (!ytdl.validateURL(link)) {
+				return reject('invalid-url');
+			}
+			
+			let videoID = ytdl.getURLVideoID(link);
+			
+			if (!videoID) {
+				reject('no-videoid');
+			}
+			
+			await ytdl.getInfo(videoID).then((info) => {
+				
+				if (info.live_playback) {
+					reject('live-stream');
 				}
-				unlink();
-			},
-			handleReply.requestMsgID
-		);
-		returns.delete_data();
-	});
-	
-	stream.on('error', function () {
-		
-		Utils.sendReaction.failed(api, { messageID: handleReply.requestMsgID });
-		Utils.sendReaction.failed(api, event);
-		api.sendMessage(
-			Utils.textFormat('error', 'errProcessUnable'),
-			threadID,
-			handleReply.requestMsgID
-		);
-		returns.delete_data();
-		unlink();
+				
+				if (Number(info.videoDetails.lengthSeconds) > 720) {
+					reject('long-music');
+				}
+				
+				const final_path = `${path}${videoID}.mp3`;
+				const stream = ytdl.downloadFromInfo(info, { quality: 'lowestaudio' }).pipe(fs.createWriteStream(final_path));
+				
+				stream.on('close', function () {
+					let result = {
+						title: info.videoDetails.title,
+						dur: Number(info.videoDetails.lengthSeconds),
+						viewCount: info.videoDetails.viewCount,
+						likes: info.videoDetails.likes,
+						author: info.videoDetails.author.name,
+						path: final_path
+					}
+					resolve(result);
+				});
+				
+				stream.on('error', function (err) {
+					reject(err);
+				});
+				
+			}).catch((err) => {
+				reject(err);
+			});
+		} catch(err) {
+			reject(err);
+		}
 	});
 }

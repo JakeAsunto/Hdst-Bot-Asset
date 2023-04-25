@@ -4,8 +4,8 @@ module.exports.config = {
 	credits: 'Hadestia',
 	hasPermssion: 2,
 	usages: '< group | user >',
-	replyUsages: '< c | cancel > < all | position | [positions] >\n< a | accept > < all | position | [positions] >',
-	description: 'Manage bot\'s pending messages',
+	replyUsages: '< c | cancel > < all | index | [indexes] >\n< a | accept > < all | index | [indexes] >',
+	description: 'Manage bot\'s pending messages.',
 	commandCategory: 'ownership',
 	cooldowns: 0,
 	envConfig: {

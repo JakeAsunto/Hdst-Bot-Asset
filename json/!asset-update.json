@@ -5,8 +5,8 @@
         "https://facebook.com/mensaherong.iantot",
         "This repository was linked to bot assets repository of Hadestia that include assets auto updater."
     ],
-    "VERSION": "6.12.3",
-    "CHANGELOGS": "- Fix absolute user input from the body.\n\n- Add 'settings' attributes for group command for viewing (only) group settings\n- Add afk command.\n- Moved economy command to \"administration\" category",
+    "VERSION": "6.12.4",
+    "CHANGELOGS": "- Use much reliable package for downloading musics.",
     "PRIORITY": {
         "fileTree.js": {
             "path": "scripts/"

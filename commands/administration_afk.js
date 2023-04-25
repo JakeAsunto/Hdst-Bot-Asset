@@ -4,7 +4,7 @@ module.exports.config = {
 	hasPermssion: 0,
 	cooldowns: 60,
 	usages: '<message>',
-	description: 'Set an AFK message will be displayed when someone mentioned you. AFK will automatically remove once you send any message.',
+	description: 'Set an AFK message (on this group only) will be displayed when someone mentioned you. AFK will automatically remove once you send any message.',
 	commandCategory: 'administration',
 	credits: 'Hadestia',
 	envConfig: {
@@ -19,18 +19,30 @@ module.exports.run = async function ({ api, args, event, body, Utils, Threads })
 	const { senderID, threadID, messageID } = event;
 	const { afk } = await Threads.getData(threadID);
 	
-	afk[senderID] = {
-		message: body,
-		timestamp: Date.now()
+	if (!afk[senderID]){
+		afk[senderID] = {
+			message: body,
+			timestamp: Date.now()
+		}
+	
+		api.sendMessage(
+			`I set your AFK: ${body}.`,
+			threadID,
+			() => {
+				Utils.sendReaction.success(api, event);
+			}
+			messageID
+		)
+		await Threads.setData(threadID, { afk });
+		
+	} else {
+		Utils.sendReaction.failed(api, event);
+		api.sendMessage(
+			Utils.textFormat('error', 'errOccured', 'You seemed like you have previous afk message.'),
+			threadID,
+			messageID
+		);
 	}
-	
-	api.sendMessage(
-		`I set your AFK: ${body}.`,
-		threadID,
-		messageID
-	)
-	
-	await Threads.setData(threadID, { afk });
 }
 
 module.exports.handleEvent = async function ({ api, event, Utils, Users, Threads }) {
