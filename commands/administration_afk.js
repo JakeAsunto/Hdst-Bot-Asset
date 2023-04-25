@@ -30,7 +30,7 @@ module.exports.run = async function ({ api, args, event, body, Utils, Threads })
 			threadID,
 			() => {
 				Utils.sendReaction.success(api, event);
-			}
+			},
 			messageID
 		)
 		await Threads.setData(threadID, { afk });
