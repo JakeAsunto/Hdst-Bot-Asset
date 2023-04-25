@@ -96,11 +96,11 @@
         }
     },
     "COMMANDS": [
-        "AI_chatGPT",
         "administration_afk",
         "administration_economyMain",
         "administration_group",
         "ai_sim",
+        "ai_chatGPT",
         "economy_balance",
         "economy_beg",
         "economy_deposit",
