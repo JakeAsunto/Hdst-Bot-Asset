@@ -177,7 +177,7 @@ async function downloadMusic(link, path) {
 	return new Promise(async function (resolve, reject) {
 		try {
 			if (!ytdl.validateURL(link)) {
-				return reject('invalid-url');
+				reject('invalid-url');
 			}
 			
 			let videoID = ytdl.getURLVideoID(link);
@@ -215,10 +215,8 @@ async function downloadMusic(link, path) {
 					reject(err);
 				});
 				
-			}).catch((err) => {
-				reject(err);
-			});
-		} catch(err) {
+			}).catch(reject);
+		} catch (err) {
 			reject(err);
 		}
 	});

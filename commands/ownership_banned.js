@@ -141,7 +141,7 @@ module.exports.run = async function ({ api, args, event, Utils, Users, Banned, T
 			}
 			
 			if (!isError && successProcess.length > 0) {
-				api.sendMessage(textFormat('success', 'successfulFormat', `Successfully Banned User(s):\n-${await successProcess.join('\n-')}`), threadID, messageID);
+				api.sendMessage(textFormat('success', 'successfulFormat', `Successfully Banned Group(s):\n-${await successProcess.join('\n-')}`), threadID, messageID);
 			}
 		
 			break;

@@ -5,8 +5,8 @@
         "https://facebook.com/mensaherong.iantot",
         "This repository was linked to bot assets repository of Hadestia that include assets auto updater."
     ],
-    "VERSION": "6.12.5",
-    "CHANGELOGS": "- Change 'settings' attribute for group command to 'info'\n- Use much reliable package for downloading musics.",
+    "VERSION": "6.12.6",
+    "CHANGELOGS": "- Fix missing AI command",
     "PRIORITY": {
         "fileTree.js": {
             "path": "scripts/"
