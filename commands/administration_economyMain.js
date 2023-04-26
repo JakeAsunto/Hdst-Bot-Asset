@@ -3,7 +3,7 @@
 const economySystem = require(`${global.HADESTIA_BOT_CLIENT.mainPath}/json/economySystem.json`);
 
 module.exports.config = {
-	name: 'economy',
+	name: 'economy-settings',
 	version: '1.0.1',
 	hasPermssion: 3,
 	commandCategory: 'administration',
