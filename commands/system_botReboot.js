@@ -17,14 +17,14 @@ module.exports.run = function ({ api, args, event, Utils, Threads }) {
 	
 	const response = Utils.textFormat('system', 'botReboot');
 	
-	async function updateResource(err, info) {
+	async function updateResource(err) {
 		
 		if (err) {
 			Utils.logger(`botReboot.js  ${err}`, 'error');
 			return api.sendMessage(Utils.textFormat('system', 'botRebootError'), threadID, messageID);
 		}
 		
-		const assetSession = await spawn('node', ['--trace-warnings', '--async-stack-traces', `${global.HADESTIA_BOT_CLIENT.mainPath}/scripts/assets.js`], {
+		const assetSession = await spawn('node', ['--trace-warnings', '--async-stack-traces', `${Utils.ROOT_PATH}/scripts/assets.js`], {
 			cwd: __dirname,
 	    	stdio: 'inherit',
 	    	shell: true
@@ -37,12 +37,16 @@ module.exports.run = function ({ api, args, event, Utils, Threads }) {
     	assetSession.on('close', function () {
 			process.exit(1);
 		});
+		
+		return
 	}
 	
 	return api.sendMessage(
 		response,
 		threadID,
-		updateResource,
+		async (err) => {
+			await updateResource(err, info)
+		},
 		messageID
 	);
 }
