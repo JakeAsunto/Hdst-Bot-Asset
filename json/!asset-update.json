@@ -5,7 +5,7 @@
         "https://facebook.com/mensaherong.iantot",
         "This repository was linked to bot assets repository of Hadestia that include assets auto updater."
     ],
-    "VERSION": "6.12.6",
+    "VERSION": "6.12.7",
     "CHANGELOGS": "- Fix missing AI command",
     "PRIORITY": {
         "fileTree.js": {
