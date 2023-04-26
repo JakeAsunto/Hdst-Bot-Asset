@@ -1,6 +1,6 @@
 module.exports.config = {
 	name: 'flip',
-	version: '1.0.0',
+	version: '1.0.4',
 	hasPermssion: 0,
 	commandCategory: 'gambling',
 	credits: 'Hadestia',
@@ -31,9 +31,11 @@ module.exports.run = async function ({ api, args, event, Utils, Threads }) {
 	const userMoney = economy[senderID].hand
 	
 	if (!bet) return err('Invalid amount of bet, Bet must be a number ranges 100 - 5000.');
-	if (userMoney < this.config.gamble.min_bet) return api.sendMessage(Utils.textFormat('gamblingSystem', 'errNotEnoughBet', `${data.default_currency}${this.config.gamble.min_bet}.`), threadID, messageID);
-	if (userMoney > this.config.gamble.max_bet) return api.sendMessage(Utils.textFormat('gamblingSystem', 'errExceedBet', `${data.default_currency}${this.config.gamble.max_bet}.`), threadID, messageID);
-	if (!['heads', 'tails'].includes(place)) return err(Utils.textFormat('error', 'errOccured', 'Invalid place of bet. only accept: `heads` or `tails`.'));
+	if (bet < this.config.gamble.min_bet) { return api.sendMessage(Utils.textFormat('gamblingSystem', 'errNotEnoughBet', `${data.default_currency}${this.config.gamble.min_bet}.`), threadID, messageID); }
+	if (bet > this.config.gamble.max_bet) { return api.sendMessage(Utils.textFormat('gamblingSystem', 'errExceedBet', `${data.default_currency}${this.config.gamble.max_bet}.`), threadID, messageID); }
+	if (userMoney < bet) { return err(`You only have ${data.default_currency}${userMoney.toLocaleString('en-US')} on hand for this bet.`); }
+	
+	if (!['heads', 'tails'].includes(place)) { return err(Utils.textFormat('error', 'errOccured', 'Invalid place of bet. only accept: `heads` or `tails`.')); }
 	
 	const outcome = Math.floor(Math.random() * 2);
 	
