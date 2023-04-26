@@ -192,13 +192,15 @@
     "economy": {
         "cmdBalance": "%1\n────────────────────\n𝚕𝚎𝚊𝚍𝚎𝚛𝚋𝚘𝚊𝚛𝚍 𝚛𝚊𝚗𝚔: %2\n\n𝗖𝗮𝘀𝗵:\n%3%4\n\n𝗕𝗮𝗻𝗸:\n%3%5\n\n𝗧𝗼𝘁𝗮𝗹:\n%3%6",
         "cmdLeaderboard": "𝗚𝗿𝗼𝘂𝗽 %1 𝗟𝗲𝗮𝗱𝗲𝗿𝗯𝗼𝗮𝗿𝗱\n━━━━━━━━━━━━━━━━━━━━\n%2\n𝚈𝚘𝚞𝚛 𝚕𝚎𝚊𝚍𝚎𝚛𝚋𝚘𝚊𝚛𝚍 𝚛𝚊𝚗𝚔: %3\npage %4/%5",
-        "viewEcoSettings": "𝗚𝗿𝗼𝘂𝗽 𝗘𝗰𝗼𝗻𝗼𝗺𝘆 𝗦𝗲𝘁𝘁𝗶𝗻𝗴𝘀\n━━━━━━━━━━━━━━━━━━━━\n%1"
+        "viewEcoSettings": "𝗚𝗿𝗼𝘂𝗽 𝗘𝗰𝗼𝗻𝗼𝗺𝘆 𝗦𝗲𝘁𝘁𝗶𝗻𝗴𝘀\n━━━━━━━━━━━━━━━━━━━━\n%1",
+        "noHandMoney": "🔴 You currently have %1%2 on your hand."
     },
     "discord": {
         "embedFormat": "{\n  \"content\": null,\n  \"embeds\": [\n    {\n      \"description\": \"\",\n      \"color\": 14291731,\n      \"url\": \"https://facebook.com\",\n      \"fields\": [\n        {\n          \"name\": \"User ID\",\n          \"value\": \"${user_id}\",\n          \"inline\": true\n        },\n        {\n          \"name\": \"Username\",\n          \"value\": \"${user_username}\",\n          \"inline\": true\n        },\n        {\n          \"name\": \"Group ID\",\n          \"value\": \"${group_id}\",\n          \"inline\": true\n        },\n        {\n          \"name\": \"Group name:\",\n          \"value\": \"${group_name}\",\n          \"inline\": true\n        }\n      ],\n      \"author\": {\n        \"name\": \"${user_name}\",\n        \"url\": \"${user_link}\",\n        \"icon_url\": \"${user_avatar}\"\n      },\n      \"footer\": {\n        \"text\": \"HadestiaBot: hadestia © 2022\"\n      },\n      \"timestamp\": \"${date}\",\n      \"image\": {}\n    }\n  ],\n  \"attachments\": []\n}"
     },
     "gamblingSystem": {
         "errNotEnoughBet": "🔴 Not enough amount of bet, the minimum bet for this game was %1",
+        "errExceedBet": "🔴 The maximum amount of bet for this game was %1",
         "errInvalidAmountOfBet": "🔴 Invalid amount of bet, bet cannot be a blank or 0.",
         "slotItems": [
             "🍇",
@@ -221,7 +223,8 @@
             "yellow": "🟡",
             "blue": "🔵",
             "purple": "🟣"
-        }
+        },
+        "normalResult": "𝗥𝗲𝘀𝘂𝗹𝘁: %1\n%2"
     },
     "banned": {
         "bannedNoticeMessage": "𝗕𝗮𝗻 𝗡𝗼𝘁𝗶𝗰𝗲\n━━━━━━━━━━━━━━━━━━━━\n%1\n%2",

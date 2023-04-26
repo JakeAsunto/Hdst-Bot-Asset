@@ -19,8 +19,6 @@ module.exports.config = {
 
 module.exports.run = async function ({ api, args, event, returns, Utils, Prefix, Threads }) {
 	
-	const economySystem = require(`${Utils.ROOT_PATH}/json/economySystem.json`);
-
 	const { threadID, messageID, senderID } = event;
 	const dateNow = Date.now();
 	
@@ -29,15 +27,15 @@ module.exports.run = async function ({ api, args, event, returns, Utils, Prefix,
 		const economy = threadData.economy;
 		const inventory = threadData.inventory;
 		
-		const expirationTime = (threadData.data.work_cooldown || economySystem.config.work_cooldown); // 20 minutes default
+		const expirationTime = (threadData.data.work_cooldown || Utils.economySystem.config.work_cooldown); // 20 minutes default
 
 		if (dateNow < economy[senderID].work_cooldown) {
 			return returns.user_in_cooldown(economy[senderID].work_cooldown, dateNow);
 		}
 		
-		const currency = threadData.data.default_currency || economySystem.config.default_currency;
-		const minWage = threadData.data.work_min_wage || economySystem.config.work_min_wage || 500;
-		const maxWage = threadData.data.work_max_wage || economySystem.config.work_max_wage || 1000;
+		const currency = threadData.data.default_currency || Utils.economySystem.config.default_currency;
+		const minWage = threadData.data.work_min_wage || Utils.economySystem.config.work_min_wage || 500;
+		const maxWage = threadData.data.work_max_wage || Utils.economySystem.config.work_max_wage || 1000;
 	
 		const randomSalary = Math.floor(Math.random() * (maxWage - minWage + 1)) + minWage;
 	
@@ -47,7 +45,7 @@ module.exports.run = async function ({ api, args, event, returns, Utils, Prefix,
 		await Threads.setData(threadID, { economy });
 		
 		const formatSalary = randomSalary.toLocaleString('en-US');
-		const messageResponse = (economySystem.workResponse[Math.floor(Math.random() * (economySystem.workResponse).length)]).replace('${salary}', `${currency}${formatSalary}`);
+		const messageResponse = (Utils.economySystem.workResponse[Math.floor(Math.random() * (Utils.economySystem.workResponse).length)]).replace('${salary}', `${currency}${formatSalary}`);
 		
 		return api.sendMessage( messageResponse, threadID, messageID);
 		

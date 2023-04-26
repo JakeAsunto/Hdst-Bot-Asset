@@ -7,6 +7,8 @@ module.exports = async function ({ api, Users, Banned, Threads }) {
 		editGif = require('../utils/editGif.js'),
 		logger = require('../utils/log.js');
 	
+	const databaseSystem = require('../json/databaseConfig.json'),
+		economySystem = require('../json/economySystem.json');
 	
 	const Utils = {};
 	
@@ -19,12 +21,30 @@ module.exports = async function ({ api, Users, Banned, Threads }) {
 	// FUNCTIONS...
 	for (const func in util) Utils[func] = util[func];
 	
+	Utils.databaseSystem = databaseSystem;
+	Utils.economySystem = economySystem;
 	Utils.sendReaction = sendReaction;
 	Utils.textFormat = textFormat;
 	Utils.fancyFont = fancyFont;
 	Utils.editGif = editGif;
 	Utils.logger = logger;
 	
+	
+	Utils.initBotJoin = async function (threadID) {
+		api.changeNickname(
+			Utils.textFormat('system', 'botNicknameSetup', global.HADESTIA_BOT_CONFIG.PREFIX, await Utils.fancyFont.get(`${(Utils.BOT_FULLNAME.split(' '))[0]} Bot`, 1)),
+			threadID,
+			Utils.BOT_ID
+		);
+		
+		const messageBody = `${Utils.textFormat('events', 'eventBotJoinedConnected', global.HADESTIA_BOT_CONFIG.BOTNAME, global.HADESTIA_BOT_CONFIG.PREFIX)}\n\n${Utils.textFormat('cmd', 'cmdHelpUsageSyntax', global.HADESTIA_BOT_CONFIG.PREFIX, Utils.BOT_FULLNAME)}`;
+		// send a startup mesaage
+		return api.sendMessage(
+			messageBody,
+			threadID,
+			Utils.autoUnsend
+		);
+	}
 	
 	Utils.sendRequestError = async function (err, event, prefix) {
 		api.sendMessage(Utils.textFormat('error', 'errCmdExceptionError', err.message, prefix), event.threadID, ()=>{}, event.messageID);

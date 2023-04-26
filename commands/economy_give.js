@@ -20,15 +20,13 @@ module.exports.config = {
 
 module.exports.run = async function ({ api, args, event, returns, Utils, Prefix, Threads }) {
 
-	const economySystem = require(`${Utils.ROOT_PATH}/json/economySystem.json`);
-
 	const { threadID, messageID, senderID } = event;
 	
 	try {
 		const threadData = await Threads.getData(threadID);
 		const economy = threadData.economy;
 		
-		const currency = threadData.data.default_currency || economySystem.config.default_currency;
+		const currency = threadData.data.default_currency || Utils.economySystem.config.default_currency;
 		
 		let ID, NAME;
 		let amount = (args.join(' ').toLowerCase()).match(/\d+|all/g);
@@ -50,7 +48,7 @@ module.exports.run = async function ({ api, args, event, returns, Utils, Prefix,
 		// if 0 or not enough
 		if (amount == 0 || economy[senderID].hand < amount) {
 			returns.remove_usercooldown();
-			return api.sendMessage(Utils.textFormat('error', 'errOccured', `You currently have ${currency}${(economy[senderID].hand).toLocaleString('en-US')} on your hand, withdraw some.`), threadID, Utils.autoUnsend, messageID);
+			return api.sendMessage(Utils.textFormat('economy', 'noHandMoney', currency, (economy[senderID].hand).toLocaleString('en-US')), threadID, Utils.autoUnsend, messageID);
 		}
 		
 		// get names

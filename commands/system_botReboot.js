@@ -45,7 +45,7 @@ module.exports.run = function ({ api, args, event, Utils, Threads }) {
 		response,
 		threadID,
 		async (err) => {
-			await updateResource(err, info)
+			await updateResource(err);
 		},
 		messageID
 	);

@@ -20,7 +20,6 @@ module.exports.config = {
 
 module.exports.run = async function ({ api, args, event, returns, Utils, Prefix, Threads }) {
 
-	const economySystem = require(`${Utils.ROOT_PATH}/json/economySystem.json`);
 	const { threadID, messageID, senderID } = event;
 	
 	try {
@@ -29,10 +28,10 @@ module.exports.run = async function ({ api, args, event, returns, Utils, Prefix,
 		const economy = threadData.economy;
 		
 		if (!economy[senderID]) {
-			economy[senderID] = economySystem.userConfig;
+			economy[senderID] = Utils.economySystem.userConfig;
 		}
 		
-		const currency = threadData.data.default_currency || economySystem.config.default_currency;
+		const currency = threadData.data.default_currency || Utils.economySystem.config.default_currency;
 		const moneyOnBank = economy[senderID].bank;
 		const moneyOnBankText = (moneyOnBank).toLocaleString('en-US');
 

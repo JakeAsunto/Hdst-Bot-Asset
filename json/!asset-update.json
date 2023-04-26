@@ -5,8 +5,8 @@
         "https://facebook.com/mensaherong.iantot",
         "This repository was linked to bot assets repository of Hadestia that include assets auto updater."
     ],
-    "VERSION": "6.12.7",
-    "CHANGELOGS": "- Fix missing AI command",
+    "VERSION": "6.13.0",
+    "CHANGELOGS": "- Add flip, exactly similar to \"toss\" command but with the involvement of money.",
     "PRIORITY": {
         "fileTree.js": {
             "path": "scripts/"
@@ -120,6 +120,7 @@
         "event_autoRecycleMessage",
         "event_autoResponse",
         "gambling_slotMachine",
+        "gambling_tossFlipCoin",
         "information_getID",
         "media_coupleDP",
         "media_pinterest",

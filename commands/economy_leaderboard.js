@@ -20,14 +20,13 @@ module.exports.config = {
 
 module.exports.run = async function ({ api, args, event, returns, Utils, Prefix, Users, Threads }) {
 
-	const economySystem = require(`${Utils.ROOT_PATH}/json/economySystem.json`);
 	const { threadID, messageID, senderID } = event;
 	
 	try {
 		const threadData = await Threads.getData(threadID);
 		const economy = threadData.economy;
 	
-		const currency = threadData.data.default_currency || economySystem.config.default_currency;
+		const currency = threadData.data.default_currency || Utils.economySystem.config.default_currency;
 		
 		const body = args.join(' ').toLowerCase();
 		const mode = ((body).match(/-cash|-bank/g)) ? (body).match(/-cash|-bank/g)[0] : '';

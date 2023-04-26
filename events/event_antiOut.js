@@ -17,10 +17,9 @@ module.exports.run = async function ({ event, api, Utils, Threads, Users }) {
 	
 	if (event.logMessageData.leftParticipantFbId == Utils.BOT_ID) {
 		try {
-			// console.log('ANTIOUT: delete group Data');
 			await Threads.delData(event.threadID);
+			return;
 		} catch (e) {}
-		return;
 	}
 	
 	const userID = event.logMessageData.leftParticipantFbId

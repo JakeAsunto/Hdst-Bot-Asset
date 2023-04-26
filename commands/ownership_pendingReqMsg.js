@@ -126,13 +126,13 @@ module.exports.handleReply = async function({ api, event, returns, handleReply, 
     async function connectBot(obj) {
     	const bannedData = await Banned.getData(obj.threadID);
     	if (!bannedData) {
-    		api.sendMessage(`${Utils.textFormat('events', 'eventBotJoinedConnected', global.HADESTIA_BOT_CONFIG.BOTNAME, global.HADESTIA_BOT_CONFIG.PREFIX)}\n\n${Utils.textFormat('cmd', 'cmdHelpUsageSyntax', global.HADESTIA_BOT_CONFIG.PREFIX, Utils.BOT_FULLNAME)}`, obj.threadID, ()=>{} );
+    		Utils.initBotJoin(obj.threadID);
     	} else {
     		const reason = bannedData.data.reason;
     		const date = bannedData.data.dateIssued;
     		await threadIsBanned(obj, reason, date);
     		if (obj.isGroup) {
-				api.removeUserFromGroup(api.getCurrentUserID(), obj.threadID, (e)=>{});
+				api.removeUserFromGroup(Utils.BOT_ID, obj.threadID, (e)=>{});
 				const data = await Threads.getData(obj.threadID);
 				if (data) {
 					await Threads.delData(obj.threadID);
@@ -149,7 +149,7 @@ module.exports.handleReply = async function({ api, event, returns, handleReply, 
     		const date = bannedData.data.dateIssued;
     		await threadIsBanned(obj, reason, date);
     		if (obj.isGroup) {
-				api.removeUserFromGroup(api.getCurrentUserID(), obj.threadID, (e)=>{});
+				api.removeUserFromGroup(Utils.BOT_ID, obj.threadID, (e)=>{});
 				const data = await Threads.getData(obj.threadID);
 				if (data) {
 					await Threads.delData(obj.threadID);
@@ -161,7 +161,7 @@ module.exports.handleReply = async function({ api, event, returns, handleReply, 
 					Utils.textFormat('events', 'eventBotDeclinedGroup'),
 					obj.threadID,
 					(e)=>{
-						api.removeUserFromGroup(api.getCurrentUserID(), obj.threadID, (e)=>{});
+						api.removeUserFromGroup(Utils.BOT_ID, obj.threadID, (e)=>{});
 					}
 				);
     		}

@@ -19,17 +19,15 @@ module.exports.config = {
 
 module.exports.run = async function ({ api, args, event, returns, Utils, Prefix, Threads }) {
 
-	const economySystem = require(`${Utils.ROOT_PATH}/json/economySystem.json`);
-	
 	const { threadID, messageID, senderID } = event;
 	
 	try {
 		const threadData = await Threads.getData(threadID);
 		const economy = threadData.economy;
 		
-		const currency = threadData.data.default_currency || economySystem.config.default_currency;
-		const minWage = economySystem.default.beg_min_salary;
-		const maxWage = economySystem.default.beg_max_salary;
+		const currency = threadData.data.default_currency || Utils.economySystem.config.default_currency;
+		const minWage = Utils.economySystem.default.beg_min_salary;
+		const maxWage = Utils.economySystem.default.beg_max_salary;
 		
 		// if user was in cooldown
 		if (Date.now() < economy[senderID].beg_cooldown) {
@@ -46,11 +44,11 @@ module.exports.run = async function ({ api, args, event, returns, Utils, Prefix,
 		}
 		
 		const randomSalary = Math.floor(Math.random() * (maxWage - minWage + 1)) + minWage;
-		const randomSuccessResponse = (economySystem.begResponseSuccess[Math.floor(Math.random() * (economySystem.begResponseSuccess).length)]).replace('${salary}', `${currency}${randomSalary.toLocaleString('en-US')}`);
-		const randomFailedResponse = economySystem.begResponseFailed[Math.floor(Math.random() * (economySystem.begResponseFailed).length)];
+		const randomSuccessResponse = (Utils.economySystem.begResponseSuccess[Math.floor(Math.random() * (Utils.economySystem.begResponseSuccess).length)]).replace('${salary}', `${currency}${randomSalary.toLocaleString('en-US')}`);
+		const randomFailedResponse = Utils.economySystem.begResponseFailed[Math.floor(Math.random() * (Utils.economySystem.begResponseFailed).length)];
 		
 		// set time for user for his/her next session
-		economy[senderID].beg_cooldown = (Date.now() + economySystem.default.beg_cooldown);
+		economy[senderID].beg_cooldown = (Date.now() + Utils.economySystem.default.beg_cooldown);
 
 		// if user was in debt just a lil consideration will do :)
 		if (economy[senderID].hand < 0) {
@@ -60,7 +58,7 @@ module.exports.run = async function ({ api, args, event, returns, Utils, Prefix,
 			
 		} else {
 			// do the probability
-			if (Math.random() <= economySystem.default.beg_success_rate) {
+			if (Math.random() <= Utils.economySystem.default.beg_success_rate) {
 				
 				economy[senderID].hand += randomSalary;
 				api.sendMessage(randomSuccessResponse, threadID, messageID);

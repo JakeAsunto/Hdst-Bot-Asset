@@ -15,15 +15,6 @@ module.exports.run = async function({ api, event, Utils }) {
 	
 	// If joined user was this bot
 	if (event.logMessageData.addedParticipants.some(i => i.userFbId == Utils.BOT_ID)) {
-		
-		api.changeNickname(Utils.textFormat('system', 'botNicknameSetup', global.HADESTIA_BOT_CONFIG.PREFIX, (!global.HADESTIA_BOT_CONFIG.BOTNAME) ? ' ' : global.HADESTIA_BOT_CONFIG.BOTNAME), threadID, Utils.BOT_ID);
-		
-		const messageBody = `${Utils.textFormat('events', 'eventBotJoinedConnected', global.HADESTIA_BOT_CONFIG.BOTNAME, global.HADESTIA_BOT_CONFIG.PREFIX)}\n\n${Utils.textFormat('cmd', 'cmdHelpUsageSyntax', global.HADESTIA_BOT_CONFIG.PREFIX, Utils.BOT_FULLNAME)}`;
-		// send a startup mesaage
-		return api.sendMessage(
-			messageBody,
-			threadID,
-			Utils.autoUnsend
-		);
+		Utils.initBotJoin(threadID);
 	}
 }

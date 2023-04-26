@@ -298,13 +298,13 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
 
             Obj.Threads = Threads;
             
+            Obj.returns = returns;
+            
             Obj.Prefix = PREFIX_FINAL;
 
             Obj.textFormat = Utils.textFormat;
             
             Obj.logMessageError = logMessageError;
-
-			Obj.returns = returns;
 			
 			Obj.getText = Utils.getModuleText(command, event);
 			

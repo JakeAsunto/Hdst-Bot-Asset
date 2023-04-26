@@ -26,7 +26,7 @@ module.exports.run = async function({ api, event, Threads, Utils }) {
 				if (!threadData || !economy || !inventory) break;
 				
 				for (const user of event.logMessageData.addedParticipants) {
-					if (user.userFbId != global.botUserID) {
+					if (user.userFbId != Utils.BOT_ID) {
 						this.initUserEco({
 							userID: user.userFbId,
 							threadID, Threads, Utils
@@ -35,7 +35,7 @@ module.exports.run = async function({ api, event, Threads, Utils }) {
 				}
 				break;
 			case 'log:unsubscribe':
-				if (event.logMessageData.leftParticipantFbId != global.botUserID) {
+				if (event.logMessageData.leftParticipantFbId != Utils.BOT_ID) {
 					this.delUserEco({
 						userID: event.logMessageData.leftParticipantFbId,
 						threadID, Threads, Utils,

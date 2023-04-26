@@ -19,7 +19,6 @@ module.exports.config = {
 
 module.exports.run = async function ({ api, args, event, returns, Utils, Prefix, Users, Threads }) {
 
-	const economySystem = require(`${Utils.ROOT_PATH}/json/economySystem.json`);
 	const leaderboard = require('./economy_leaderboard.js');
 	
 	const { threadID, messageID, senderID } = event;
@@ -41,14 +40,14 @@ module.exports.run = async function ({ api, args, event, returns, Utils, Prefix,
 		ID = (!ID) ? senderID : ID;
 		
 		if (!economy[ID]) {
-			economy[ID] = economySystem.userConfig;
+			economy[ID] = Utils.economySystem.userConfig;
 			await Threads.setData(threadID, { economy });
 		}
 		
 		// GET CURRENT USER LEADERBOARD POSITION
 		const leaderboards = await leaderboard.sortLeaderboard(ID, economy, '', Users, Utils);
 		
-		const currency = threadData.data.default_currency || economySystem.config.default_currency;
+		const currency = threadData.data.default_currency || Utils.economySystem.config.default_currency;
 	
 		const owner = await api.getUserInfoV2(ID) || {};
 		const ownerName = await Utils.fancyFont.get((NAME && (NAME).split(' ')[0]) || (owner.name) ? (owner.name == 'Facebook User') ? owner.name : (owner.name).split(' ')[0] : 'Facebook User', 1);
