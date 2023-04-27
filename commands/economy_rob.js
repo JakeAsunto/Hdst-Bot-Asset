@@ -13,7 +13,7 @@ module.exports.config = {
 		requiredArgument: 1,
 		needGroupData: true,
 		groupCommandOnly: true
-	}
+	},
 	min_fined: 5000,
 	max_fined: 10000
 }
