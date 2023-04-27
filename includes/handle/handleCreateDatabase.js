@@ -61,15 +61,12 @@ async function handleUserData({ UserData, userID, databaseSystem, economySystem,
     const info = await Users.getInfo(userID) || {};
 
 	const userName = info.name || await Users.getNameUser(userID);
-    const credentials = (UserData) ? UserData : {};
+    const credentials = (UserData) ? await Users.getData(userID) : {};
     const data = new Object(credentials.data || {});
     let changesCount = 0;
     
     for (const key in databaseSystem.user_data_config) {
-    	if (!data.hasOwnProperty(key)) {
-			data[key] = databaseSystem.user_data_config[key];
-			changesCount++;
-		}
+    	data[key] = data[key] || databaseSystem.user_data_config[key];
     }
 	// IF USER WAS BANNED
 	const bannedUserData = await Banned.getData(userID);
@@ -89,14 +86,12 @@ async function handleUserData({ UserData, userID, databaseSystem, economySystem,
 	if (!UserData) {
     	Utils.logger(Utils.getText('handleCreateDatabase', 'newUser', chalk.hex("#" + random)(`New users: `) + chalk.hex("#" + random1)(`${userName}`) + " || " + chalk.hex("#" + random2)(`${userID}`)), '[ USER ]');
     } else {
-    	if (changesCount > 0) {
-    		Utils.logger(`Updated USER: ${userName}(${userID})`, 'database');
-    	}
+    	Utils.logger(`Updated USER: ${userName}(${userID})`, 'database');
     }
     return;
 }
 
-async function handleGroupData({ GroupData, log, threadID, databaseSystem, economySystem, Utils, Users, Threads, Banned }) {
+async function handleGroupData({ GroupData, threadID, databaseSystem, economySystem, Utils, Users, Threads, Banned }) {
 	
 	const chalk = require('chalk');
 	const notFound = ['undefined', 'null'];
@@ -114,26 +109,20 @@ async function handleGroupData({ GroupData, log, threadID, databaseSystem, econo
 	threadInfo.adminIDs = threadIn4.adminIDs;
 	threadInfo.nicknames = threadIn4.nicknames;
 
-	const credentials = (GroupData) ? GroupData : {};
-    const inventory = new Object(credentials.inventory || {});
-    const economy = new Object(credentials.economy || {});
-    const data = new Object(credentials.data || {});
-	const afk = new Object(credentials.afk || {});
+	const credentials = (GroupData) ? await Threads.getData(threadID) : {};
+    const inventory = credentials.inventory || {};
+    const economy = credentials.economy || {};
+    const data = credentials.data || {};
+	const afk = credentials.afk || {};
 	
 	// default config
 	for (const item in databaseSystem.group_data_config) {
-		if (!data.hasOwnProperty(item)) {
-			data[item] = databaseSystem.group_data_config[item];
-			changesCount++;
-		}
+		data[item] = data[item] || databaseSystem.group_data_config[item];
 	}
 
 	// default configuration for economy system for this group
 	for (const item in economySystem.config) {
-		if (!data.hasOwnProperty(item)) {
-			data[item] = economySystem.config[item];
-			changesCount++;
-		}
+		data[item] = economySystem.config[item];
 	}
 				
 	// IF THREAD WAS BANNED
@@ -153,31 +142,22 @@ async function handleGroupData({ GroupData, log, threadID, databaseSystem, econo
 	for (singleData of threadIn4.userInfo) {
 		// sets each member a initial data for economy & inventory
 		const UID = String(singleData.id);
-		const userEco = (economy[UID]) ? economy[UID] : {};
+		const userEco = economy[UID] || {};
 		
 		for (const key in economySystem.userConfig) {
-			if (!userEco.hasOwnProperty(key)) {
-				userEco[key] = economySystem.userConfig[key];
-				changesCount++;
-			}
+			userEco[key] = userEco[key] || economySystem.userConfig[key];
 		}
-		
 		economy[UID] = userEco;
-		if (!inventory[UID]) {
-			inventory[UID] = {};
-			changesCount++;
-		}
+		inventory[UID] = inventory[UID] || {};
 		
         try {
 			// update member data on User table if exist
 			const thisGroupUserData = await Users.getData(UID);
             if (thisGroupUserData) {
             	
-            	const dataUser = (thisGroupUserData.data) ? thisGroupUserData.data : {};
+            	const dataUser = thisGroupUserData.data || {};
             	for (const key in databaseSystem.user_data_config) {
-            		if (!dataUser.hasOwnProperty(key)) {
-						dataUser[key] = databaseSystem.user_data_config[key];
-					}
+            		dataUser[key] = dataUser[key] || databaseSystem.user_data_config[key];
             	}
             	
 				await Users.setData(
@@ -221,9 +201,7 @@ async function handleGroupData({ GroupData, log, threadID, databaseSystem, econo
 		Utils.logger(Utils.getText('handleCreateDatabase', 'newThread', chalk.hex("#" + random)(`New group: `) + chalk.hex("#" + random1)(`${threadID}`) + "  ||  " + chalk.hex("#" + random2)(`${threadIn4.threadName}`)), '[ THREAD ]');
 		return true;
 	} else {
-		if (changesCount > 0) {
-			Utils.logger(`Updated GROUP: ${threadIn4.threadName}(${threadID}).\nTotal Changes: ${changesCount}\n\n`, 'database');
-		}
+		Utils.logger(`Updated GROUP: ${threadIn4.threadName}(${threadID}).\nTotal Changes: ${changesCount}\n\n`, 'database');
 		return true;
 	}
 	return false;

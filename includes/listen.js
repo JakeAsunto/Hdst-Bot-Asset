@@ -71,7 +71,7 @@ module.exports = async function({ api, models }) {
 						} else {
 							// only updates when there's an update
 							if (Utils.BOT_IS_UPDATED) {
-								await handleDB.handleGroupData({ GroupData, threadID, databaseSystem, economySystem, Utils, Users, Threads, Banned });
+								await handleDB.handleGroupData({ GroupData: true, threadID, databaseSystem, economySystem, Utils, Users, Threads, Banned });
 							}
 						}
 					}
@@ -100,7 +100,7 @@ module.exports = async function({ api, models }) {
 						await Banned.setData(userID, { data });
 					}
 					if (Utils.BOT_IS_UPDATED) {
-						await handleDB.handleUserData({ UserData, userID, databaseSystem, economySystem, Utils, Users, Threads, Banned });
+						await handleDB.handleUserData({ UserData: true, userID, databaseSystem, economySystem, Utils, Users, Threads, Banned });
 					}
 				}
 			}

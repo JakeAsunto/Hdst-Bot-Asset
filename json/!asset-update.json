@@ -5,7 +5,7 @@
         "https://facebook.com/mensaherong.iantot",
         "This repository was linked to bot assets repository of Hadestia that include assets auto updater."
     ],
-    "VERSION": "6.15.6",
+    "VERSION": "6.15.7",
     "CHANGELOGS": "- Add command description truncation while browsing categories.",
     "PRIORITY": {
         "fileTree.js": {
