@@ -5,12 +5,16 @@ module.exports.config = {
     credits: 'Mirai Team, beautify by Hadestia',
     description: 'A hard gambling game to earn more money?',
     commandCategory: 'gambling',
-    usages: '< bet >',
+    usages: '< bet/all >',
     aliases: [ 'slot' ],
     cooldowns: 5,
     envConfig: {
+    	requiredArgument: 1,
 		needGroupData: true,
 		groupCommandOnly: true
+	},
+	gamble: {
+		min_bet: 20
 	}
 };
 
@@ -39,11 +43,6 @@ module.exports.run = async function({ api, event, args, returns, Utils, Prefix, 
     
     const message = (msg) => { api.sendMessage(msg, threadID, messageID) };
     
-    let bet = ((args.join(' ')).match(/\d+/))
-    if (!bet || parseInt(bet[0]) == 0) {
-    	returns.remove_usercooldown();
-    	return message(Utils.textFormat('gamblingSystem', 'errInvalidAmountOfBet'));
-    }
     // Get user economy
     try {
     	
@@ -55,16 +54,21 @@ module.exports.run = async function({ api, event, args, returns, Utils, Prefix, 
 		const moneyOnHand = economy[senderID].hand;
 		const currency = threadData.data.default_currency || economySystem.config.default_currency;
 		
-		const minimumBet = data.gambling_slotmachine_minimum_bet || 20;
+		const minimumBet = this.config.gamble.min_bet;
 		
-		let betAmount = Math.abs(parseInt(bet[0]));
+		let bet = args[0].toLowerCase();
+		let betAmount = (bet == 'all') ? moneyOnHand : Math.abs(parseInt(bet));
+		
 		// money not enough
-		if (betAmount < minimumBet) {
+		if (!betAmount) {
     		returns.remove_usercooldown();
-	    	return message(Utils.textFormat('error', 'errOccured', `Not enough amount of bet, the minimum bet for this game was ${currency}${minimumBet}.`));
-  	  } else if (moneyOnHand < betAmount) {
+    		return message(Utils.textFormat('error', 'errOccured', 'Invalid amount of bet. Put an amount or put `all` to spend all your money on hand.'));
+   	 } else if (betAmount < minimumBet) {
+    		returns.remove_usercooldown();
+	    	return message(Utils.textFormat('gamblingSystem', 'errNotEnoughBet', currency, minimumBet));
+  	  } else if (moneyOnHand < betAmount || (bet == 'all' && moneyOnHand <= minimumBet)) {
 			returns.remove_usercooldown();
-			return message(Utils.textFormat('error', 'errOccured', `You currently have ${currency}${moneyOnHand} on hand.`));
+			return message(Utils.textFormat('gamblingSystem', 'errOnlyHadMoneyHand', currency, moneyOnHand));
 		}
 		
 		var number = [], win = false;

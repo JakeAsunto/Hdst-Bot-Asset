@@ -1,12 +1,13 @@
 module.exports.config = {
-	name: 'flip',
+	name: 'coin-flip',
 	version: '1.0.4',
 	hasPermssion: 0,
 	commandCategory: 'gambling',
 	credits: 'Hadestia',
 	cooldowns: 0,
 	description: 'A toss coin game same as "toss" but with the involvement of money. Max bet for this game was 5,000 due to higher chances of winning by 50%.',
-	usages: '<bet> [heads/tails]',
+	usages: '[heads/tails] <bet/all>',
+	aliases: [ 'cf' ],
 	envConfig: {
 		requiredArgument: 2,
 		needGroupData: true
@@ -25,17 +26,16 @@ module.exports.run = async function ({ api, args, event, Utils, Threads }) {
 	const err = (msg) => api.sendMessage(Utils.textFormat('error', 'errOccured', msg), threadID, messageID);
 	const result = (res, msg) => api.sendMessage(Utils.textFormat('gamblingSystem', 'normalResult', res, msg), threadID, messageID);
 	
-	let bet = parseInt(args[0]);
-	let place = args[1].toLowerCase();
+	let place = args[0].toLowerCase();
+	let bet = parseInt(args[1]);
 	
 	const userMoney = economy[senderID].hand
-	
-	if (!bet) return err('Invalid amount of bet, Bet must be a number ranges 100 - 5000.');
-	if (bet < this.config.gamble.min_bet) { return api.sendMessage(Utils.textFormat('gamblingSystem', 'errNotEnoughBet', `${data.default_currency}${this.config.gamble.min_bet}.`), threadID, messageID); }
-	if (bet > this.config.gamble.max_bet) { return api.sendMessage(Utils.textFormat('gamblingSystem', 'errExceedBet', `${data.default_currency}${this.config.gamble.max_bet}.`), threadID, messageID); }
-	if (userMoney < bet) { return err(`You only have ${data.default_currency}${userMoney.toLocaleString('en-US')} on hand for this bet.`); }
-	
+
 	if (!['heads', 'tails'].includes(place)) { return err(Utils.textFormat('error', 'errOccured', 'Invalid place of bet. only accept: `heads` or `tails`.')); }
+	if (!bet) return err('Invalid amount of bet, Bet must be a number ranges 100 - 5000.');
+	if (bet < this.config.gamble.min_bet) { return api.sendMessage(Utils.textFormat('gamblingSystem', 'errNotEnoughBet', data.default_currency, this.config.gamble.min_bet), threadID, messageID); }
+	if (bet > this.config.gamble.max_bet) { return api.sendMessage(Utils.textFormat('gamblingSystem', 'errExceedBet', data.default_currency, this.config.gamble.max_bet), threadID, messageID); }
+	if (userMoney < bet) { return api.sendMessage('gamblingSystem', 'errOnlyHadMoneyHand', data.default_currency, userMoney.toLocaleString('en-US')), threadID, messageID); }
 	
 	const outcome = Math.floor(Math.random() * 2);
 	

@@ -8,6 +8,7 @@ module.exports.config = {
     usages: '<prompt>',
     aliases: [ 'ai' ],
     cooldowns: 60,
+    disabled: true,
     envConfig: {
     	requiredArgument: 1
     },
