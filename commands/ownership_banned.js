@@ -5,7 +5,7 @@ module.exports.config = {
 	cooldowns: 0,
 	hasPermssion: 2,
 	commandCategory: 'ownership',
-	description: 'Give a punishment to a Group(s) or User(s). Basically banned them.',
+	description: 'Manage banned Users or Groups.',
 	usages: '[ ban-(user/group) | unban-(user/group) | check | list ] [ id | this-group | @mention ] | [ ... ]',
 	envConfig: {
 		requiredArgument: 1

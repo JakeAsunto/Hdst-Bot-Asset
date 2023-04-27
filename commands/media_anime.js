@@ -7,7 +7,7 @@ module.exports.config = {
 	commandCategory: 'media',
 	usages: '<category>',
 	cooldowns: 5,
-	credits: 'ctto rest API owner',
+	credits: '© rest API owner',
 	dependencies: {
 		'axios': '',
 		'fs-extra': ''

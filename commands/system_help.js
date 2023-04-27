@@ -87,9 +87,10 @@ module.exports.run = async function({ api, event, args, Utils, Prefix }) {
 			for (const cmd of commands.values()) {
 				if (cmd.config.commandCategory.toLowerCase() == requestCategory) {
 					const name = await Utils.fancyFont.get(`${Prefix}${cmd.config.name}`, 6);
+					const description = cmd.config.description || '<no description>';
 					categoryCommands[categoryCommands.length] = {
 						name: name,
-						desc: cmd.config.description || '<no description>',
+						desc: (description.length > 73) ? `${description.slice(0, 73)}...` : description,
 						aliases: cmd.config.aliases || []
 					}
 				}
@@ -123,7 +124,7 @@ module.exports.run = async function({ api, event, args, Utils, Prefix }) {
 				const cooldown = (command.config.cooldowns && command.config.cooldowns > 1) ? `${command.config.cooldowns} seconds` : 'no cooldown';
 				const commandReplyUsage = (command.config.replyUsages) ? `\n\n${await Utils.fancyFont.get('● reply usage:', 1)}\n\`${command.config.replyUsages}\`` : '';
 				const commandName = await Utils.fancyFont.get(command.config.name, 1);
-	
+				
 				const messageBody = Utils.textFormat(
 					'cmd', 'cmdShowInfo',
 					`${Prefix}${commandName}`,
