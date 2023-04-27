@@ -133,7 +133,7 @@ module.exports.run = async function({ api, event, args, Utils, Prefix }) {
 					command.config.commandCategory,
 					cooldown,
 					permssion,
-					(command.config.aliases) ? `\n[ ${command.config.aliases.join(', ')} ]` : 'none',
+					(command.config.aliases) ? `[ ${command.config.aliases.join(', ')} ]` : 'none',
 					command.config.credits || 'ctto'
 				);
 				return api.sendMessage( messageBody, threadID, autoUnsent, messageID);

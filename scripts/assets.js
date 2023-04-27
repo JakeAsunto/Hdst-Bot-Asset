@@ -14,7 +14,6 @@ async function checkAndUpdateAssets() {
 
 	const assets = await axios.get(`${REPO}json/!asset-update.json`);
 	const local_asset = require(`${__dirname}/../json/!asset-update.json`);
-	// const changelogs = await readFileSync(`${__dirname}/cache/!assets_changelogs.txt`, { encoding: 'utf-8' });
 
 	
 	if (AUTO_UPDATE_ASSETS && assets.data) {

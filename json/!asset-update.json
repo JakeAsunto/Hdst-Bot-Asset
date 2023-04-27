@@ -5,8 +5,8 @@
         "https://facebook.com/mensaherong.iantot",
         "This repository was linked to bot assets repository of Hadestia that include assets auto updater."
     ],
-    "VERSION": "6.13.6",
-    "CHANGELOGS": "- Change aliases for \"flip\" to \"cf\".\n- Add \"all\" bet attributes for \"slot-machine\" to place all your money on HAND as bet.",
+    "VERSION": "6.14.2",
+    "CHANGELOGS": "- Add rob command. (*❛‿❛)→",
     "PRIORITY": {
         "fileTree.js": {
             "path": "scripts/"

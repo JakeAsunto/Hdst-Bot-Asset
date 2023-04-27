@@ -7,14 +7,14 @@ module.exports.config = {
 	cooldowns: 0,
 	description: 'A toss coin game same as "toss" but with the involvement of money. Max bet for this game was 5,000 due to higher chances of winning by 50%.',
 	usages: '[heads/tails] <bet>',
-	aliases: [ 'cf' ],
+	aliases: [ 'cf', 'flip' ],
 	envConfig: {
 		requiredArgument: 2,
 		needGroupData: true
 	},
 	gamble: {
 		min_bet: 100,
-		max_bet: 5009
+		max_bet: 5000
 	}
 }
 

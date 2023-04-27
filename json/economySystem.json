@@ -12,8 +12,9 @@
         "rob_fail_probability": 0.5,
         "slut_fail_probability": 0.5,
         "crime_fail_probability": 0.5,
-        "rob_success_percentage": 0.2,
-        "work_cooldown": 1200000
+        "rob_success_probability": 0.2,
+        "work_cooldown": 1200000,
+        "rob_cooldown": 3600000
     },
     "userConfig": {
         "hand": 0,
@@ -30,8 +31,7 @@
         "You participated in a loudest fart contest in your town and you won. They gave you ${salary} as a reward.",
         "You noticed someone spamming in the group and immediately notified the admins. They rewarded you with ${salary}.",
         "You were hired by the city of Stuckenborstel to pave roads. After some time, you gave the city good-looking roads. Impressed, the city mayor paid you ${salary}.",
-        "You caught a bot forker and reported it to the police. They rewarded you ${salary}.",
-        "You caught someone changing the credits of a bot files and immediately reported it to the owner. They gave you ${salary} as a reward.",
+        "You caught someone changing the credits of a files and immediately reported it to the owner. They gave you ${salary} as a reward.",
         "While digging, you found an ancient Hadestian artifact. You hand it to the museum and they give you ${salary} for it.",
         "You report a really nasty bug of the bot and the developers give you ${salary}.",
         "You helped to translate some of the symbols from an Hadestian artifact and got ${salary} as a reward.",
@@ -54,7 +54,7 @@
         "You come across someone sitting on a bench playing a trash game called Mobile Legends. They are so disctracted, you can easily grab their wallet. It contained ${salary}."
     ],
     "crimeReponseFailed": [
-        "You were about to rob a bank, but you saw a kid playing TheoTown game and got addicted. The police later came and fined ${fined} for trying to rob a bank.",
+        "You were about to rob a bank, but you saw a kid playing a game and got addicted. The police later came and fined ${fined} for trying to rob a bank.",
         "Crime doesn't pay, but you do. Enjoy your fine of  ${fined}.",
         "You see someone on their phone and try to grab it, but they were playing Wild Rift and are very angry. They chase after you and tackle you to the ground. After the police arrives you get ${fined} fined."
     ],

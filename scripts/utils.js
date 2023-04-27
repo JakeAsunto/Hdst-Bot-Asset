@@ -10,13 +10,15 @@ module.exports = async function ({ api, Users, Banned, Threads }) {
 	const databaseSystem = require('../json/databaseConfig.json'),
 		economySystem = require('../json/economySystem.json');
 	
+	const isUpdated = readFileSync(`${global.HADESTIA_BOT_CLIENT.mainPath}/cache/keep/!asset-has-update.txt`, { encoding: 'utf-8' });
+
 	const Utils = {};
-	
 	/// CONSTANTS...
 	Utils.BOT_ID = api.getCurrentUserID();
 	Utils.BOT_NAME = global.HADESTIA_BOT_CONFIG.BOTNAME;
 	Utils.ROOT_PATH = global.HADESTIA_BOT_CLIENT.mainPath;
 	Utils.BOT_FULLNAME = await Users.getNameUser(Utils.BOT_ID);
+	Utils.BOT_IS_UPDATED = isUpdated == 'true';
 	
 	// FUNCTIONS...
 	for (const func in util) Utils[func] = util[func];
