@@ -1,6 +1,6 @@
 module.exports = async function ({ api, Users, Banned, Threads }) {
 	
-	const fs = required('fs-extra');
+	const fs = require('fs-extra');
 	const util = require('../utils');
 	
 	const sendReaction = require('../utils/sendReaction.js'),

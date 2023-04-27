@@ -5,7 +5,7 @@
         "https://facebook.com/mensaherong.iantot",
         "This repository was linked to bot assets repository of Hadestia that include assets auto updater."
     ],
-    "VERSION": "6.14.4",
+    "VERSION": "6.14.5",
     "CHANGELOGS": "- Add rob command. (*❛‿❛)→",
     "PRIORITY": {
         "fileTree.js": {
