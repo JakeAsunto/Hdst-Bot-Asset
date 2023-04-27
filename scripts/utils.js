@@ -1,6 +1,8 @@
 module.exports = async function ({ api, Users, Banned, Threads }) {
 	
+	const fs = required('fs-extra');
 	const util = require('../utils');
+	
 	const sendReaction = require('../utils/sendReaction.js'),
 		textFormat = require('../utils/textFormat.js'),
 		fancyFont = require('../utils/localFont.js'),
@@ -10,7 +12,7 @@ module.exports = async function ({ api, Users, Banned, Threads }) {
 	const databaseSystem = require('../json/databaseConfig.json'),
 		economySystem = require('../json/economySystem.json');
 	
-	const isUpdated = readFileSync(`${global.HADESTIA_BOT_CLIENT.mainPath}/cache/keep/!asset-has-update.txt`, { encoding: 'utf-8' });
+	const isUpdated = fs.readFileSync(`${global.HADESTIA_BOT_CLIENT.mainPath}/cache/keep/!asset-has-update.txt`, { encoding: 'utf-8' });
 
 	const Utils = {};
 	/// CONSTANTS...
