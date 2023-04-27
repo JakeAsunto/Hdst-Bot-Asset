@@ -6,7 +6,7 @@ module.exports.config = {
 	credits: 'Hadestia',
 	cooldowns: 0,
 	description: 'A toss coin game same as "toss" but with the involvement of money. Max bet for this game was 5,000 due to higher chances of winning by 50%.',
-	usages: '[heads/tails] <bet/all>',
+	usages: '[heads/tails] <bet>',
 	aliases: [ 'cf' ],
 	envConfig: {
 		requiredArgument: 2,
