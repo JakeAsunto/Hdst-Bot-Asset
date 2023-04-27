@@ -23,7 +23,6 @@ module.exports.run = async function ({ api, args, event, Utils, Threads }) {
 	const { threadID, messageID, senderID } = event;
 	const { data, economy } = await Threads.getData(threadID);
 	
-	const err = (msg) => api.sendMessage(Utils.textFormat('error', 'errOccured', msg), threadID, messageID);
 	const result = (res, msg) => api.sendMessage(Utils.textFormat('gamblingSystem', 'normalResult', res, msg), threadID, messageID);
 	
 	let place = args[0].toLowerCase();
@@ -31,7 +30,7 @@ module.exports.run = async function ({ api, args, event, Utils, Threads }) {
 	
 	const userMoney = economy[senderID].hand
 
-	if (!['heads', 'tails'].includes(place)) { return err(Utils.textFormat('error', 'errOccured', 'Invalid place of bet. only accept: `heads` or `tails`.')); }
+	if (!['heads', 'tails'].includes(place)) { return api.sendMessage(Utils.textFormat('error', 'errOccured', 'Invalid place of bet. only accept: `heads` or `tails`.'), threadID, messageID); }
 	if (!bet) return err('Invalid amount of bet, Bet must be a number ranges 100 - 5000.');
 	if (bet < this.config.gamble.min_bet) { return api.sendMessage(Utils.textFormat('gamblingSystem', 'errNotEnoughBet', data.default_currency, this.config.gamble.min_bet), threadID, messageID); }
 	if (bet > this.config.gamble.max_bet) { return api.sendMessage(Utils.textFormat('gamblingSystem', 'errExceedBet', data.default_currency, this.config.gamble.max_bet), threadID, messageID); }

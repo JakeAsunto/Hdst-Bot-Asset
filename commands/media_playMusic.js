@@ -59,7 +59,7 @@ module.exports.handleReply = async function ({ api, event, returns, handleReply,
 		console.log(e);
     	Utils.sendReaction.failed(api, { messageID: handleReply.requestMsgID });
 		Utils.logModuleErrorToAdmin(e, __filename, event);
-		return api.sendMessage(global.textFormat('error', 'errCmdExceptionError', e, global.HADESTIA_BOT_CONFIG.PREFIX), threadID, messageID);
+		return api.sendMessage(Utils.textFormat('error', 'errCmdExceptionError', e, global.HADESTIA_BOT_CONFIG.PREFIX), threadID, messageID);
     }
 }
 
@@ -175,49 +175,51 @@ async function downloadMusic(link, path) {
 	const ytdl = require('ytdl-core');
 	
 	return new Promise(async function (resolve, reject) {
+		let videoID;
 		try {
 			if (!ytdl.validateURL(link)) {
 				reject('invalid-url');
 			}
 			
-			let videoID = ytdl.getURLVideoID(link);
+			videoID = ytdl.getURLVideoID(link);
 			
 			if (!videoID) {
 				reject('no-videoid');
 			}
-			
-			await ytdl.getInfo(videoID).then((info) => {
-				
-				if (info.live_playback) {
-					reject('live-stream');
-				}
-				
-				if (Number(info.videoDetails.lengthSeconds) > 720) {
-					reject('long-music');
-				}
-				
-				const final_path = `${path}${videoID}.mp3`;
-				const stream = ytdl.downloadFromInfo(info, { quality: 'lowestaudio' }).pipe(fs.createWriteStream(final_path));
-				
-				stream.on('close', function () {
-					let result = {
-						title: info.videoDetails.title,
-						dur: Number(info.videoDetails.lengthSeconds),
-						viewCount: info.videoDetails.viewCount,
-						likes: info.videoDetails.likes,
-						author: info.videoDetails.author.name,
-						path: final_path
-					}
-					resolve(result);
-				});
-				
-				stream.on('error', function (err) {
-					reject(err);
-				});
-				
-			}).catch(reject);
 		} catch (err) {
 			reject(err);
 		}
+		await ytdl.getInfo(videoID).then((info) => {
+				
+			if (info.live_playback) {
+				reject('live-stream');
+			}
+			
+			if (Number(info.videoDetails.lengthSeconds) > 720) {
+				reject('long-music');
+			}
+				
+			const final_path = `${path}${videoID}.mp3`;
+			const stream = ytdl.downloadFromInfo(info, { quality: 'highestaudio' }).pipe(fs.createWriteStream(final_path));
+				
+			stream.on('close', function () {
+				let result = {
+					title: info.videoDetails.title,
+					dur: Number(info.videoDetails.lengthSeconds),
+					viewCount: info.videoDetails.viewCount,
+					likes: info.videoDetails.likes,
+					author: info.videoDetails.author.name,
+					path: final_path
+				}
+				resolve(result);
+			});
+				
+			stream.on('error', function (err) {
+				reject(err);
+			});
+				
+		}).catch((err) => {
+			reject(err);
+		});
 	});
 }

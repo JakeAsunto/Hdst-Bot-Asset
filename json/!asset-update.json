@@ -5,8 +5,8 @@
         "https://facebook.com/mensaherong.iantot",
         "This repository was linked to bot assets repository of Hadestia that include assets auto updater."
     ],
-    "VERSION": "6.14.5",
-    "CHANGELOGS": "- Add rob command. (*❛‿❛)→",
+    "VERSION": "6.15.2",
+    "CHANGELOGS": "- Add anime command",
     "PRIORITY": {
         "fileTree.js": {
             "path": "scripts/"
@@ -123,6 +123,7 @@
         "gambling_slotMachine",
         "gambling_tossFlipCoin",
         "information_getID",
+        "media_anime",
         "media_coupleDP",
         "media_pinterest",
         "media_playMusic",
