@@ -2,10 +2,12 @@ const categories = [ 'waifu', 'neko', 'shinobu', 'megumin', 'bully', 'cuddle', '
 module.exports.config = {
 	name: 'anime',
 	version: '1.0.0',
+	hasPermssion: 0,
 	description: `Gives a random anime depending on a given category. Available categories are:\n(${categories.join(', ')})`,
 	commandCategory: 'media',
 	usages: '<category>',
 	cooldowns: 5,
+	credits: 'ctto rest API owner',
 	dependencies: {
 		'axios': '',
 		'fs-extra': ''
