@@ -35,7 +35,7 @@ module.exports.run = async function ({ api, args, event, Utils, Threads }) {
 	if (!bet) return err('Invalid amount of bet, Bet must be a number ranges 100 - 5000.');
 	if (bet < this.config.gamble.min_bet) { return api.sendMessage(Utils.textFormat('gamblingSystem', 'errNotEnoughBet', data.default_currency, this.config.gamble.min_bet), threadID, messageID); }
 	if (bet > this.config.gamble.max_bet) { return api.sendMessage(Utils.textFormat('gamblingSystem', 'errExceedBet', data.default_currency, this.config.gamble.max_bet), threadID, messageID); }
-	if (userMoney < bet) { return api.sendMessage('gamblingSystem', 'errOnlyHadMoneyHand', data.default_currency, userMoney.toLocaleString('en-US')), threadID, messageID); }
+	if (userMoney < bet) { return api.sendMessage(Utils.textFormat('gamblingSystem', 'errOnlyHadMoneyHand', data.default_currency, userMoney.toLocaleString('en-US')), threadID, messageID); }
 	
 	const outcome = Math.floor(Math.random() * 2);
 	
