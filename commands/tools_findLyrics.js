@@ -1,7 +1,7 @@
 module.exports.config = {
 	name: 'find-lyrics',
 	description: 'Try to find the lyrics of your favorite songs.',
-	commandCategory: 'other',
+	commandCategory: 'tools',
 	version: '1.0.0',
 	hasPermssion: 0,
 	usages: '<title>',
@@ -19,7 +19,7 @@ module.exports.run = async function ({ api, args, event, Utils }) {
 	
 	try {
 		const Genius = require('genius-lyrics');
-		const Client = new Genius.Client();
+		const Client = new Genius.Client(process.env.GENIUS_LYRICS_AT);
 		
 		const searches = await Client.songs.search(args.join(' '));
 

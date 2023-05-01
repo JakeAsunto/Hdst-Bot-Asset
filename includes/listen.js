@@ -317,10 +317,16 @@ module.exports = async function({ api, models }) {
 	
 	/// COMMANDS AND EVENTS MODULE LATE INITIALIZATION ///
 	const { events, commands } = global.HADESTIA_BOT_CLIENT;
-	
+	const ignore_adminMessageReply = [];
 	// # Commands Late Init
 	for (const [key, module] of commands.entries()) {
 		try {
+			if (module.config.ignoreAdminMessageReply) {
+				for (const text of module.config.ignoreAdminMessageReply) {
+					ignore_adminMessageReply.push(text.toLowerCase());
+				}
+			}
+			
 			if (module.lateInit) {
 				Utils.logger(`Command Module Late Init: ${key}`, 'lateInit');
 				module.lateInit({ api, models, Utils, Users, Banned, Threads });
@@ -351,7 +357,7 @@ module.exports = async function({ api, models }) {
 		
 		event.body = (event.body !== undefined) ? (event.body).normalize('NFKD') : '';
 		
-        const input = { event }
+        const input = { event, ignore_adminMessageReply }
         
 		switch (event.type) {
 			

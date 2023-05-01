@@ -7,7 +7,8 @@ module.exports.config = {
 	commandCategory: 'other',
 	aliases: [ 'unsend', 'remove' ],
 	usages: '<!reply base command!>',
-	cooldowns: 0
+	cooldowns: 0,
+	ignoreAdminMessageReply: [ 'unsend', 'unsent', 'remove', 'delete' ]
 };
 
 module.exports.handleMessageReply = async function ({ api, event, Utils }) {

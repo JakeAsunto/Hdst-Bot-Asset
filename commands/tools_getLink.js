@@ -2,7 +2,7 @@ module.exports.config = {
 	name: 'get-link',
 	version: '1.0.0',
 	hasPermssion: 0,
-	commandCategory: 'other',
+	commandCategory: 'tools',
 	description: 'Get the download link of a reply message that has an attachment.',
 	cooldowns: 5,
 	credits: 'Hadestia',

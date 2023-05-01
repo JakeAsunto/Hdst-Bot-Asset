@@ -2,7 +2,7 @@ module.exports.config = {
 	name: 'font',
 	version: '1.0.0',
 	hasPermssion: 0,
-	commandCategory: 'other',
+	commandCategory: 'tools',
 	description: 'Replace string into specific font style',
 	usages: `[ 1 - 6 ] < text | @(reply) >\n\nAvailable Font:\n1 = bold sans\n2 = italic bold sans\n3 = bold serif\n4 = italic bold sarif\n5 = medieval bold\n6 = thin font1\n\n`,
 	aliases: [ 'style' ],

@@ -131,7 +131,7 @@ module.exports.run = async function({ api, event, args, Utils, Prefix }) {
 					command.config.description,
 					commandUsage,
 					commandReplyUsage,
-					command.config.commandCategory,
+					command.config.commandCategory.replace('_', ' '),
 					cooldown,
 					permssion,
 					(command.config.aliases) ? `[ ${command.config.aliases.join(', ')} ]` : 'none',

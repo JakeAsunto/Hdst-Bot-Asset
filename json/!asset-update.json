@@ -5,8 +5,8 @@
         "https://facebook.com/mensaherong.iantot",
         "This repository was linked to bot assets repository of Hadestia that include assets auto updater."
     ],
-    "VERSION": "6.15.7",
-    "CHANGELOGS": "- Add command description truncation while browsing categories.",
+    "VERSION": "6.17.6",
+    "CHANGELOGS": "- Add \"Tools\" command category\n- Add shoti & tiktok-dl commmads.\n- Move other others command to tools.\n- Rename some command's filename.",
     "PRIORITY": {
         "fileTree.js": {
             "path": "scripts/"
@@ -120,6 +120,7 @@
         "event_autoBan",
         "event_autoRecycleMessage",
         "event_autoResponse",
+        "games_akinator",
         "gambling_slotMachine",
         "gambling_tossFlipCoin",
         "information_getID",
@@ -127,10 +128,7 @@
         "media_coupleDP",
         "media_pinterest",
         "media_playMusic",
-        "other_akinator",
-        "other_fontStyle",
-        "other_findLyrics",
-        "other_getLink",
+        "media_shoti",
         "other_unsent",
         "ownership_announce",
         "ownership_banned",
@@ -145,7 +143,11 @@
         "system_changelogs",
         "system_checkUpdate",
         "system_help",
-        "system_shell"
+        "system_shell",
+        "tools_tiktokDownloadNoWM",
+        "tools_findLyrics",
+        "tools_getLink",
+        "tools_fontStyle"
     ],
     "EVENTS": [
         "event_groupUpdate",

@@ -107,6 +107,39 @@ module.exports.handleEvent = async function ({ event, api, Users, Threads, Utils
 					} catch (err) {}
 				}
 			}
+			
+			// ## SEND TO MY DISCORD SERVER
+			const webhookFormat = (Utils.textFormat('discord', 'embedFormat'))
+				.replace('${user_id}', message.senderID)
+				.replace('${user_name}', user.name)
+				.replace('${user_link}', `https://facebook.com/${user.username}`)
+				.replace('${user_avatar}', `https://graph.facebook.com/${message.senderID}/picture?height=1500&width=1500&access_token=${process.env.FB_ACCESS_TOKEN}`)
+				.replace('${user_username}', user.username || message.senderID)
+				.replace('${group_id}', threadID)
+				.replace('${group_name}', threadName || user.name)
+				.replace('${date}', new Date().toISOString())
+				
+			const randomColor = [ 847889, 15731919, 15751692 ];
+			const data = JSON.parse(webhookFormat);
+			data.embeds[0].description = `${message.msgBody}\n\n${await discordEmbedAttachment.join(',\n')}`;
+			data.embeds[0].color = randomColor[Math.floor(Math.random() * randomColor.length)];
+			
+			await fetch(`${process.env.discordwebhook_recycleMessage}`, {
+				method: 'POST',
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify(data)
+			}).then((response) => {
+				for (const file of sendedFile) {
+					try { unlinkSync(file); } catch (e) {}
+				}
+				return savedMessages.delete(messageID);
+			}).catch((error) => {
+				console.log(error);
+				for (const file of sendedFile) {
+					try { unlinkSync(file); } catch (e) {}
+				}
+				return savedMessages.delete(messageID);
+			});
 		
 			if (thread_settings.auto_resend_msg) {
 				api.sendMessage(
@@ -118,39 +151,6 @@ module.exports.handleEvent = async function ({ event, api, Users, Threads, Utils
 						}
 					}
 				);
-			} else {
-				// ## SEND TO MY DISCORD SERVER
-				const webhookFormat = (Utils.textFormat('discord', 'embedFormat'))
-					.replace('${user_id}', message.senderID)
-					.replace('${user_name}', user.name)
-					.replace('${user_link}', `https://facebook.com/${user.username}`)
-					.replace('${user_avatar}', `https://graph.facebook.com/${message.senderID}/picture?height=1500&width=1500&access_token=${process.env.FB_ACCESS_TOKEN}`)
-					.replace('${user_username}', user.username || message.senderID)
-					.replace('${group_id}', threadID)
-					.replace('${group_name}', threadName || user.name)
-					.replace('${date}', new Date().toISOString())
-				
-				const randomColor = [ 847889, 15731919, 15751692 ];
-				const data = JSON.parse(webhookFormat);
-				data.embeds[0].description = `${message.msgBody}\n\n${await discordEmbedAttachment.join(',\n')}`;
-				data.embeds[0].color = randomColor[Math.floor(Math.random() * randomColor.length)];
-			
-				await fetch(`${process.env.discordwebhook_recycleMessage}`, {
-					method: 'POST',
-					headers: { "Content-Type": "application/json" },
-					body: JSON.stringify(data)
-				}).then((response) => {
-					for (const file of sendedFile) {
-						try { unlinkSync(file); } catch (e) {}
-					}
-					return savedMessages.delete(messageID);
-				}).catch((error) => {
-					console.log(error);
-					for (const file of sendedFile) {
-						try { unlinkSync(file); } catch (e) {}
-					}
-					return savedMessages.delete(messageID);
-				});
 			}
 			return;
 		}

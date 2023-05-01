@@ -11,14 +11,14 @@ module.exports.config = {
 // nothing to do here this is a hidden command
 module.exports.run = function ({ api, args, event }) {}
 
-module.exports.handleMessageReply = async function ({ api, event, Utils, Users, Threads }) {
+module.exports.handleMessageReply = async function ({ api, event, ignore_adminMessageReply, Utils, Users, Threads }) {
 	
 	if (!event.messageReply) return;
 
 	try {
 		const { ADMINBOT, PREFIX } = global.HADESTIA_BOT_CONFIG;
 		
-		if (!event.body.startsWith(PREFIX)) {
+		if (!event.body.startsWith(PREFIX) || !ignore_adminMessageReply.includes(event.body.toLowerCase())) {
 			
 			const { messageReply, threadID, messageID, senderID, body } = event;
 			

@@ -128,13 +128,13 @@ module.exports.run = async function ({ api, args, event, returns, Utils, Prefix 
 			(e, info) => {
 				if (e) return Utils.sendRequestError(e, event, Prefix);
 				Utils.sendReaction.inprocess(api, event);
+				Utils.autoUnsend(e, info, 120);
 				global.HADESTIA_BOT_CLIENT.handleReply.push({
 					name: this.config.name,
 					messageID: info.messageID,
 					requestMsgID: messageID,
 					author: senderID,
 					results: link,
-					timeout: Date.now() + 20000
 				});
 			},
 			messageID
@@ -189,7 +189,7 @@ async function downloadMusic(link, path) {
 		} catch (err) {
 			reject(err);
 		}
-		await ytdl.getInfo(videoID).then((info) => {
+		await ytdl.getInfo(videoID).then(async (info) => {
 				
 			if (info.live_playback) {
 				reject('live-stream');
@@ -200,7 +200,7 @@ async function downloadMusic(link, path) {
 			}
 				
 			const final_path = `${path}${videoID}.mp3`;
-			const stream = ytdl.downloadFromInfo(info, { quality: 'highestaudio' }).pipe(fs.createWriteStream(final_path));
+			const stream = await ytdl.downloadFromInfo(info, { quality: 'lowestaudio' }).pipe(fs.createWriteStream(final_path));
 				
 			stream.on('close', function () {
 				let result = {

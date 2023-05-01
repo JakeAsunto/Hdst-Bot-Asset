@@ -34,20 +34,22 @@ module.exports = async function ({ api, Users, Banned, Threads }) {
 	Utils.logger = logger;
 	
 	
-	Utils.initBotJoin = async function (threadID) {
+	Utils.initBotJoin = async function (threadID, welcome_msg = true) {
 		api.changeNickname(
 			Utils.textFormat('system', 'botNicknameSetup', global.HADESTIA_BOT_CONFIG.PREFIX, await Utils.fancyFont.get(`${(Utils.BOT_FULLNAME.split(' '))[0]} Bot`, 1)),
 			threadID,
 			Utils.BOT_ID
 		);
 		
-		const messageBody = `${Utils.textFormat('events', 'eventBotJoinedConnected', global.HADESTIA_BOT_CONFIG.BOTNAME, global.HADESTIA_BOT_CONFIG.PREFIX)}\n\n${Utils.textFormat('cmd', 'cmdHelpUsageSyntax', global.HADESTIA_BOT_CONFIG.PREFIX, Utils.BOT_FULLNAME)}`;
-		// send a startup mesaage
-		return api.sendMessage(
-			messageBody,
-			threadID,
-			Utils.autoUnsend
-		);
+		if (welcome_msg) {
+			const messageBody = `${Utils.textFormat('events', 'eventBotJoinedConnected', global.HADESTIA_BOT_CONFIG.BOTNAME, global.HADESTIA_BOT_CONFIG.PREFIX)}\n\n${Utils.textFormat('cmd', 'cmdHelpUsageSyntax', global.HADESTIA_BOT_CONFIG.PREFIX, Utils.BOT_FULLNAME)}`;
+			// send a startup mesaage
+			return api.sendMessage(
+				messageBody,
+				threadID,
+				Utils.autoUnsend
+			);
+		}
 	}
 	
 	Utils.sendRequestError = async function (err, event, prefix) {

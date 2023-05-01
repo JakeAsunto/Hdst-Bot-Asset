@@ -27,6 +27,10 @@
         "icon": "⚙️",
         "description": "Commands for the system."
     },
+    "tools": {
+        "icon": "🛠️",
+        "description": "Useful commands for fetching and other functions."
+    },
     "media": {
         "icon": "🎞️",
         "description": "Commands related to media. e.g Music."
@@ -45,7 +49,7 @@
     },
     "economy": {
         "icon": "🪙",
-        "description": "Commands that was fun and related to economy system.."
+        "description": "Commands that was fun and related to economy system."
     },
     "other": {
         "icon": "🗑️",
