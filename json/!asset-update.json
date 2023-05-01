@@ -5,8 +5,8 @@
         "https://facebook.com/mensaherong.iantot",
         "This repository was linked to bot assets repository of Hadestia that include assets auto updater."
     ],
-    "VERSION": "6.17.6",
-    "CHANGELOGS": "- Add \"Tools\" command category\n- Add shoti & tiktok-dl commmads.\n- Move other others command to tools.\n- Rename some command's filename.",
+    "VERSION": "6.17.8",
+    "CHANGELOGS": "- Fix missing anime commands.\n- Fix tiktok-dl command forgot to delete request video after sending from the system.",
     "PRIORITY": {
         "fileTree.js": {
             "path": "scripts/"

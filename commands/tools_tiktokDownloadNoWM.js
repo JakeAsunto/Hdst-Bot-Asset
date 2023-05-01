@@ -1,6 +1,6 @@
 module.exports.config = {
 	name: 'tiktok-dl',
-	version: '1.0.0',
+	version: '1.0.2',
 	hasPermssion: 0,
 	credits: 'Hadestia',
 	description: 'Downloads tiktok video via link without watermark.',
@@ -40,6 +40,7 @@ module.exports.run = async function ({ api, args, event, returns, Utils }) {
 				},
 				threadID,
 				(err) => {
+					fs.unlinkSync(path);
 					if (err) return Utils.sendReaction.failed(api, event);
 					Utils.sendReaction.success(api, event);
 				},
