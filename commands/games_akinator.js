@@ -52,7 +52,7 @@ module.exports.lateInit = function ({ api, Utils }) {
 	
 }
 
-module.exports.run = async function ({ api, event, Utils }) {
+module.exports.run = async function ({ api, event, Utils, Prefix }) {
 	
 	const { Aki } = require('aki-api');
 	
@@ -62,22 +62,28 @@ module.exports.run = async function ({ api, event, Utils }) {
 	
 	// Create new client
 	if (!userMAP[mappingID]) {
-		const akiAPI = new Aki({ region: 'en' });
-		const expiration = 120;
-		const botGuessed = false;
-		await akiAPI.start();
+		try {
+			const akiAPI = new Aki({ region: 'en' });
+			const expiration = 120;
+			const botGuessed = false;
+			await akiAPI.start();
 		
-		const question = await Utils.fancyFont.get(`Q${akiAPI.currentStep + 1}. ${akiAPI.question}`, 1);
-		api.sendMessage(
-			Utils.textFormat('cmd', 'cmdAkinatorQuestion', question),
-			threadID,
-			(err) => {
-				if (!err) {
-					userMAP[mappingID] = { threadID, akiAPI, expiration, botGuessed }
-				}
-			},
-			messageID
-		);
+			const question = await Utils.fancyFont.get(`Q${akiAPI.currentStep + 1}. ${akiAPI.question}`, 1);
+			api.sendMessage(
+				Utils.textFormat('cmd', 'cmdAkinatorQuestion', question),
+				threadID,
+				(err) => {
+					if (!err) {
+						userMAP[mappingID] = { threadID, akiAPI, expiration, botGuessed }
+					}
+				},
+				messageID
+			);
+		} catch (err) {
+			Utils.sendReaction.failed(api, event);
+			Utils.logModuleErrorToAdmin(err, __filename, event);
+			api.sendMessage(Utils.textFormat('error', 'errCmdExceptionError', err, Prefix), threadID, messageID);
+		}
 	}
 }
 
