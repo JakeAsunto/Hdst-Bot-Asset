@@ -29,7 +29,7 @@ module.exports = async function({ api, models }) {
 			//const handleCreateDatabase = require('./handle/handleCreateDatabase');
 			Utils.logger(Utils.getText('listen', 'startLoadEnvironment'), '[ DATABASE ]');
 			
-			let users = await Users.getAll(['userID', 'name', 'data']),
+			let users = await Users.getAll(['userID', 'name', 'data', 'experience']),
 				threads = await Threads.getAll(['threadID', 'threadInfo', 'data', 'economy', 'afk', 'inventory']);
 				
 			for (const GroupData of threads) {
@@ -106,7 +106,7 @@ module.exports = async function({ api, models }) {
 					const index = global.HADESTIA_BOT_DATA.allUserID;
 					global.HADESTIA_BOT_DATA.allUserID[index] = userID;
 					if (Utils.BOT_IS_UPDATED) {
-						await handleDB.handleUserData({ UserData, userID, databaseSystem, economySystem, Utils, Users, Threads, Banned });
+						await handleDB.handleUserData({ UserData, userID, userName: UserData.name, databaseSystem, economySystem, Utils, Users, Threads, Banned });
 					}
 				}
 			}

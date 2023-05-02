@@ -26,8 +26,6 @@ module.exports.handleEvent = async function ({ api, event, Utils, Users, Threads
 	const { data } = await Threads.getData(threadID);
 	let { experience } = await Users.getData(senderID);
 	
-	console.log(experience);
-	
 	if (!experience || !data.allowRankLevels) return;
 	
 	// Increment
@@ -52,6 +50,7 @@ module.exports.handleEvent = async function ({ api, event, Utils, Users, Threads
 			api.sendMessage(
 				{
 					body: message,
+					attachment: fs.createReadStream(path),
 					mentions: [ { tag: shorten_name, id: senderID } ]
 				},
 				threadID,

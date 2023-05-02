@@ -44,7 +44,7 @@ module.exports = function({ Utils, Users, Threads, Banned }) {
     }
 }
 
-async function handleUserData({ UserData, userID, databaseSystem, economySystem, Utils, Users, Threads, Banned }) {
+async function handleUserData({ UserData, userID, userName, databaseSystem, economySystem, Utils, Users, Threads, Banned }) {
 	
 	const chalk = require('chalk');
 	let job = ["FF9900", "FFFF33", "33FFFF", "FF99FF", "FF3366", "FFFF66", "FF00FF", "66FF99", "00CCFF", "FF0099", "FF0066", "008E97", "F58220", "38B6FF", "7ED957", "97FFFF", "00BFFF", "76EEC6", "4EEE94", "98F5FF", "AFD788", "00B2BF", "9F79EE", "00FA9A"];
@@ -55,9 +55,11 @@ async function handleUserData({ UserData, userID, databaseSystem, economySystem,
     
     const info = await Users.getInfo(userID) || {};
 
-	const userName = info.name || await Users.getNameUser(userID);
+	const name_of_user = userName || info.name || await Users.getNameUser(userID);
     const credentials = UserData || {};
-    const data = new Object(credentials.data || {});
+    const data = credentials.data || {};
+    const experience = credentials.experience || 1;
+    
     let changesCount = 0;
     
     for (const key in databaseSystem.user_data_config) {
@@ -68,7 +70,7 @@ async function handleUserData({ UserData, userID, databaseSystem, economySystem,
 	if (bannedUserData) {
 		const bd = bannedUserData.data || {};
 		const banned = {
-			name: userName,
+			name: name_of_user,
 			caseID: bd.caseID || -1,
 			reason: bd.reason || databaseSystem.user_data_config.banned.reason,
 			dateIssued: bd.dateIssued || databaseSystem.user_data_config.banned.dateIssued
@@ -77,7 +79,7 @@ async function handleUserData({ UserData, userID, databaseSystem, economySystem,
 		await Banned.setData(userID, { data: banned });
 	}
 	// SAVE
-	await Users.setData(userID, { name: userName, data });
+	await Users.setData(userID, { name: name_of_user, data, experience });
 	
 	if (!global.HADESTIA_BOT_DATA.allUserID.includes(userID)) {
 		global.HADESTIA_BOT_DATA.allUserID.push(userID);
@@ -86,7 +88,7 @@ async function handleUserData({ UserData, userID, databaseSystem, economySystem,
 	if (!UserData) {
     	Utils.logger(Utils.getText('handleCreateDatabase', 'newUser', chalk.hex("#" + random)(`New users: `) + chalk.hex("#" + random1)(`${userName}`) + " || " + chalk.hex("#" + random2)(`${userID}`)), '[ USER ]');
     } else {
-    	Utils.logger(`Updated USER: ${userName}(${userID})`, 'database');
+    	Utils.logger(`Updated USER: ${name_of_user}(${userID})`, 'database');
     }
     return;
 }
@@ -142,16 +144,16 @@ async function handleGroupData({ GroupData, threadID, databaseSystem, economySys
 		// sets each member a initial data for economy & inventory
 		const userID = String(singleData.id);
 		const userEco = economy[userID] || {};
-		const name = singleData.name;
+		const userName = singleData.name;
 		
 		for (const key in economySystem.userConfig) {
 			userEco[key] = userEco[key] || economySystem.userConfig[key];
 		}
 		economy[userID] = userEco;
-		inventory[userID] = inventory[UID] || {};
+		inventory[userID] = inventory[userID] || {};
 		
 		const UserData = await Users.getData(userID);
-        handleUserData({ UserData, userID, databaseSystem, economySystem, Utils, Users, Threads, Banned });
+        handleUserData({ UserData, userID, userName, databaseSystem, economySystem, Utils, Users, Threads, Banned });
 	}
 	// SAVE
 	await Threads.setData(threadID, { threadInfo, data, economy, inventory, afk });
