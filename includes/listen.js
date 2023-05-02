@@ -69,6 +69,8 @@ module.exports = async function({ api, models }) {
 								}
 							);
 						} else {
+							const index = global.HADESTIA_BOT_DATA.allThreadID.length;
+							global.HADESTIA_BOT_DATA.allThreadID[index] = threadID;
 							// only updates when there's an update
 							/*if (Utils.BOT_IS_UPDATED) {
 								await handleDB.handleGroupData({ GroupData: true, threadID, databaseSystem, economySystem, Utils, Users, Threads, Banned });
@@ -99,6 +101,8 @@ module.exports = async function({ api, models }) {
 						}
 						await Banned.setData(userID, { data });
 					}
+					const index = global.HADESTIA_BOT_DATA.allUserID;
+					global.HADESTIA_BOT_DATA.allUserID[index] = userID;
 					/*if (Utils.BOT_IS_UPDATED) {
 						await handleDB.handleUserData({ UserData: true, userID, databaseSystem, economySystem, Utils, Users, Threads, Banned });
 					}*/

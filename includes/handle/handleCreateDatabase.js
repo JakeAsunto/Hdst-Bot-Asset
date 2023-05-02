@@ -5,7 +5,7 @@ module.exports = function({ Utils, Users, Threads, Banned }) {
 	
     return async function({ event }) {
     	
-		const { updatedThreadDatabase } = global.HADESTIA_BOT_DATA;
+		const { allThreadID, allUserID } = global.HADESTIA_BOT_DATA;
 		// check if automatic DB creation was set
         if (!global.HADESTIA_BOT_CONFIG.autoCreateDB) { return; }
         
@@ -14,13 +14,8 @@ module.exports = function({ Utils, Users, Threads, Banned }) {
         senderID = String(senderID);
 		threadID = String(threadID);
 		
-		const GroupData = await Threads.getData(threadID);
-		const UserData = await Users.getData(senderID);
-		
         try {
 			const inputData = {
-				UserData,
-				GroupData,
 				threadID,
 				userID: senderID,
 				databaseSystem,
@@ -32,11 +27,11 @@ module.exports = function({ Utils, Users, Threads, Banned }) {
 			}
 		    
 			// ####### IF GROUP CHAT ####### //
-			if (event.isGroup && !GroupData) {
+			if (event.isGroup && !allThreadID.includes(threadID)) {
 				await handleGroupData(inputData);
             }
 			
-            if (!UserData) {
+            if (!allUserID.includes(senderID)) {
             	await handleUserData(inputData);
             }
             
@@ -83,6 +78,11 @@ async function handleUserData({ UserData, userID, databaseSystem, economySystem,
 	}
 	// SAVE
 	await Users.setData(userID, { name: userName, data });
+	
+	if (!global.HADESTIA_BOT_DATA.allUserID.includes(userID)) {
+		global.HADESTIA_BOT_DATA.allUserID.push(userID);
+	}
+	
 	if (!UserData) {
     	Utils.logger(Utils.getText('handleCreateDatabase', 'newUser', chalk.hex("#" + random)(`New users: `) + chalk.hex("#" + random1)(`${userName}`) + " || " + chalk.hex("#" + random2)(`${userID}`)), '[ USER ]');
     } else {
@@ -190,21 +190,24 @@ async function handleGroupData({ GroupData, threadID, databaseSystem, economySys
 				await Users.setData(UID, { 'name': singleData.name, 'data': data });
 				Utils.logger(Utils.getText('handleCreateDatabase', 'newUser', chalk.hex("#" + random)(`New user:  `) + chalk.hex("#" + random1)(`${singleData.name}`) + "  ||  " + chalk.hex("#" + random2)(`${UID}`)), '[ USER ]');
 			}
+			if (!global.HADESTIA_BOT_DATA.allUserID.includes(UID)) {
+				global.HADESTIA_BOT_DATA.allUserID.push(UID);
+			}
 		} catch (e) {
 			console.log(e);
 		}
 	}
 	// SAVE
 	await Threads.setData(threadID, { threadInfo, data, economy, inventory, afk });
-	// it means this was a new thread
+	if (!global.HADESTIA_BOT_DATA.allThreadID.includes(threadID)) {
+		global.HADESTIA_BOT_DATA.allThreadID.push(userID);
+	}
 	if (!GroupData) {
 		Utils.logger(Utils.getText('handleCreateDatabase', 'newThread', chalk.hex("#" + random)(`New group: `) + chalk.hex("#" + random1)(`${threadID}`) + "  ||  " + chalk.hex("#" + random2)(`${threadIn4.threadName}`)), '[ THREAD ]');
-		return true;
 	} else {
-		Utils.logger(`Updated GROUP: ${threadIn4.threadName}(${threadID}).\nTotal Changes: ${changesCount}\n\n`, 'database');
-		return true;
+		Utils.logger(`Updated GROUP: ${threadIn4.threadName}(${threadID}).\n\n`, 'database');
 	}
-	return false;
+	return;
 }
 
 module.exports.handleUserData = handleUserData;

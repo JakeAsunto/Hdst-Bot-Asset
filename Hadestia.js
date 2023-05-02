@@ -71,6 +71,10 @@ global.HADESTIA_BOT_CLIENT = new Object({
 // former: GLOBAL.DATA
 global.HADESTIA_BOT_DATA = new Object({
 	
+	allThreadID: new Array(),
+	
+	allUserID: new Array(),
+	
 	language: new Object()
 	
 });

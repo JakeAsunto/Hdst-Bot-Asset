@@ -13,7 +13,7 @@
         "receive_update": true,
         "auto_resend_msg": true,
         "auto_response_listener": true,
-        "antiout": true,
+        "antiout": false,
         "antijoin": false,
         "guard": false,
         "allowNSFW": false,
