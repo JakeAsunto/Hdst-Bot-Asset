@@ -14,6 +14,10 @@ module.exports = function({ sequelize, Sequelize }) {
         },
 		data: {
 			type: Sequelize.JSON
+		},
+		experience: {
+			type: Sequelize.BIGINT,
+			defaultValue: 1
 		}
 	});
 

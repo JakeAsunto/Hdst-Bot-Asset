@@ -18,10 +18,9 @@ module.exports.handleMessageReply = async function ({ api, event, ignore_adminMe
 	try {
 		const { ADMINBOT, PREFIX } = global.HADESTIA_BOT_CONFIG;
 		
-		if (!event.body.startsWith(PREFIX) || !ignore_adminMessageReply.includes(event.body.toLowerCase())) {
+		if (!event.body.startsWith(PREFIX) && !ignore_adminMessageReply.includes(event.body.toLowerCase())) {
 			
 			const { messageReply, threadID, messageID, senderID, body } = event;
-			
 			if (messageReply.senderID !== Utils.BOT_ID) return;
 			if (messageReply.body.indexOf('𝗔𝗻𝗼𝗻𝘆𝗺𝗼𝘂𝘀 𝗠𝗲𝘀𝘀𝗮𝗴𝗲') !== -1) return;
 			

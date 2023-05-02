@@ -1,6 +1,6 @@
 module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
 	
-    return async function({ event }) {
+    return async function({ event, ignore_adminMessageReply }) {
     	
     	if (event.type !== 'message_reply') return;
     	
@@ -50,8 +50,10 @@ module.exports = function({ api, models, Utils, Users, Threads, Banned }) {
               	  Obj.Banned = Banned;
 
                 	Obj.Threads = Threads;
-
+					
                	 Obj.getText = Utils.getModuleText(command, event);
+               
+					Obj.ignore_adminMessageReply = ignore_adminMessageReply;
 
                	 if (command) command.handleMessageReply(Obj);
                

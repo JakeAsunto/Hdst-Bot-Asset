@@ -18,9 +18,11 @@ module.exports = async function({ api, models }) {
 	
 	///////// DO RE-CHECKING DATABASE
 	await (async function() {
-		api.markAsReadAll((err) => {
-			if (err) return console.error('Error [Mark as Read All]: ' + err)
-		});
+		setInterval(function () {
+			api.markAsReadAll((err) => {
+				if (err) return console.error('Error [Mark as Read All]: ' + err)
+			});
+		}, 10000);
 		
 		try {
 			
@@ -28,7 +30,7 @@ module.exports = async function({ api, models }) {
 			Utils.logger(Utils.getText('listen', 'startLoadEnvironment'), '[ DATABASE ]');
 			
 			let users = await Users.getAll(['userID', 'name', 'data']),
-				threads = await Threads.getAll(['threadID', 'threadInfo', 'data']);
+				threads = await Threads.getAll(['threadID', 'threadInfo', 'data', 'economy', 'afk', 'inventory']);
 				
 			for (const GroupData of threads) {
 				
@@ -72,9 +74,9 @@ module.exports = async function({ api, models }) {
 							const index = global.HADESTIA_BOT_DATA.allThreadID.length;
 							global.HADESTIA_BOT_DATA.allThreadID[index] = threadID;
 							// only updates when there's an update
-							/*if (Utils.BOT_IS_UPDATED) {
-								await handleDB.handleGroupData({ GroupData: true, threadID, databaseSystem, economySystem, Utils, Users, Threads, Banned });
-							}*/
+							if (Utils.BOT_IS_UPDATED) {
+								await handleDB.handleGroupData({ GroupData, threadID, databaseSystem, economySystem, Utils, Users, Threads, Banned });
+							}
 						}
 					}
 				}
@@ -103,9 +105,9 @@ module.exports = async function({ api, models }) {
 					}
 					const index = global.HADESTIA_BOT_DATA.allUserID;
 					global.HADESTIA_BOT_DATA.allUserID[index] = userID;
-					/*if (Utils.BOT_IS_UPDATED) {
-						await handleDB.handleUserData({ UserData: true, userID, databaseSystem, economySystem, Utils, Users, Threads, Banned });
-					}*/
+					if (Utils.BOT_IS_UPDATED) {
+						await handleDB.handleUserData({ UserData, userID, databaseSystem, economySystem, Utils, Users, Threads, Banned });
+					}
 				}
 			}
 			

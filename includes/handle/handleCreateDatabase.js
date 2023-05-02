@@ -56,7 +56,7 @@ async function handleUserData({ UserData, userID, databaseSystem, economySystem,
     const info = await Users.getInfo(userID) || {};
 
 	const userName = info.name || await Users.getNameUser(userID);
-    const credentials = (UserData) ? await Users.getData(userID) : {};
+    const credentials = UserData || {};
     const data = new Object(credentials.data || {});
     let changesCount = 0;
     
@@ -97,7 +97,6 @@ async function handleGroupData({ GroupData, threadID, databaseSystem, economySys
 	const notFound = ['undefined', 'null'];
 	let job = ["FF9900", "FFFF33", "33FFFF", "FF99FF", "FF3366", "FFFF66", "FF00FF", "66FF99", "00CCFF", "FF0099", "FF0066", "008E97", "F58220", "38B6FF", "7ED957", "97FFFF", "00BFFF", "76EEC6", "4EEE94", "98F5FF", "AFD788", "00B2BF", "9F79EE", "00FA9A"];
 	
-	let changesCount = 0;
 	const random = job[Math.floor(Math.random() * job.length)];
     const random1 = job[Math.floor(Math.random() * job.length)];
     const random2 = job[Math.floor(Math.random() * job.length)];
@@ -109,7 +108,7 @@ async function handleGroupData({ GroupData, threadID, databaseSystem, economySys
 	threadInfo.adminIDs = threadIn4.adminIDs;
 	threadInfo.nicknames = threadIn4.nicknames;
 
-	const credentials = (GroupData) ? await Threads.getData(threadID) : {};
+	const credentials = GroupData || {};
     const inventory = credentials.inventory || {};
     const economy = credentials.economy || {};
     const data = credentials.data || {};
@@ -141,71 +140,28 @@ async function handleGroupData({ GroupData, threadID, databaseSystem, economySys
 				
 	for (singleData of threadIn4.userInfo) {
 		// sets each member a initial data for economy & inventory
-		const UID = String(singleData.id);
-		const userEco = economy[UID] || {};
+		const userID = String(singleData.id);
+		const userEco = economy[userID] || {};
+		const name = singleData.name;
 		
 		for (const key in economySystem.userConfig) {
 			userEco[key] = userEco[key] || economySystem.userConfig[key];
 		}
-		economy[UID] = userEco;
-		inventory[UID] = inventory[UID] || {};
+		economy[userID] = userEco;
+		inventory[userID] = inventory[UID] || {};
 		
-        try {
-			// update member data on User table if exist
-			const thisGroupUserData = await Users.getData(UID);
-            if (thisGroupUserData) {
-            	
-            	const dataUser = thisGroupUserData.data || {};
-            	for (const key in databaseSystem.user_data_config) {
-            		dataUser[key] = dataUser[key] || databaseSystem.user_data_config[key];
-            	}
-            	
-				await Users.setData(
-					UID,
-					{
-						'name': singleData.name,
-						'data': dataUser
-					}
-				);
-				
-			} else {
-				
-				const data = new Object(databaseSystem.user_data_config);
-				// IF USER WAS BANNED
-				const thisUserBannedData = await Banned.getData(UID);
-				if (thisUserBannedData) {
-					
-					const bd = thisUserBannedData.data || {};
-					const banned = {
-						name: singleData.name,
-						caseID: bd.caseID || -1,
-						reason: bd.reason || databaseSystem.user_data_config.banned.reason,
-						dateIssued: bd.dateIssued || databaseSystem.user_data_config.banned.dateIssued
-					}
-					data.banned = banned;
-					await Banned.setData(UID, { data: banned });
-				}
-							
-				// SAVE
-				await Users.setData(UID, { 'name': singleData.name, 'data': data });
-				Utils.logger(Utils.getText('handleCreateDatabase', 'newUser', chalk.hex("#" + random)(`New user:  `) + chalk.hex("#" + random1)(`${singleData.name}`) + "  ||  " + chalk.hex("#" + random2)(`${UID}`)), '[ USER ]');
-			}
-			if (!global.HADESTIA_BOT_DATA.allUserID.includes(UID)) {
-				global.HADESTIA_BOT_DATA.allUserID.push(UID);
-			}
-		} catch (e) {
-			console.log(e);
-		}
+		const UserData = await Users.getData(userID);
+        handleUserData({ UserData, userID, databaseSystem, economySystem, Utils, Users, Threads, Banned });
 	}
 	// SAVE
 	await Threads.setData(threadID, { threadInfo, data, economy, inventory, afk });
 	if (!global.HADESTIA_BOT_DATA.allThreadID.includes(threadID)) {
-		global.HADESTIA_BOT_DATA.allThreadID.push(userID);
+		global.HADESTIA_BOT_DATA.allThreadID.push(threadID);
 	}
 	if (!GroupData) {
 		Utils.logger(Utils.getText('handleCreateDatabase', 'newThread', chalk.hex("#" + random)(`New group: `) + chalk.hex("#" + random1)(`${threadID}`) + "  ||  " + chalk.hex("#" + random2)(`${threadIn4.threadName}`)), '[ THREAD ]');
 	} else {
-		Utils.logger(`Updated GROUP: ${threadIn4.threadName}(${threadID}).\n\n`, 'database');
+		Utils.logger(`Updated GROUP: ${threadIn4.threadName}\n(${threadID}).\n`, 'database');
 	}
 	return;
 }

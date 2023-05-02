@@ -7,6 +7,7 @@
         "antijoin": "Group Anti-join/add",
         "guard": "Group Anti-change/guard",
         "allowNSFW": "Group allow NSFW",
+        "allowRankLevels": "Group allow ranking levels",
         "isBanned": "Group is banned"
     },
     "group_data_config": {
@@ -17,6 +18,7 @@
         "antijoin": false,
         "guard": false,
         "allowNSFW": false,
+        "allowRankLevels": true,
         "isBanned": false,
         "bannedCommands": [],
         "banned": {
