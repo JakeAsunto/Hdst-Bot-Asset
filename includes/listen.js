@@ -62,7 +62,7 @@ module.exports = async function({ api, models }) {
 									if (!alreadyCheckedUser.includes(id)) alreadyCheckedUser.push(id);
 								}
 							} else {
-								if (!global.HADESTIA_BOT_DATA.allThreadID.includes(threadID)) global.HADESTIA_BOT_DATA.allThreadID.push(threadID);
+								if (!global.HADESTIA_BOT_DATA.allThreadID.has(threadID)) global.HADESTIA_BOT_DATA.allThreadID.set(threadID, true);
 								if (GroupData.isBanned) {
 									const banned = GroupData.banned;
 									const data = {
