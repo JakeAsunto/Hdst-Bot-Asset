@@ -27,11 +27,11 @@ module.exports = function({ Utils, Users, Threads, Banned }) {
 			}
 		    
 			// ####### IF GROUP CHAT ####### //
-			if (event.isGroup && !allThreadID.includes(threadID)) {
+			if (event.isGroup && !allThreadID.has(threadID)) {
 				await handleGroupData(inputData);
             }
 			
-            if (!allUserID.includes(senderID)) {
+            if (!allUserID.has(senderID)) {
             	await handleUserData(inputData);
             }
             
