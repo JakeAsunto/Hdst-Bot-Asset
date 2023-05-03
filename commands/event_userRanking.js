@@ -18,8 +18,10 @@ module.exports.config = {
 module.exports.run = async function ({ api, event, Users }) {
 	
 	const { experience } = await Users.getData(event.senderID);
+	const level = Math.floor((Math.sqrt(1 + (4 * (experience + 1) / 3) + 1) / 2));
+
 	api.sendMessage(
-		`${experience}`, event.threadID, event.messageID
+		`LVL: ${level}\nEXP: ${experience}`, event.threadID, event.messageID
 	);
 }
 
