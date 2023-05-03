@@ -29,6 +29,7 @@ module.exports = async function({ api, models }) {
 			//const handleCreateDatabase = require('./handle/handleCreateDatabase');
 			Utils.logger(Utils.getText('listen', 'startLoadEnvironment'), '[ DATABASE ]');
 			
+			const alreadyCheckedUser = [];
 			let users = await Users.getAll(['userID', 'name', 'data', 'experience']),
 				threads = await Threads.getAll(['threadID', 'threadInfo', 'data', 'economy', 'afk', 'inventory']);
 				
@@ -37,22 +38,7 @@ module.exports = async function({ api, models }) {
 				const threadID = String(GroupData.threadID);
 				const Info = await Threads.getInfo(threadID);
 				
-				if (!GroupData.data || !Info) {
-					try { await Threads.delData(threadID); } catch (e) {};
-				} else {
-					
-					if (GroupData.isBanned) {
-						const banned = GroupData.banned;
-						const data = {
-							isGroup: true,
-							name: Info.threadName,
-							caseID: banned.caseID || -1,
-							reason: banned.reason || '<reason not set>',
-							dateIssued: banned.dateIssued || '<unknown date>'
-						}
-						await Banned.setData(threadID, { data });
-					}
-					
+				if (GroupData.data || Info) {
 					// auto leave inactive(amag) groups
 					if (Info.timestamp) {
 						const dateNow = Date.now();
@@ -63,19 +49,31 @@ module.exports = async function({ api, models }) {
 								Utils.textFormat('events', 'eventInactiveGroupNotice', howLong),
 								threadID,
 								async (e) => {
-									if (!e) {
-										api.removeUserFromGroup(api.getCurrentUserID(), threadID, (e)=>{});
-									}
+									api.removeUserFromGroup(Utils.BOT_ID, threadID, (e)=>{});
 									api.deleteThread(threadID, (e)=>{});
 									await Threads.delData(threadID);
 								}
 							);
 						} else {
-							const index = global.HADESTIA_BOT_DATA.allThreadID.length;
-							global.HADESTIA_BOT_DATA.allThreadID[index] = threadID;
 							// only updates when there's an update
 							if (Utils.BOT_IS_UPDATED) {
-								await handleDB.handleGroupData({ GroupData, threadID, databaseSystem, economySystem, Utils, Users, Threads, Banned });
+								const checkedUser = await handleDB.handleGroupData({ GroupData, threadID, databaseSystem, economySystem, Utils, Users, Threads, Banned });
+								for (const id of checkedUser) {
+									if (!alreadyCheckedUser.includes(id)) alreadyCheckedUser.push(id);
+								}
+							} else {
+								if (!global.HADESTIA_BOT_DATA.allThreadID.includes(threadID)) global.HADESTIA_BOT_DATA.allThreadID.push(threadID);
+								if (GroupData.isBanned) {
+									const banned = GroupData.banned;
+									const data = {
+										isGroup: true,
+										name: Info.threadName,
+										caseID: banned.caseID || -1,
+										reason: banned.reason || '<reason not set>',
+										dateIssued: banned.dateIssued || '<unknown date>'
+									}
+									await Banned.setData(threadID, { data });
+								}
 							}
 						}
 					}
@@ -88,25 +86,25 @@ module.exports = async function({ api, models }) {
 				
 				const userID = String(UserData.userID);
 				
-				if (!UserData.data) {
-					try { await Users.delData(userID); } catch (e) {}
-				} else {
-					if (UserData.isBanned) {
-						const name = await Users.getNameUser(userID);
-						const banned = UserData.banned;
-						const data = {
-							isGroup: false,
-							name: name,
-							caseID: userData.data.banned.caseID || -1,
-							reason: userData.data.banned.reason || '<reason not set>',
-							dateIssued: userData.data.banned.dateIssued || '<unknown date>'
+				if (UserData.data) {
+					if (!alreadyCheckedUser.includes(userID)) {
+						if (Utils.BOT_IS_UPDATED) {
+							await handleDB.handleUserData({ UserData, userID, userName: UserData.name, databaseSystem, economySystem, Utils, Users, Threads, Banned });
+						} else {
+							if (!global.HADESTIA_BOT_DATA.allUserID.has(userID)) global.HADESTIA_BOT_DATA.allUserID.set(userID, true);
+							if (UserData.isBanned) {
+								const name = await Users.getNameUser(userID);
+								const banned = UserData.banned;
+								const data = {
+									name,
+									isGroup: false,
+									caseID: userData.data.banned.caseID || -1,
+									reason: userData.data.banned.reason || '<reason not set>',
+									dateIssued: userData.data.banned.dateIssued || '<unknown date>'
+								}
+								await Banned.setData(userID, { data });
+							}
 						}
-						await Banned.setData(userID, { data });
-					}
-					const index = global.HADESTIA_BOT_DATA.allUserID;
-					global.HADESTIA_BOT_DATA.allUserID[index] = userID;
-					if (Utils.BOT_IS_UPDATED) {
-						await handleDB.handleUserData({ UserData, userID, userName: UserData.name, databaseSystem, economySystem, Utils, Users, Threads, Banned });
 					}
 				}
 			}

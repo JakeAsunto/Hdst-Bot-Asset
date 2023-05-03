@@ -13,7 +13,6 @@ module.exports.config = {
 
 module.exports.run = async function ({ event, api, Utils, Threads, Users }) {
 	
-	console.log(event);
 	const threadData = await Threads.getData(event.threadID);
 	const threadInfo = await Threads.getInfo(event.threadID);
 	const data = threadData.data;

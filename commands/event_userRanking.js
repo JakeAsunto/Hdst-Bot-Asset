@@ -15,7 +15,13 @@ module.exports.config = {
 	}
 }
 
-module.exports.run = function () {}
+module.exports.run = function ({ api, event, Users }) {
+	
+	const { experience } = await Users.getData(event.senderID);
+	api.sendMessage(
+		`${experience}`, event.threadID, event.messageID
+	);
+}
 
 module.exports.handleEvent = async function ({ api, event, Utils, Users, Threads }) {
 	
