@@ -15,7 +15,7 @@ module.exports.config = {
 	}
 }
 
-module.exports.run = function ({ api, event, Users }) {
+module.exports.run = async function ({ api, event, Users }) {
 	
 	const { experience } = await Users.getData(event.senderID);
 	api.sendMessage(

@@ -156,7 +156,7 @@ async function handleGroupData({ GroupData, threadID, databaseSystem, economySys
 	}
 	// SAVE
 	await Threads.setData(threadID, { threadInfo, data, economy, inventory, afk });
-	if (!global.HADESTIA_BOT_DATA.allThreadID.includes(threadID)) global.HADESTIA_BOT_DATA.allThreadID.push(threadID);
+	if (!global.HADESTIA_BOT_DATA.allThreadID.has(threadID)) global.HADESTIA_BOT_DATA.allThreadID.set(threadID, true);
 	
 	if (!GroupData) {
 		Utils.logger(Utils.getText('handleCreateDatabase', 'newThread', chalk.hex("#" + random)(`New group: `) + chalk.hex("#" + random1)(`${threadID}`) + "  ||  " + chalk.hex("#" + random2)(`${threadIn4.threadName}`)), '[ THREAD ]');
